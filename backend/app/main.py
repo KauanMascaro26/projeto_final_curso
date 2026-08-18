@@ -20,3 +20,10 @@ def health_check():
     return {
         "status": "healthy",
     }
+
+
+@app.get("/api/test")
+def api_test():
+    return {
+        "message": "API funcionando corretamente",
+    }
