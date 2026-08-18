@@ -38,4 +38,32 @@ class ApiService {
       'Erro ao buscar pontos de coleta: ${response.statusCode}',
     );
   }
+
+  static Future<List<Map<String, dynamic>>> getNearbyCollectionPoints(
+    double latitude,
+    double longitude,
+  ) async {
+    final uri = Uri.parse(
+      '${ApiConstants.baseUrl}/api/collection-points/nearby',
+    ).replace(
+      queryParameters: {
+        'latitude': latitude.toString(),
+        'longitude': longitude.toString(),
+      },
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+
+      return data
+          .map((point) => Map<String, dynamic>.from(point))
+          .toList();
+    }
+
+    throw Exception(
+      'Erro ao buscar pontos próximos: ${response.statusCode}',
+    );
+  }
 }

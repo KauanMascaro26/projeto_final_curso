@@ -14,37 +14,27 @@ class CollectionPointsScreen extends StatefulWidget {
 
 class _CollectionPointsScreenState
     extends State<CollectionPointsScreen> {
-  late Future<List<CollectionPoint>> collectionPoints;
+  late Future<List<Map<String, dynamic>>> nearbyPoints;
 
   @override
   void initState() {
     super.initState();
-    collectionPoints = ApiService.getCollectionPoints();
+    nearbyPoints = loadNearbyPoints();
   }
 
-  Future<void> testLocation() async {
-    try {
-      final position = await LocationService.getCurrentLocation();
+  Future<List<Map<String, dynamic>>> loadNearbyPoints() async {
+    final position = await LocationService.getCurrentLocation();
 
-      if (!mounted) return;
+    return ApiService.getNearbyCollectionPoints(
+      position.latitude,
+      position.longitude,
+    );
+  }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Latitude: ${position.latitude}\n'
-            'Longitude: ${position.longitude}',
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro: $e'),
-        ),
-      );
-    }
+  Future<void> refreshLocation() async {
+    setState(() {
+      nearbyPoints = loadNearbyPoints();
+    });
   }
 
   @override
@@ -52,9 +42,15 @@ class _CollectionPointsScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pontos de coleta'),
+        actions: [
+          IconButton(
+            onPressed: refreshLocation,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
-      body: FutureBuilder<List<CollectionPoint>>(
-        future: collectionPoints,
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: nearbyPoints,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -63,9 +59,28 @@ class _CollectionPointsScreenState
           }
 
           if (snapshot.hasError) {
-            return const Center(
-              child: Text(
-                'Não foi possível carregar os pontos de coleta.',
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.location_off,
+                      size: 50,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Não foi possível obter os pontos de coleta.',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: refreshLocation,
+                      child: const Text('Tentar novamente'),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -80,47 +95,66 @@ class _CollectionPointsScreenState
             );
           }
 
-          return ListView(
+          return ListView.builder(
             padding: const EdgeInsets.all(16),
-            children: [
-              ElevatedButton.icon(
-                onPressed: testLocation,
-                icon: const Icon(Icons.location_on),
-                label: const Text('Testar minha localização'),
-              ),
+            itemCount: points.length,
+            itemBuilder: (context, index) {
+              final point = points[index];
 
-              const SizedBox(height: 16),
+              final collectionPoint = CollectionPoint.fromJson(point);
 
-              ...points.map(
-                (point) {
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+              final distance =
+                  (point['distancia_km'] as num).toDouble();
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Text(
-                            point.nome,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          const Icon(Icons.location_on),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              collectionPoint.nome,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(point.endereco),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Aceita: ${point.tiposResiduos.join(', ')}',
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        collectionPoint.endereco,
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        'Distância: ${distance.toStringAsFixed(2)} km',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        'Aceita: ${collectionPoint.tiposResiduos.join(', ')}',
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
