@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.data.collection_points import collection_points
 
 app = FastAPI(
     title="Descarte Inteligente API",
@@ -27,3 +28,7 @@ def api_test():
     return {
         "message": "API funcionando corretamente",
     }
+
+@app.get("/api/collection-points")
+def get_collection_points():
+    return collection_points

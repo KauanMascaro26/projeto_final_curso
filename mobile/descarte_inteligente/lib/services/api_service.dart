@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../core/constants/api_constants.dart';
+import '../models/collection_point.dart';
 
 class ApiService {
   static Future<String> testConnection() async {
@@ -17,6 +18,24 @@ class ApiService {
 
     throw Exception(
       'Erro na API: ${response.statusCode}',
+    );
+  }
+
+  static Future<List<CollectionPoint>> getCollectionPoints() async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/api/collection-points'),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+
+      return data
+          .map((json) => CollectionPoint.fromJson(json))
+          .toList();
+    }
+
+    throw Exception(
+      'Erro ao buscar pontos de coleta: ${response.statusCode}',
     );
   }
 }
