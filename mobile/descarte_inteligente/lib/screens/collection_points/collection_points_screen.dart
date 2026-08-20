@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/collection_point.dart';
 import '../../services/api_service.dart';
@@ -58,6 +59,33 @@ class _CollectionPointsScreenState
         ),
       ),
     );
+  }
+
+  Future<void> openRoute(Map<String, dynamic> point) async {
+    final latitude = (point['latitude'] as num).toDouble();
+    final longitude = (point['longitude'] as num).toDouble();
+
+    final url = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1'
+      '&destination=$latitude,$longitude',
+    );
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Não foi possível abrir o Google Maps.',
+          ),
+        ),
+      );
+    }
   }
 
   Set<Marker> buildMarkers(
@@ -263,6 +291,23 @@ class _CollectionPointsScreenState
                               Text(
                                 'Aceita: '
                                 '${collectionPoint.tiposResiduos.join(', ')}',
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              SizedBox(
+                                width: double.infinity,
+                                child:
+                                    ElevatedButton.icon(
+                                  onPressed: () =>
+                                      openRoute(point),
+                                  icon: const Icon(
+                                    Icons.directions,
+                                  ),
+                                  label: const Text(
+                                    'Como chegar',
+                                  ),
+                                ),
                               ),
                             ],
                           ),
