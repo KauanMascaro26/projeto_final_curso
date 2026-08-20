@@ -12,6 +12,8 @@
 **/captures/
 **/*.jks
 **/*.keystore
+android/secrets.properties
+android/local.defaults.properties
 
 # IDE
 **/.idea/
@@ -23,3 +25,7 @@
 # OS
 .DS_Store
 Thumbs.db
+
+# Google Maps secrets
+mobile/descarte_inteligente/android/secrets.properties
+mobile/descarte_inteligente/android/local.defaults.properties
