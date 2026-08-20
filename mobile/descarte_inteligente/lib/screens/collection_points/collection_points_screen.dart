@@ -46,6 +46,20 @@ class _CollectionPointsScreenState
     });
   }
 
+  void focusOnPoint(Map<String, dynamic> point) {
+    final latitude = (point['latitude'] as num).toDouble();
+    final longitude = (point['longitude'] as num).toDouble();
+
+    mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(latitude, longitude),
+          zoom: 16,
+        ),
+      ),
+    );
+  }
+
   Set<Marker> buildMarkers(
     List<Map<String, dynamic>> points,
   ) {
@@ -190,61 +204,68 @@ class _CollectionPointsScreenState
                         (point['distancia_km'] as num)
                             .toDouble();
 
-                    return Card(
-                      margin:
-                          const EdgeInsets.only(bottom: 12),
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    collectionPoint.nome,
-                                    style:
-                                        const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight:
-                                          FontWeight.bold,
+                    return InkWell(
+                      onTap: () => focusOnPoint(point),
+                      borderRadius:
+                          BorderRadius.circular(12),
+                      child: Card(
+                        margin:
+                            const EdgeInsets.only(
+                          bottom: 12,
+                        ),
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      collectionPoint.nome,
+                                      style:
+                                          const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            Text(
-                              collectionPoint.endereco,
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            Text(
-                              'Distância: '
-                              '${distance.toStringAsFixed(2)} km',
-                              style:
-                                  const TextStyle(
-                                fontWeight:
-                                    FontWeight.bold,
+                                ],
                               ),
-                            ),
 
-                            const SizedBox(height: 8),
+                              const SizedBox(height: 8),
 
-                            Text(
-                              'Aceita: '
-                              '${collectionPoint.tiposResiduos.join(', ')}',
-                            ),
-                          ],
+                              Text(
+                                collectionPoint.endereco,
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              Text(
+                                'Distância: '
+                                '${distance.toStringAsFixed(2)} km',
+                                style:
+                                    const TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              Text(
+                                'Aceita: '
+                                '${collectionPoint.tiposResiduos.join(', ')}',
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
