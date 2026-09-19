@@ -173,9 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     _buildMainBanner(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
                     _buildFeatureGrid(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
                     _buildImpactCard(),
                   ],
                 ),
@@ -282,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _openIdentification,
         borderRadius: BorderRadius.circular(24),
         child: Ink(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           decoration: BoxDecoration(
             color: const Color(0xFFEAF7EF),
             borderRadius: BorderRadius.circular(24),
@@ -293,8 +293,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             children: [
               Container(
-                width: 54,
-                height: 54,
+                width: 44,
+                height: 44,
                 decoration: const BoxDecoration(
                   color: _green,
                   shape: BoxShape.circle,
@@ -302,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(
                   Icons.eco,
                   color: Colors.white,
-                  size: 29,
+                  size: 24,
                 ),
               ),
               const SizedBox(width: 16),
@@ -313,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'Juntos por uma São Carlos mais limpa!',
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: _darkGreen,
                       ),
@@ -331,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const Icon(
                 Icons.arrow_forward_ios,
-                size: 18,
+                size: 16,
                 color: _darkGreen,
               ),
             ],
@@ -348,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: 14,
       mainAxisSpacing: 14,
-      childAspectRatio: 1.06,
+      childAspectRatio: 1.12,
       children: [
         _FeatureCard(
           icon: Icons.camera_alt_outlined,
@@ -471,7 +471,7 @@ class _FeatureCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 14, 14),
+          padding: const EdgeInsets.fromLTRB(14, 13, 12, 11),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -485,14 +485,14 @@ class _FeatureCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   color: Colors.white,
-                  size: 26,
+                  size: 23,
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 10),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 17,
+                  fontSize: 15.5,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -501,19 +501,19 @@ class _FeatureCard extends StatelessWidget {
                 child: Text(
                   description,
                   style: const TextStyle(
-                    fontSize: 12.5,
+                    fontSize: 11.5,
                     color: Colors.black54,
                     height: 1.25,
                   ),
-                  maxLines: 4,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Container(
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.75),
                     shape: BoxShape.circle,
