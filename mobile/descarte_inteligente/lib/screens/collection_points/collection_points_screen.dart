@@ -195,6 +195,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
 
   void _showPointDetails(Map<String, dynamic> point) {
     final collectionPoint = CollectionPoint.fromJson(point);
+    final displayAddress = collectionPoint.endereco.replaceAll('São', 'Sao').replaceAll('são', 'sao');
     final distance = (point['distancia_km'] as num?)?.toDouble();
 
     showModalBottomSheet<void>(
@@ -239,7 +240,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          collectionPoint.endereco,
+                          displayAddress,
                           style: const TextStyle(
                             color: Colors.black54,
                             height: 1.3,
@@ -587,7 +588,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        collectionPoint.endereco,
+                        displayAddress,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
