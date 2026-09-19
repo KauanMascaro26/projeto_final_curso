@@ -348,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: 14,
       mainAxisSpacing: 14,
-      childAspectRatio: 1.12,
+      childAspectRatio: 1.00,
       children: [
         _FeatureCard(
           icon: Icons.camera_alt_outlined,
@@ -492,23 +492,23 @@ class _FeatureCard extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 15.5,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 6),
-              Expanded(
-                child: Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    color: Colors.black54,
-                    height: 1.25,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
+              const SizedBox(height: 5),
+              Text(
+                description,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.black54,
+                  height: 1.2,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
+              const Spacer(),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Container(
