@@ -545,7 +545,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     return Positioned(
       left: 16,
       right: 16,
-      bottom: 18,
+      bottom: 42,
       child: Material(
         color: Colors.white,
         elevation: 8,
