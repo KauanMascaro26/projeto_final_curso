@@ -541,6 +541,9 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
 
   Widget _buildBottomCard(Map<String, dynamic> point) {
     final collectionPoint = CollectionPoint.fromJson(point);
+    final displayAddress = collectionPoint.endereco
+        .replaceAll('São', 'Sao')
+        .replaceAll('são', 'sao');
     final distance = (point['distancia_km'] as num).toDouble();
 
     return Positioned(
