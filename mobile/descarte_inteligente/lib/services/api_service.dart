@@ -12,7 +12,7 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       return data['message'];
     }
 
@@ -27,7 +27,7 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
 
       return data
           .map((json) => CollectionPoint.fromJson(json))
@@ -55,7 +55,7 @@ class ApiService {
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
 
       return data
           .map((point) => Map<String, dynamic>.from(point))
