@@ -348,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: 14,
       mainAxisSpacing: 14,
-      childAspectRatio: 0.94,
+      childAspectRatio: 1.06,
       children: [
         _FeatureCard(
           icon: Icons.camera_alt_outlined,
