@@ -204,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton.filled(
-                    onPressed: _isSending ? null : _sendMessage,
+                    onPressed: _isSending ? null : () => _sendMessage(),
                     style: IconButton.styleFrom(
                       backgroundColor: _green,
                       foregroundColor: Colors.white,
