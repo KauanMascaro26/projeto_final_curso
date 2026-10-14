@@ -12,179 +12,166 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const _green = Color(0xFF168A68);
-  static const _darkGreen = Color(0xFF101C2C);
-  static const _blue = Color(0xFF168EAD);
-  static const _yellow = Color(0xFF168EAD);
-  static const _purple = Color(0xFF168A68);
+  static const _background = Color(0xFF07131D);
+  static const _surface = Color(0xFF0D202B);
+  static const _surfaceRaised = Color(0xFF122B38);
+  static const _green = Color(0xFF55D6A2);
+  static const _greenDark = Color(0xFF168A68);
+  static const _cyan = Color(0xFF53D9F5);
+  static const _text = Color(0xFFF2F8FA);
+  static const _muted = Color(0xFFADC1CC);
+  static const _border = Color(0xFF204653);
 
   int _currentIndex = 0;
-
-  void _openIdentification() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const IdentificationScreen(),
-      ),
-    );
-  }
 
   void _openChat() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const ChatScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const ChatScreen()),
+    );
+  }
+
+  void _openIdentification() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const IdentificationScreen()),
     );
   }
 
   void _openCollectionPoints() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const CollectionPointsScreen(),
+      MaterialPageRoute(builder: (_) => const CollectionPointsScreen()),
+    );
+  }
+
+  void _showProfile() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: _surface,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text(
+                'Descarte Inteligente',
+                style: TextStyle(
+                  color: _text,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Tecnologia a favor de uma cidade mais sustentável.',
+                style: TextStyle(color: _muted, height: 1.5),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Este aplicativo está em desenvolvimento. Os pontos de coleta serão atualizados após o levantamento dos locais reais.',
+                style: TextStyle(color: _muted, height: 1.5),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  void _showRecyclingGuide() {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Guia de reciclagem',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Consulte orientações para separar e descartar seus resíduos corretamente.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _GuideItem(
-                    icon: Icons.recycling,
-                    color: _green,
-                    title: 'Separe os resíduos',
-                    text: 'Sempre que possível, separe os materiais por categoria.',
-                  ),
-                  _GuideItem(
-                    icon: Icons.water_drop_outlined,
-                    color: _blue,
-                    title: 'Higienize quando necessário',
-                    text: 'Alguns materiais recicláveis devem estar limpos e secos.',
-                  ),
-                  _GuideItem(
-                    icon: Icons.location_on_outlined,
-                    color: _purple,
-                    title: 'Encontre um ponto',
-                    text: 'Use o mapa do aplicativo para localizar pontos de coleta próximos.',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showSustainabilityTips() {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Dicas sustentáveis',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _TipRow(
-                  icon: Icons.shopping_bag_outlined,
-                  text: 'Prefira produtos reutilizáveis quando possível.',
-                ),
-                _TipRow(
-                  icon: Icons.recycling,
-                  text: 'Separe os resíduos antes de descartá-los.',
-                ),
-                _TipRow(
-                  icon: Icons.delete_outline,
-                  text: 'Evite misturar materiais recicláveis com rejeitos.',
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _handleNavigation(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-
+  void _onNavigation(int index) {
+    setState(() => _currentIndex = index);
     switch (index) {
+      case 0:
+        break;
       case 1:
-        _openIdentification();
+        _openChat();
         break;
       case 2:
-        _openCollectionPoints();
+        _openIdentification();
         break;
       case 3:
-        _showRecyclingGuide();
+        _openCollectionPoints();
+        break;
+      case 4:
+        _showProfile();
         break;
     }
-
-    if (index != 0) {
-      setState(() {
-        _currentIndex = 0;
-      });
+    if (index != 0 && mounted) {
+      setState(() => _currentIndex = 0);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FB),
+      backgroundColor: _background,
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
-              child: _buildHeader(),
-            ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
               sliver: SliverToBoxAdapter(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildMainBanner(),
+                    _buildHeader(),
+                    const SizedBox(height: 28),
+                    const Text(
+                      'Identifique, aprenda e descarte',
+                      style: TextStyle(
+                        color: _text,
+                        fontSize: 25,
+                        height: 1.15,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    const Text(
+                      'de forma correta.',
+                      style: TextStyle(
+                        color: _green,
+                        fontSize: 25,
+                        height: 1.15,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildChatCard(),
                     const SizedBox(height: 14),
-                    _buildFeatureGrid(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _ActionCard(
+                            icon: Icons.search_rounded,
+                            title: 'Buscar resíduo',
+                            description: 'Encontre orientações por material.',
+                            accent: _cyan,
+                            onTap: _openIdentification,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _ActionCard(
+                            icon: Icons.photo_camera_outlined,
+                            title: 'Identificar por foto',
+                            description: 'Reconhecimento visual.',
+                            accent: _muted,
+                            disabled: true,
+                            onTap: null,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCollectionCard(),
                     const SizedBox(height: 14),
                     _buildImpactCard(),
                   ],
@@ -195,30 +182,37 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: NavigationBar(
+        height: 70,
+        backgroundColor: const Color(0xFF091923),
+        indicatorColor: _green.withValues(alpha: 0.15),
+        surfaceTintColor: Colors.transparent,
         selectedIndex: _currentIndex,
-        onDestinationSelected: _handleNavigation,
-        backgroundColor: Colors.white,
-        indicatorColor: _green.withValues(alpha: 0.14),
+        onDestinationSelected: _onNavigation,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home_rounded, color: _green),
             label: 'Início',
           ),
           NavigationDestination(
-            icon: Icon(Icons.search),
-            selectedIcon: Icon(Icons.search_rounded),
-            label: 'Pesquisar',
+            icon: Icon(Icons.chat_bubble_outline_rounded),
+            selectedIcon: Icon(Icons.chat_rounded, color: _green),
+            label: 'Chat',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search_rounded),
+            selectedIcon: Icon(Icons.search_rounded, color: _green),
+            label: 'Buscar',
           ),
           NavigationDestination(
             icon: Icon(Icons.location_on_outlined),
-            selectedIcon: Icon(Icons.location_on),
-            label: 'Mapa',
+            selectedIcon: Icon(Icons.location_on_rounded, color: _green),
+            label: 'Pontos',
           ),
           NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Aprender',
+            icon: Icon(Icons.person_outline_rounded),
+            selectedIcon: Icon(Icons.person_rounded, color: _green),
+            label: 'Perfil',
           ),
         ],
       ),
@@ -226,124 +220,140 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(22, 26, 22, 28),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF101C2C),
-            Color(0xFF168A68),
-          ],
+    return Row(
+      children: [
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [_green, _cyan],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: _green.withValues(alpha: 0.16),
+                blurRadius: 18,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: const Icon(Icons.park_rounded, color: _background, size: 30),
         ),
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(30),
+        const SizedBox(width: 12),
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Descarte Inteligente',
+                style: TextStyle(
+                  color: _text,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              SizedBox(height: 3),
+              Text(
+                'Tecnologia por um futuro sustentável',
+                style: TextStyle(color: _muted, fontSize: 11.5),
+              ),
+            ],
+          ),
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Olá!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Pequenas ações, grandes mudanças.',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.86),
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: _surfaceRaised,
+            shape: BoxShape.circle,
+            border: Border.all(color: _border),
+          ),
+          child: IconButton(
+            tooltip: 'Sobre o aplicativo',
+            onPressed: _showProfile,
+            icon: const Icon(
+              Icons.person_outline_rounded,
+              color: _muted,
+              size: 22,
             ),
           ),
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.14),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.person_outline,
-              color: Colors.white,
-              size: 28,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildMainBanner() {
+  Widget _buildChatCard() {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(22),
       child: InkWell(
-        onTap: _openIdentification,
-        borderRadius: BorderRadius.circular(24),
+        onTap: _openChat,
+        borderRadius: BorderRadius.circular(22),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: const Color(0xFFE8F8F1),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: _green.withValues(alpha: 0.12),
+            gradient: const LinearGradient(
+              colors: [Color(0xFF103D3D), Color(0xFF102B40)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: _green.withValues(alpha: 0.72)),
+            boxShadow: [
+              BoxShadow(
+                color: _green.withValues(alpha: 0.06),
+                blurRadius: 22,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: _green,
-                  shape: BoxShape.circle,
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.13),
+                  borderRadius: BorderRadius.circular(17),
+                  border: Border.all(color: _green.withValues(alpha: 0.28)),
                 ),
                 child: const Icon(
-                  Icons.eco,
-                  color: Colors.white,
-                  size: 24,
+                  Icons.forum_rounded,
+                  color: _green,
+                  size: 28,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Juntos por uma São Carlos mais limpa!',
+                      'Chat inteligente',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _darkGreen,
+                        color: _text,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     SizedBox(height: 5),
                     Text(
-                      'Identifique, descarte e faça a diferença.',
+                      'Tire suas dúvidas sobre descarte',
                       style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black54,
+                        color: _muted,
+                        fontSize: 12.5,
+                        height: 1.35,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: _darkGreen,
-              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right_rounded, color: _green, size: 28),
             ],
           ),
         ),
@@ -351,64 +361,65 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFeatureGrid() {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 14,
-      mainAxisSpacing: 14,
-      childAspectRatio: 0.90,
-      children: [
-        _FeatureCard(
-          icon: Icons.chat_bubble_outline_rounded,
-          iconColor: _green,
-          backgroundColor: const Color(0xFFEAF7EF),
-          title: 'Chat inteligente',
-          description: 'Tire dúvidas sobre descarte e preparação de materiais.',
-          onTap: _openChat,
+  Widget _buildCollectionCard() {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: _openCollectionPoints,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          padding: const EdgeInsets.all(17),
+          decoration: BoxDecoration(
+            color: _surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: _border),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: _cyan.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.location_on_outlined,
+                  color: _cyan,
+                  size: 29,
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Pontos de coleta',
+                      style: TextStyle(
+                        color: _text,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Consulte os locais cadastrados no aplicativo.',
+                      style: TextStyle(
+                        color: _muted,
+                        fontSize: 12.5,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_rounded, color: _cyan, size: 21),
+            ],
+          ),
         ),
-        _FeatureCard(
-          icon: Icons.search_rounded,
-          iconColor: _green,
-          backgroundColor: const Color(0xFFEAF7EF),
-          title: 'Pesquisar resíduo',
-          description: 'Pesquise um material e veja as orientações corretas.',
-          onTap: _openIdentification,
-        ),
-        _FeatureCard(
-          icon: Icons.location_on_outlined,
-          iconColor: _blue,
-          backgroundColor: const Color(0xFFEAF2FE),
-          title: 'Pontos de coleta',
-          description: 'Encontre os locais mais próximos para o descarte correto.',
-          onTap: _openCollectionPoints,
-        ),
-        _FeatureCard(
-          icon: Icons.menu_book_outlined,
-          iconColor: _yellow,
-          backgroundColor: const Color(0xFFFFF6DF),
-          title: 'Guia de reciclagem',
-          description: 'Aprenda sobre os tipos de resíduos e como descartá-los.',
-          onTap: _showRecyclingGuide,
-        ),
-        _FeatureCard(
-          icon: Icons.eco_outlined,
-          iconColor: _purple,
-          backgroundColor: const Color(0xFFF1EDFC),
-          title: 'Dicas sustentáveis',
-          description: 'Pequenas atitudes geram um grande impacto no dia a dia.',
-          onTap: _showSustainabilityTips,
-        ),
-        _FeatureCard(
-          icon: Icons.camera_alt_outlined,
-          iconColor: Colors.grey,
-          backgroundColor: const Color(0xFFF0F1F0),
-          title: 'Identificar por foto',
-          description: 'O reconhecimento por imagem estará disponível em breve.',
-          onTap: null,
-        ),
-      ],
+      ),
     );
   }
 
@@ -416,242 +427,146 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 7),
-          ),
-        ],
+        color: const Color(0xFF0B202A),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _border),
       ),
       child: Row(
         children: [
           Container(
-            width: 54,
-            height: 54,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: _green.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(16),
+              color: _green.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
-              Icons.bar_chart_rounded,
-              color: _green,
-              size: 30,
-            ),
+            child: const Icon(Icons.eco_outlined, color: _green, size: 25),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 13),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Impacto em São Carlos',
+                  'Pequenas atitudes,',
                   style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
+                    color: _text,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                SizedBox(height: 4),
                 Text(
-                  'Veja como o descarte correto contribui para uma cidade mais sustentável.',
+                  'grandes mudanças.',
                   style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black54,
-                    height: 1.3,
+                    color: _green,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  'O descarte correto ajuda a construir uma cidade mais sustentável.',
+                  style: TextStyle(
+                    color: _muted,
+                    fontSize: 12,
+                    height: 1.4,
                   ),
                 ),
               ],
             ),
           ),
+          const SizedBox(width: 8),
+          const Icon(Icons.auto_awesome_rounded, color: _green, size: 25),
         ],
       ),
     );
   }
 }
 
-class _FeatureCard extends StatelessWidget {
+class _ActionCard extends StatelessWidget {
   final IconData icon;
-  final Color iconColor;
-  final Color backgroundColor;
   final String title;
   final String description;
+  final Color accent;
+  final bool disabled;
   final VoidCallback? onTap;
 
-  const _FeatureCard({
+  const _ActionCard({
     required this.icon,
-    required this.iconColor,
-    required this.backgroundColor,
     required this.title,
     required this.description,
+    required this.accent,
+    this.disabled = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: backgroundColor,
-      borderRadius: BorderRadius.circular(22),
+      color: const Color(0xFF0D202B),
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 13, 12, 11),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 174),
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFF204653)),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: iconColor,
-                  shape: BoxShape.circle,
+                  color: accent.withValues(alpha: 0.11),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: accent.withValues(alpha: 0.26)),
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 23,
-                ),
+                child: Icon(icon, color: accent, size: 25),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 13),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFF2F8FA),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 6),
               const SizedBox(height: 5),
               Text(
                 description,
                 style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.black54,
-                  height: 1.2,
+                  color: Color(0xFFADC1CC),
+                  fontSize: 11.5,
+                  height: 1.35,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-              const Spacer(),
-              if (onTap == null)
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Text(
+              if (disabled) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF172F3C),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
                     'Em breve',
                     style: TextStyle(
-                      color: iconColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFADC1CC),
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w700,
                     ),
-                  ),
-                )
-              else
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.75),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: iconColor,
-                      size: 18,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GuideItem extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String text;
-
-  const _GuideItem({
-    required this.icon,
-    required this.color,
-    required this.title,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  text,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    height: 1.3,
                   ),
                 ),
               ],
-            ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TipRow extends StatelessWidget {
-  final IconData icon;
-  final String text;
-
-  const _TipRow({
-    required this.icon,
-    required this.text,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.check_circle_outline,
-            color: _HomeScreenState._green,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 15,
-                height: 1.3,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
