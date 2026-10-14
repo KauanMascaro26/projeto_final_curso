@@ -256,7 +256,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                         : ListView.separated(
                             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                             itemCount: _wasteTypes.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 10),
+                            separatorBuilder: (_, _) => const SizedBox(height: 10),
                             itemBuilder: (context, index) {
                               final waste = _wasteTypes[index];
                               return Card(
