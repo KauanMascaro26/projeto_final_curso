@@ -270,20 +270,30 @@ def get_collection_points_for_waste(waste_id: int):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT
-                    id,
-                    nome,
-                    endereco,
-                    tipos_residuos,
-                    latitude,
-                    longitude
-                FROM collection_points
-                WHERE id IN (
-                    SELECT collection_point_id
-                    FROM waste_collection_point_types
-                    WHERE waste_type_id = %s
+                SELECT id
+                FROM waste_types
+                WHERE id = %s AND ativo = TRUE
+            """, (waste_id,))
+
+            if cursor.fetchone() is None:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Resíduo não encontrado.",
                 )
-                ORDER BY nome
+
+            cursor.execute("""
+                SELECT
+                    cp.id,
+                    cp.nome,
+                    cp.endereco,
+                    cp.tipos_residuos,
+                    cp.latitude,
+                    cp.longitude
+                FROM collection_points cp
+                JOIN waste_collection_point_types wcpt
+                    ON wcpt.collection_point_id = cp.id
+                WHERE wcpt.waste_type_id = %s
+                ORDER BY cp.nome
             """, (waste_id,))
 
             rows = cursor.fetchall()
