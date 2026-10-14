@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from typing import Literal
 
@@ -9,6 +10,7 @@ from pydantic import BaseModel, Field
 from app.database import get_connection
 
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 MODEL_NAME = os.getenv("OPENAI_MODEL", "gpt-5-mini")
 
@@ -144,11 +146,18 @@ def chat_with_disposal_assistant(request: ChatRequest):
             max_output_tokens=500,
         )
     except OpenAIError as exc:
+        logger.exception(
+            "Falha na chamada à OpenAI (model=%s, error_type=%s, status=%s, code=%s)",
+            MODEL_NAME,
+            type(exc).__name__,
+            getattr(exc, "status_code", None),
+            getattr(exc, "code", None),
+        )
         raise HTTPException(
             status_code=502,
             detail=(
-                "Não consegui obter uma resposta da IA agora. "
-                "Verifique a chave, o acesso à API e tente novamente."
+                "A chamada à IA falhou. Confira o terminal do backend "
+                "para identificar o erro (sem compartilhar a chave da API)."
             ),
         ) from exc
 
