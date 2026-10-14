@@ -81,15 +81,15 @@ class _ChatScreenState extends State<ChatScreen> {
         );
         _isSending = false;
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted) return;
 
       setState(() {
         _messages.add(
           const _ChatMessage(
             text:
-                'Não consegui consultar as orientações agora. Confira se o '
-                'servidor está ligado e tente novamente.',
+                'Não consegui responder agora: '
+                '${error.toString().replaceFirst('Exception: ', '')}',
             isUser: false,
           ),
         );
@@ -315,7 +315,7 @@ class _ThinkingBubble extends StatelessWidget {
               ),
             ),
             SizedBox(width: 10),
-            Text('Consultando orientações...'),
+            Text('Preparando sua resposta...'),
           ],
         ),
       ),
