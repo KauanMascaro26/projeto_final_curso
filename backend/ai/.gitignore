@@ -1,0 +1,9 @@
+# Dados de treinamento e artefatos de IA (não versionar no Git)
+dataset/
+dataset-*/
+models/
+*.keras
+*.h5
+*.tflite
+__pycache__/
+*.py[cod]
