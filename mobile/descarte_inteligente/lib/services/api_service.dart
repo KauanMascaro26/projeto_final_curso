@@ -66,4 +66,62 @@ class ApiService {
       'Erro ao buscar pontos próximos: ${response.statusCode}',
     );
   }
+
+  static Future<List<Map<String, dynamic>>> getWasteTypes() async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/api/waste-types'),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+
+      return data
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+
+    throw Exception(
+      'Erro ao buscar resíduos: ${response.statusCode}',
+    );
+  }
+
+  static Future<List<Map<String, dynamic>>> searchWasteTypes(
+    String query,
+  ) async {
+    final uri = Uri.parse(
+      '${ApiConstants.baseUrl}/api/waste-types/search',
+    ).replace(
+      queryParameters: {'q': query},
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+
+      return data
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+
+    throw Exception(
+      'Erro ao pesquisar resíduos: ${response.statusCode}',
+    );
+  }
+
+  static Future<Map<String, dynamic>> getWasteType(int wasteId) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/api/waste-types/$wasteId'),
+    );
+
+    if (response.statusCode == 200) {
+      return Map<String, dynamic>.from(
+        jsonDecode(utf8.decode(response.bodyBytes)),
+      );
+    }
+
+    throw Exception(
+      'Erro ao buscar resíduo: ${response.statusCode}',
+    );
+  }
 }
