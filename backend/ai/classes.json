@@ -1,0 +1,65 @@
+{
+  "plastic": {
+    "category": "Plástico",
+    "examples": [
+      "Garrafa PET",
+      "embalagem plástica"
+    ]
+  },
+  "paper_cardboard": {
+    "category": "Papel",
+    "examples": [
+      "papel",
+      "jornal",
+      "papelão"
+    ]
+  },
+  "glass": {
+    "category": "Vidro",
+    "examples": [
+      "garrafa",
+      "pote de vidro"
+    ]
+  },
+  "metal": {
+    "category": "Metal",
+    "examples": [
+      "lata de alumínio",
+      "lata de aço"
+    ]
+  },
+  "electronics": {
+    "category": "Eletrônico",
+    "examples": [
+      "cabo",
+      "carregador",
+      "pequeno aparelho"
+    ]
+  },
+  "batteries": {
+    "category": "Pilhas e baterias",
+    "examples": [
+      "pilha AA",
+      "bateria portátil"
+    ]
+  },
+  "cooking_oil": {
+    "category": "Óleo de cozinha",
+    "examples": [
+      "óleo de cozinha usado em recipiente"
+    ]
+  },
+  "organic": {
+    "category": "Orgânico",
+    "examples": [
+      "cascas",
+      "restos de alimentos"
+    ]
+  },
+  "reject": {
+    "category": "Rejeito",
+    "examples": [
+      "material sem reciclagem viável conforme orientação local"
+    ]
+  }
+}
