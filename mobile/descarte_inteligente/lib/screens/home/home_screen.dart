@@ -113,13 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomScrollView(
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     const Text(
                       'Identifique, aprenda e descarte',
                       style: TextStyle(
@@ -130,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 7),
+                    const SizedBox(height: 4),
                     const Text(
                       'de forma correta.',
                       style: TextStyle(
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 11),
                     _buildChatCard(),
                     const SizedBox(height: 12),
                     Row(
@@ -169,9 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 11),
                     _buildCollectionCard(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     _buildImpactCard(),
                   ],
                 ),
@@ -424,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildImpactCard() {
     return Container(
-      padding: const EdgeInsets.all(13),
+      padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
         color: const Color(0xFF0B202A),
         borderRadius: BorderRadius.circular(20),
