@@ -86,10 +86,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
       setState(() {
         _messages.add(
-          const _ChatMessage(
-            text:
-                'Não consegui responder agora: '
-                '${error.toString().replaceFirst('Exception: ', '')}',
+          _ChatMessage(
+            text: "Não consegui responder agora: ${error.toString().replaceFirst('Exception: ', '')}",
             isUser: false,
           ),
         );
