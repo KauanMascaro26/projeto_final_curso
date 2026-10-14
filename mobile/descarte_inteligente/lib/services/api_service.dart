@@ -124,4 +124,29 @@ class ApiService {
       'Erro ao buscar resíduo: ${response.statusCode}',
     );
   }
+
+  static Future<Map<String, dynamic>> sendChatMessage(String message) async {
+    final response = await http
+        .post(
+          Uri.parse('${ApiConstants.baseUrl}/api/chat'),
+          headers: {'Content-Type': 'application/json; charset=UTF-8'},
+          body: jsonEncode({'message': message}),
+        )
+        .timeout(const Duration(seconds: 20));
+
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+
+    if (response.statusCode == 200) {
+      return Map<String, dynamic>.from(decoded);
+    }
+
+    final detail = decoded is Map<String, dynamic>
+        ? decoded['detail']?.toString()
+        : null;
+
+    throw Exception(
+      detail ?? 'Erro ao enviar mensagem: ${response.statusCode}',
+    );
+  }
+
 }
