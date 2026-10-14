@@ -1,7 +1,8 @@
-# Dados de treinamento e artefatos de IA (não versionar no Git)
+# Dados de treinamento, ambientes virtuais e artefatos de IA (não versionar no Git)
 dataset/
 dataset-*/
 models/
+.venv/
 *.keras
 *.h5
 *.tflite
