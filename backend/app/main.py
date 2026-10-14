@@ -1,4 +1,8 @@
+import re
+import unicodedata
+
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from app.database import get_connection
 from math import radians, sin, cos, sqrt, atan2
 
@@ -312,3 +316,171 @@ def get_collection_points_for_waste(waste_id: int):
 
     finally:
         connection.close()
+
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=500)
+
+
+def _normalize_chat_text(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value.casefold())
+    without_accents = "".join(
+        character for character in normalized
+        if not unicodedata.combining(character)
+    )
+    return re.sub(r"[^a-z0-9\\s]", " ", without_accents).strip()
+
+
+@app.post("/api/chat")
+def chat_with_disposal_assistant(request: ChatRequest):
+    message = request.message.strip()
+
+    if not message:
+        raise HTTPException(
+            status_code=422,
+            detail="Digite uma mensagem para conversar com o assistente.",
+        )
+
+    normalized_message = _normalize_chat_text(message)
+    tokens = {
+        token for token in normalized_message.split()
+        if len(token) >= 3
+    }
+    greeting_tokens = {
+        "oi", "ola", "olá", "bom", "boa", "dia", "tarde", "noite",
+        "obrigado", "obrigada", "valeu", "ajuda", "ajudar",
+    }
+
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    wt.id,
+                    wt.nome,
+                    wt.descricao,
+                    wt.orientacao_descarte,
+                    wt.preparacao,
+                    wt.reciclavel,
+                    wc.nome AS categoria
+                FROM waste_types wt
+                JOIN waste_categories wc
+                    ON wc.id = wt.categoria_id
+                WHERE wt.ativo = TRUE
+                ORDER BY wt.nome
+            """)
+            rows = cursor.fetchall()
+    finally:
+        connection.close()
+
+    waste_items = [
+        {
+            "id": row[0],
+            "nome": row[1],
+            "descricao": row[2],
+            "orientacao_descarte": row[3],
+            "preparacao": row[4],
+            "reciclavel": row[5],
+            "categoria": row[6],
+        }
+        for row in rows
+    ]
+
+    suggestions = [item["nome"] for item in waste_items[:4]]
+
+    if not tokens or tokens.issubset(greeting_tokens):
+        return {
+            "answer": (
+                "Olá! Sou o assistente do Descarte Inteligente. "
+                "Posso ajudar com orientações de descarte dos materiais "
+                "cadastrados. Por exemplo: como descartar uma pilha usada "
+                "ou como preparar uma garrafa PET?"
+            ),
+            "matched_waste": None,
+            "suggestions": suggestions,
+        }
+
+    ignored_tokens = {
+        "como", "qual", "quais", "onde", "quando", "porque", "por que",
+        "posso", "pode", "devo", "descartar", "descarte", "jogar",
+        "jogo", "lixo", "residuo", "residuos", "material", "materiais",
+        "uma", "uns", "umas", "para", "com", "sem", "que", "isso",
+        "esse", "essa", "este", "esta", "tem", "ser", "seria", "faz",
+        "fazer", "reciclar", "reciclavel", "reciclaveis", "meu", "minha",
+        "por", "favor", "sobre", "orientacao", "orientacoes",
+    }
+    useful_tokens = tokens - ignored_tokens
+
+    best_item = None
+    best_score = 0
+
+    for item in waste_items:
+        name = _normalize_chat_text(item["nome"] or "")
+        category = _normalize_chat_text(item["categoria"] or "")
+        details = _normalize_chat_text(" ".join([
+            str(item["descricao"] or ""),
+            str(item["orientacao_descarte"] or ""),
+            str(item["preparacao"] or ""),
+        ]))
+
+        name_tokens = set(name.split())
+        category_tokens = set(category.split())
+        detail_tokens = set(details.split())
+
+        score = 0
+        if name and name in normalized_message:
+            score += 10
+
+        score += 4 * len(useful_tokens & name_tokens)
+        score += 3 * len(useful_tokens & category_tokens)
+        score += len(useful_tokens & detail_tokens)
+
+        if score > best_score:
+            best_score = score
+            best_item = item
+
+    if best_item is None or best_score == 0:
+        return {
+            "answer": (
+                "Ainda não encontrei esse material na minha base de dados. "
+                "Por enquanto, consigo orientar sobre os resíduos cadastrados. "
+                "Tente informar o nome de um objeto, como garrafa PET, papelão, "
+                "garrafa de vidro, lata de alumínio, pilha usada ou óleo de cozinha usado."
+            ),
+            "matched_waste": None,
+            "suggestions": suggestions,
+        }
+
+    item_name = best_item["nome"]
+    answer_parts = [
+        f"Sobre {item_name}: {best_item['orientacao_descarte']}"
+    ]
+
+    preparation = (best_item["preparacao"] or "").strip()
+    if preparation:
+        answer_parts.append(f"Preparação: {preparation}")
+
+    if best_item["reciclavel"]:
+        answer_parts.append(
+            "Esse material está marcado como reciclável na base de dados."
+        )
+    else:
+        answer_parts.append(
+            "A base de dados indica que pode ser necessário um ponto de "
+            "recebimento específico para esse material."
+        )
+
+    return {
+        "answer": " ".join(answer_parts),
+        "matched_waste": {
+            "id": best_item["id"],
+            "nome": best_item["nome"],
+            "categoria": best_item["categoria"],
+            "orientacao_descarte": best_item["orientacao_descarte"],
+            "preparacao": best_item["preparacao"],
+            "reciclavel": best_item["reciclavel"],
+        },
+        "suggestions": suggestions,
+    }
