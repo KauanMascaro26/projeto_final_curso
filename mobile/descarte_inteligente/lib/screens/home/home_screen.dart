@@ -113,18 +113,18 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomScrollView(
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 16),
                     const Text(
                       'Identifique, aprenda e descarte',
                       style: TextStyle(
                         color: _text,
-                        fontSize: 25,
+                        fontSize: 22,
                         height: 1.15,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
@@ -141,9 +141,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     _buildChatCard(),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 9),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -181,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: NavigationBar(
-        height: 70,
+        height: 62,
         backgroundColor: const Color(0xFF091923),
         indicatorColor: _green.withValues(alpha: 0.15),
         surfaceTintColor: Colors.transparent,
@@ -222,8 +222,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       children: [
         Container(
-          width: 48,
-          height: 48,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [_green, _cyan],
@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _openChat,
         borderRadius: BorderRadius.circular(22),
         child: Ink(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFF103D3D), Color(0xFF102B40)],
@@ -313,8 +313,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             children: [
               Container(
-                width: 54,
-                height: 54,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: _green.withValues(alpha: 0.13),
                   borderRadius: BorderRadius.circular(17),
@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(
                   Icons.forum_rounded,
                   color: _green,
-                  size: 28,
+                  size: 24,
                 ),
               ),
               const SizedBox(width: 14),
@@ -335,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Chat inteligente',
                       style: TextStyle(
                         color: _text,
-                        fontSize: 17,
+                        fontSize: 15,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -368,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _openCollectionPoints,
         borderRadius: BorderRadius.circular(20),
         child: Ink(
-          padding: const EdgeInsets.all(17),
+          padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
             color: _surface,
             borderRadius: BorderRadius.circular(20),
@@ -377,8 +377,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             children: [
               Container(
-                width: 52,
-                height: 52,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   color: _cyan.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(16),
@@ -398,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Pontos de coleta',
                       style: TextStyle(
                         color: _text,
-                        fontSize: 16,
+                        fontSize: 14.5,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -424,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildImpactCard() {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
         color: const Color(0xFF0B202A),
         borderRadius: BorderRadius.circular(20),
@@ -508,8 +508,8 @@ class _ActionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 174),
-          padding: const EdgeInsets.all(15),
+          constraints: const BoxConstraints(minHeight: 136),
+          padding: const EdgeInsets.all(11),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: const Color(0xFF204653)),
@@ -518,8 +518,8 @@ class _ActionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 46,
-                height: 46,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.11),
                   borderRadius: BorderRadius.circular(15),
@@ -527,7 +527,7 @@ class _ActionCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: accent, size: 25),
               ),
-              const SizedBox(height: 13),
+              const SizedBox(height: 8),
               Text(
                 title,
                 style: const TextStyle(
