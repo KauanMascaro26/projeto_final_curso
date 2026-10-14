@@ -10,19 +10,23 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  static const _green = Color(0xFF249B57);
-  static const _darkGreen = Color(0xFF173D2B);
-  static const _background = Color(0xFFF7F9F7);
+  static const _navy = Color(0xFF101C2C);
+  static const _navySoft = Color(0xFF1C3045);
+  static const _green = Color(0xFF168A68);
+  static const _mint = Color(0xFF55D6A2);
+  static const _cyan = Color(0xFF53D9F5);
+  static const _background = Color(0xFFF4F7FB);
+  static const _text = Color(0xFF182638);
+  static const _muted = Color(0xFF68788B);
 
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
 
   final List<_ChatMessage> _messages = [
     const _ChatMessage(
-      text:
-          'Olá! Sou o assistente do Descarte Inteligente. Posso ajudar com '
-          'orientações de descarte dos materiais cadastrados. O que você '
-          'precisa descartar?',
+      text: 'Olá! Sou o assistente do Descarte Inteligente. Posso ajudar você '
+          'a descobrir como preparar e descartar seus resíduos. Por onde '
+          'vamos começar?',
       isUser: false,
     ),
   ];
@@ -30,9 +34,9 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isSending = false;
 
   static const _suggestions = [
-    'Como descarto uma pilha usada?',
-    'Como descarto uma garrafa PET?',
-    'Como preparo o papelão?',
+    _Suggestion('Pilha usada', 'Como descarto uma pilha usada?', Icons.battery_3_bar_outlined),
+    _Suggestion('Garrafa PET', 'Como descarto uma garrafa PET?', Icons.water_bottle_outlined),
+    _Suggestion('Papelão', 'Como preparo o papelão para reciclagem?', Icons.inventory_2_outlined),
   ];
 
   @override
@@ -44,20 +48,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage([String? suggestedMessage]) async {
     final message = (suggestedMessage ?? _messageController.text).trim();
-
     if (message.isEmpty || _isSending) return;
 
     final history = _messages
-        .map(
-          (chatMessage) => <String, String>{
-            'role': chatMessage.isUser ? 'user' : 'assistant',
-            'content': chatMessage.text,
-          },
-        )
+        .map((item) => <String, String>{
+              'role': item.isUser ? 'user' : 'assistant',
+              'content': item.text,
+            })
         .toList();
 
     _messageController.clear();
-
     setState(() {
       _messages.add(_ChatMessage(text: message, isUser: true));
       _isSending = true;
@@ -65,32 +65,22 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      final response = await ApiService.sendChatMessage(
-        message,
-        history: history,
-      );
+      final response = await ApiService.sendChatMessage(message, history: history);
       if (!mounted) return;
-
       setState(() {
-        _messages.add(
-          _ChatMessage(
-            text: response['answer']?.toString() ??
-                'Não recebi uma resposta válida do assistente.',
-            isUser: false,
-          ),
-        );
+        _messages.add(_ChatMessage(
+          text: response['answer']?.toString() ?? 'Não recebi uma resposta válida do assistente.',
+          isUser: false,
+        ));
         _isSending = false;
       });
     } catch (error) {
       if (!mounted) return;
-
       setState(() {
-        _messages.add(
-          _ChatMessage(
-            text: "Não consegui responder agora: ${error.toString().replaceFirst('Exception: ', '')}",
-            isUser: false,
-          ),
-        );
+        _messages.add(_ChatMessage(
+          text: 'Não consegui responder agora. Verifique sua conexão e tente novamente.',
+          isUser: false,
+        ));
         _isSending = false;
       });
     }
@@ -101,40 +91,53 @@ class _ChatScreenState extends State<ChatScreen> {
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
-
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isWelcome = _messages.length == 1 && !_isSending;
+
     return Scaffold(
       backgroundColor: _background,
       appBar: AppBar(
-        backgroundColor: _darkGreen,
+        backgroundColor: _navy,
         foregroundColor: Colors.white,
-        title: const Row(
+        toolbarHeight: 78,
+        titleSpacing: 4,
+        title: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: Colors.white24,
-              child: Icon(Icons.eco_outlined, color: Colors.white),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [_mint, _cyan],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const Icon(Icons.auto_awesome_rounded, color: _navy, size: 25),
             ),
-            SizedBox(width: 12),
-            Expanded(
+            const SizedBox(width: 12),
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Chat inteligente',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Assistente de descarte',
-                    style: TextStyle(fontSize: 12, color: Colors.white70),
+                  Text('Chat inteligente', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  SizedBox(height: 3),
+                  Row(
+                    children: [
+                      Icon(Icons.circle, color: _mint, size: 8),
+                      SizedBox(width: 6),
+                      Text('Assistente de descarte', style: TextStyle(fontSize: 12, color: Colors.white70)),
+                    ],
                   ),
                 ],
               ),
@@ -147,45 +150,28 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-              itemCount: _messages.length + (_isSending ? 1 : 0),
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+              itemCount: _messages.length + (_isSending ? 1 : 0) + (isWelcome ? 1 : 0),
               itemBuilder: (context, index) {
-                if (_isSending && index == _messages.length) {
+                if (isWelcome && index == _messages.length) {
+                  return const _WelcomePrompts();
+                }
+                if (_isSending && index == _messages.length + (isWelcome ? 1 : 0)) {
                   return const _ThinkingBubble();
                 }
-
                 return _MessageBubble(message: _messages[index]);
               },
             ),
           ),
-          if (_messages.length == 1 && !_isSending)
-            SizedBox(
-              height: 48,
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                scrollDirection: Axis.horizontal,
-                itemCount: _suggestions.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final suggestion = _suggestions[index];
-
-                  return ActionChip(
-                    label: Text(suggestion),
-                    backgroundColor: Colors.white,
-                    side: const BorderSide(color: Color(0xFFDCE8DE)),
-                    onPressed: () => _sendMessage(suggestion),
-                  );
-                },
-              ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(top: BorderSide(color: Color(0xFFE1E8F0))),
+              boxShadow: [BoxShadow(color: Color(0x0A101C2C), blurRadius: 18, offset: Offset(0, -5))],
             ),
-          SafeArea(
-            top: false,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: Color(0xFFE5ECE6))),
-              ),
+            child: SafeArea(
+              top: false,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -199,34 +185,107 @@ class _ChatScreenState extends State<ChatScreen> {
                       onSubmitted: (_) => _sendMessage(),
                       decoration: InputDecoration(
                         hintText: 'Pergunte sobre um resíduo...',
+                        hintStyle: const TextStyle(color: _muted, fontSize: 14),
                         filled: true,
                         fillColor: _background,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(22),
+                          borderSide: const BorderSide(color: Color(0xFFE1E8F0)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(22),
+                          borderSide: const BorderSide(color: Color(0xFFE1E8F0)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(22),
+                          borderSide: const BorderSide(color: _green, width: 1.5),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  IconButton.filled(
-                    onPressed: _isSending ? null : () => _sendMessage(),
-                    style: IconButton.styleFrom(
-                      backgroundColor: _green,
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor: Colors.grey.shade300,
+                  const SizedBox(width: 9),
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: FilledButton(
+                      onPressed: _isSending ? null : () => _sendMessage(),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _green,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: const Color(0xFFB8C5D5),
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
+                      ),
+                      child: Icon(_isSending ? Icons.more_horiz_rounded : Icons.arrow_upward_rounded, size: 25),
                     ),
-                    tooltip: 'Enviar mensagem',
-                    icon: const Icon(Icons.send_rounded),
                   ),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Suggestion {
+  final String title;
+  final String prompt;
+  final IconData icon;
+
+  const _Suggestion(this.title, this.prompt, this.icon);
+}
+
+class _WelcomePrompts extends StatelessWidget {
+  const _WelcomePrompts();
+
+  static const _items = _ChatScreenState._suggestions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 14, bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('COMECE POR AQUI', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.3, color: Color(0xFF68788B))),
+          const SizedBox(height: 10),
+          ..._items.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 9),
+                child: Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(17),
+                  child: InkWell(
+                    onTap: () => context.findAncestorStateOfType<_ChatScreenState>()?._sendMessage(item.prompt),
+                    borderRadius: BorderRadius.circular(17),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(17),
+                        border: Border.all(color: const Color(0xFFE1E8F0)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F8F1),
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            child: Icon(item.icon, color: const Color(0xFF168A68)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(item.title, style: const TextStyle(color: Color(0xFF182638), fontWeight: FontWeight.w700, fontSize: 14))),
+                          const Icon(Icons.arrow_forward_rounded, color: Color(0xFF168A68), size: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )),
         ],
       ),
     );
@@ -247,40 +306,29 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final alignment =
-        message.isUser ? Alignment.centerRight : Alignment.centerLeft;
-    final background =
-        message.isUser ? const Color(0xFF249B57) : Colors.white;
-    final foreground = message.isUser ? Colors.white : const Color(0xFF26352B);
+    final background = message.isUser ? const Color(0xFF168A68) : Colors.white;
+    final foreground = message.isUser ? Colors.white : const Color(0xFF182638);
 
     return Align(
-      alignment: alignment,
+      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.sizeOf(context).width * 0.82,
-        ),
+        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.84),
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(18),
-            topRight: const Radius.circular(18),
-            bottomLeft: Radius.circular(message.isUser ? 18 : 4),
-            bottomRight: Radius.circular(message.isUser ? 4 : 18),
+            topLeft: const Radius.circular(19),
+            topRight: const Radius.circular(19),
+            bottomLeft: Radius.circular(message.isUser ? 19 : 5),
+            bottomRight: Radius.circular(message.isUser ? 5 : 19),
           ),
-          border: message.isUser
-              ? null
-              : Border.all(color: const Color(0xFFE5ECE6)),
+          border: message.isUser ? null : Border.all(color: const Color(0xFFE1E8F0)),
+          boxShadow: message.isUser
+              ? const []
+              : const [BoxShadow(color: Color(0x07101C2C), blurRadius: 12, offset: Offset(0, 4))],
         ),
-        child: Text(
-          message.text,
-          style: TextStyle(
-            color: foreground,
-            fontSize: 15,
-            height: 1.4,
-          ),
-        ),
+        child: Text(message.text, style: TextStyle(color: foreground, fontSize: 15, height: 1.48)),
       ),
     );
   }
@@ -291,29 +339,20 @@ class _ThinkingBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
+    return const Align(
       alignment: Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFE5ECE6)),
-        ),
-        child: const Row(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 12),
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Color(0xFF249B57),
-              ),
+              width: 17,
+              height: 17,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF168A68)),
             ),
             SizedBox(width: 10),
-            Text('Preparando sua resposta...'),
+            Text('Preparando sua resposta...', style: TextStyle(color: Color(0xFF68788B), fontSize: 13)),
           ],
         ),
       ),
