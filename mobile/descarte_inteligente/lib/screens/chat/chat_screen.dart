@@ -47,6 +47,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (message.isEmpty || _isSending) return;
 
+    final history = _messages
+        .map(
+          (chatMessage) => <String, String>{
+            'role': chatMessage.isUser ? 'user' : 'assistant',
+            'content': chatMessage.text,
+          },
+        )
+        .toList();
+
     _messageController.clear();
 
     setState(() {
@@ -56,7 +65,10 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      final response = await ApiService.sendChatMessage(message);
+      final response = await ApiService.sendChatMessage(
+        message,
+        history: history,
+      );
       if (!mounted) return;
 
       setState(() {
