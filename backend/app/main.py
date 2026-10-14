@@ -261,3 +261,44 @@ def get_waste_type(waste_id: int):
 
     finally:
         connection.close()
+
+
+@app.get("/api/waste-types/{waste_id}/collection-points")
+def get_collection_points_for_waste(waste_id: int):
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    id,
+                    nome,
+                    endereco,
+                    tipos_residuos,
+                    latitude,
+                    longitude
+                FROM collection_points
+                WHERE id IN (
+                    SELECT collection_point_id
+                    FROM waste_collection_point_types
+                    WHERE waste_type_id = %s
+                )
+                ORDER BY nome
+            """, (waste_id,))
+
+            rows = cursor.fetchall()
+
+            return [
+                {
+                    "id": row[0],
+                    "nome": row[1],
+                    "endereco": row[2],
+                    "tipos_residuos": row[3],
+                    "latitude": row[4],
+                    "longitude": row[5],
+                }
+                for row in rows
+            ]
+
+    finally:
+        connection.close()
