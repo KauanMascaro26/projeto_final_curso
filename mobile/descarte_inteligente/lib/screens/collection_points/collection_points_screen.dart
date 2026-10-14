@@ -17,7 +17,6 @@ class CollectionPointsScreen extends StatefulWidget {
 class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   static const _green = Color(0xFF249B57);
   static const _darkGreen = Color(0xFF173D2B);
-  static const _blue = Color(0xFF2F80ED);
   static const _purple = Color(0xFF7657C8);
   static const _orange = Color(0xFFF2A51A);
   static const _red = Color(0xFFE34D4D);
@@ -500,7 +499,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: filters.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final filter = filters[index];
                   final selected = selectedFilter == filter.$1;
