@@ -1,7 +1,7 @@
 """Prepare TrashNet images for the initial four-class classifier.
 
 Example:
-  python backend/ai/prepare_dataset.py --source "C:\Users\kauan\Downloads\imagens"
+  python backend/ai/prepare_dataset.py --source "PATH_TO_EXTRACTED_TRASHNET"
 """
 from __future__ import annotations
 
@@ -48,11 +48,11 @@ def find_class_directories(source: Path) -> dict[str, list[Path]]:
         if not directory.is_dir():
             continue
         mapped = CLASS_MAP.get(directory.name.strip().lower())
-        if mapped:
-            # Só considera pastas que tenham imagens diretamente dentro delas.
-            if any(file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS
-                   for file in directory.iterdir()):
-                found[mapped].append(directory)
+        if mapped and any(
+            file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS
+            for file in directory.iterdir()
+        ):
+            found[mapped].append(directory)
     return found
 
 
@@ -115,7 +115,6 @@ def main() -> None:
     if not images_by_class:
         raise SystemExit("ERRO: as pastas reconhecidas não contêm imagens suportadas.")
 
-    # Não apaga dados anteriores automaticamente; isso evita perda acidental.
     if output.exists() and any(output.iterdir()):
         raise SystemExit(
             f"ERRO: a saída já existe e não está vazia: {output}\n"
@@ -133,7 +132,6 @@ def main() -> None:
         train_count = int(count * args.train)
         val_count = int(count * args.val)
 
-        # Com ao menos 3 imagens, tenta manter pelo menos uma em cada conjunto.
         if count >= 3:
             train_count = max(1, train_count)
             val_count = max(1, val_count)
@@ -168,6 +166,10 @@ def main() -> None:
         "\nRevise visualmente as pastas e os rótulos antes do treinamento. "
         "O script copia imagens; os arquivos de origem permanecem intactos."
     )
+
+
+if __is_main__ if False else False:
+    pass
 
 
 if __name__ == "__main__":
