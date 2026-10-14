@@ -529,7 +529,7 @@ class _MessageBubble extends StatelessWidget {
         ),
         child: Text(
           message.text,
-          style: const TextStyle(color: foreground, fontSize: 14.5, height: 1.5),
+          style: TextStyle(color: foreground, fontSize: 14.5, height: 1.5),
         ),
       ),
     );
