@@ -321,9 +321,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   border: Border.all(color: _green.withValues(alpha: 0.28)),
                 ),
                 child: const Icon(
-                  Icons.forum_rounded,
+                  Icons.chat_rounded,
                   color: _green,
-                  size: 24,
+                  size: 23,
+                  shadows: [
+                    Shadow(color: Color(0x9955D6A2), blurRadius: 9),
+                  ],
                 ),
               ),
               const SizedBox(width: 14),
