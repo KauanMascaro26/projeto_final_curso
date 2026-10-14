@@ -1,0 +1,3 @@
+# Dependência opcional para treinamento local da IA (Windows CPU)
+# Use Python 3.10–3.13 de 64 bits. O treinamento pode ser executado em CPU.
+tensorflow==2.21.0
