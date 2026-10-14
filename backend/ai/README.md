@@ -1,85 +1,77 @@
 # IA de identificação de resíduos por imagem
 
-Este diretório organiza a futura classificação de resíduos por imagem. **O modelo ainda não foi treinado**; os nomes abaixo são o contrato inicial entre o dataset, o backend e o aplicativo.
+O modelo ainda não foi treinado. Este diretório documenta o primeiro experimento visual do Descarte Inteligente.
 
-## Estratégia inicial do modelo
+## Escopo da primeira versão
 
-A abordagem escolhida para o primeiro experimento é **transfer learning com MobileNetV2 pré-treinada**, usando TensorFlow/Keras. Em vez de treinar toda a rede do zero, vamos reaproveitar os recursos visuais aprendidos no pré-treinamento e adaptar a camada de classificação às classes de resíduos do projeto.
+Vamos começar com **quatro classes visuais**:
 
-A MobileNetV2 é uma candidata inicial, não uma garantia de desempenho. Depois de montar o dataset, vamos treinar um baseline e avaliar métricas por classe, matriz de confusão e comportamento com imagens fora das classes. Se os resultados forem insuficientes, poderemos comparar outra arquitetura.
+- `plastic`: plástico
+- `paper_cardboard`: papel e papelão
+- `glass`: vidro
+- `metal`: metal
 
-O fluxo previsto é: dataset revisado → treinamento com transferência de aprendizado → avaliação → exportação do modelo e mapeamento de rótulos → endpoint de inferência no FastAPI → integração com Flutter. A IA prevê a classe; a API consulta as regras e orientações de descarte no banco de dados.
+Eletrônicos ficam como possível expansão, depois de encontrarmos e avaliarmos imagens suficientes. Óleo de cozinha, orgânicos e rejeitos serão tratados inicialmente pela identificação por texto/busca, usando as orientações do banco de dados. Pilhas e baterias também ficam fora do primeiro modelo visual.
 
-## Classes iniciais
+Essa divisão é intencional: é melhor entregar um classificador limitado e avaliado do que alegar que reconhece classes para as quais não temos dados suficientes.
 
-| Rótulo técnico | Categoria apresentada no app | Exemplos |
-|---|---|---|
-| `plastic` | Plástico | garrafa PET, embalagem plástica |
-| `paper_cardboard` | Papel | folha, jornal, caixa de papelão |
-| `glass` | Vidro | garrafa, pote de vidro |
-| `metal` | Metal | lata de alumínio, lata de aço |
-| `electronics` | Eletrônico | cabo, carregador, pequeno aparelho |
-| `batteries` | Pilhas e baterias | pilha AA, bateria portátil |
-| `cooking_oil` | Óleo de cozinha | recipiente com óleo usado |
-| `organic` | Orgânico | cascas e restos de alimentos |
-| `reject` | Rejeito | material sem reciclagem viável, conforme orientação local |
+## Estratégia do modelo
 
-As classes representam uma primeira versão. Antes de treinar, é preciso confirmar que cada classe possui imagens suficientes e visualmente distinguíveis. Se uma classe não tiver dados confiáveis, ela não deve ser simulada nem apresentada como reconhecida pelo modelo.
+O baseline será **transfer learning com MobileNetV2 pré-treinada**, usando TensorFlow/Keras. Vamos reaproveitar os recursos visuais aprendidos no pré-treinamento e adaptar a camada de classificação às quatro classes.
 
-## Estrutura esperada do dataset
+A MobileNetV2 é uma candidata inicial, não uma garantia de desempenho. Vamos avaliar métricas por classe, matriz de confusão e comportamento com fotos diferentes das usadas no treino. A confiança do modelo não é garantia de acerto.
 
-Organize imagens licenciadas ou coletadas com autorização nesta estrutura (não versionar imagens privadas ou muito pesadas sem avaliar Git LFS):
+Fluxo previsto: dataset revisado → treinamento → avaliação → modelo e rótulos salvos → endpoint de inferência no FastAPI → integração com Flutter. A IA prevê uma classe; o backend usa essa classe para consultar as orientações de descarte no banco.
+
+## Dataset inicial: TrashNet
+
+Repositório original: https://github.com/garythung/trashnet
+
+Antes de usar ou redistribuir imagens, confira a licença e as condições descritas no repositório. Baixe o dataset para a sua máquina; não envie todas as imagens para o GitHub do projeto.
+
+Depois de extrair o dataset, vamos mapear as pastas originais para estes nomes:
+
+| Pasta de destino | Conteúdo esperado |
+|---|---|
+| `plastic` | plástico |
+| `paper_cardboard` | papel e papelão |
+| `glass` | vidro |
+| `metal` | metal |
+
+O TrashNet original costuma trazer as classes `plastic`, `paper`, `cardboard`, `glass`, `metal` e `trash`. Portanto, papel e papelão serão combinados em `paper_cardboard`; a classe genérica `trash` não entrará no primeiro modelo, pois não representa de forma confiável nossa classe de rejeitos.
+
+## Organização local esperada
+
+Mantenha o dataset fora do Git e organize uma cópia preparada neste formato:
 
 ```text
-dataset/
+backend/ai/dataset/
   train/
     plastic/
     paper_cardboard/
     glass/
     metal/
-    electronics/
-    batteries/
-    cooking_oil/
-    organic/
-    reject/
   val/
     plastic/
     paper_cardboard/
     glass/
     metal/
-    electronics/
-    batteries/
-    cooking_oil/
-    organic/
-    reject/
   test/
     plastic/
     paper_cardboard/
     glass/
     metal/
-    electronics/
-    batteries/
-    cooking_oil/
-    organic/
-    reject/
 ```
 
-- Separar imagens por objeto/captura antes da divisão, evitando que fotos quase idênticas apareçam em treino e teste.
-- Começar com uma divisão aproximada de 70% treino, 15% validação e 15% teste.
-- Buscar diversidade de iluminação, fundos, ângulos, tamanhos e estado do material.
+Divisão inicial aproximada: 70% treino, 15% validação e 15% teste. A separação deve ser feita antes de aplicar aumentos artificiais de imagem; fotos duplicadas ou quase idênticas não podem aparecer em conjuntos diferentes.
+
+## Critérios antes de integrar
+
+- Registrar origem, licença e quantidade de imagens por classe.
+- Conferir visualmente os rótulos e o equilíbrio das classes.
 - Não usar imagens de teste para ajustar o modelo.
-- Registrar origem, licença e quantidade por classe.
-- Avaliar precisão por classe e matriz de confusão; não confiar apenas na acurácia geral.
-- Incluir uma forma de recusar imagens fora das classes ou com baixa confiança. A confiança do modelo não é garantia de acerto.
+- Avaliar precisão/recall por classe e matriz de confusão, não apenas acurácia geral.
+- Prever uma resposta de baixa confiança/objeto não reconhecido.
+- Testar com fotografias reais que não foram usadas no treinamento.
 
-## Próximas etapas
-
-1. Escolher e verificar fontes de imagens e respectivas licenças.
-2. Montar um dataset inicial e conferir o balanceamento das classes.
-3. Implementar o treinamento baseline com MobileNetV2 e avaliar os resultados.
-4. Salvar modelo, mapeamento de rótulos e métricas de avaliação.
-5. Implementar a inferência no FastAPI e validar tamanho/formato das imagens.
-6. Integrar captura/galeria no Flutter e exibir classe, confiança, orientação do banco e opção de tentar novamente.
-7. Testar com fotos reais não utilizadas no treinamento.
-
-**Importante:** até o modelo treinado e avaliado ser integrado, a aplicação não deve afirmar que uma foto foi classificada por IA.
+**Importante:** até o modelo ser treinado, avaliado e integrado, o aplicativo não deve afirmar que uma foto foi classificada por IA.
