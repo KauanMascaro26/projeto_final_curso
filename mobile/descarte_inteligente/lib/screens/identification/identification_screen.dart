@@ -10,8 +10,8 @@ class IdentificationScreen extends StatefulWidget {
 }
 
 class _IdentificationScreenState extends State<IdentificationScreen> {
-  static const _green = Color(0xFF249B57);
-  static const _darkGreen = Color(0xFF173D2B);
+  static const _green = Color(0xFF168A68);
+  static const _darkGreen = Color(0xFF101C2C);
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -148,7 +148,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F7),
+      backgroundColor: const Color(0xFFF4F7FB),
       appBar: AppBar(
         title: const Text('Identificar resíduo'),
         backgroundColor: _darkGreen,
