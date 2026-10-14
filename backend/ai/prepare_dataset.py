@@ -43,6 +43,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def find_class_directories(source: Path) -> dict[str, list[Path]]:
+    """Retorna todas as pastas encontradas para cada classe de destino."""
     found: dict[str, list[Path]] = {name: [] for name in set(CLASS_MAP.values())}
     for directory in source.rglob("*"):
         if not directory.is_dir():
@@ -71,46 +72,42 @@ def main() -> None:
         )
 
     discovered = find_class_directories(source)
-    selected: dict[str, Path] = {}
-    missing = []
-    ambiguous = []
+    missing = [
+        class_name for class_name, directories in discovered.items()
+        if not directories
+    ]
+    if missing:
+        print("Aviso: não encontrei pastas para:", ", ".join(sorted(missing)))
 
+    # "paper" e "cardboard" são combinadas intencionalmente em paper_cardboard.
+    # Para as outras classes, mais de uma pasta pode indicar cópias duplicadas;
+    # nesse caso, interrompemos para não contaminar a divisão treino/val/teste.
+    images_by_class: dict[str, list[Path]] = {}
     for class_name, directories in discovered.items():
         if not directories:
-            missing.append(class_name)
+            continue
+        if class_name == "paper_cardboard":
+            chosen_directories = directories
         elif len(directories) > 1:
-            ambiguous.append((class_name, directories))
-        else:
-            selected[class_name] = directories[0]
-
-    if ambiguous:
-        print("Foram encontradas várias pastas para a mesma classe:")
-        for class_name, directories in ambiguous:
-            print(f"\n{class_name}:")
+            print(f"ERRO: várias pastas encontradas para a classe '{class_name}':")
             for directory in directories:
                 print(f"  {directory}")
-        raise SystemExit(
-            "\nUse --source apontando para uma única versão do dataset "
-            "(por exemplo, dataset-resized), para não misturar cópias diferentes."
-        )
-    if missing:
-        print("Aviso: não encontrei pastas para:", ", ".join(missing))
-        print("Classes encontradas:", ", ".join(sorted(selected)))
-    if not selected:
-        raise SystemExit(
-            "ERRO: nenhuma pasta de classe reconhecida. "
-            "Confira se --source aponta para a pasta que contém plastic, paper, "
-            "cardboard, glass e metal."
-        )
+            raise SystemExit(
+                "Escolha uma única versão do dataset com --source para evitar "
+                "misturar cópias potencialmente duplicadas."
+            )
+        else:
+            chosen_directories = directories
 
-    images_by_class: dict[str, list[Path]] = {}
-    for class_name, directory in selected.items():
-        images = sorted(
-            file for file in directory.iterdir()
-            if file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS
-        )
-        if images:
-            images_by_class[class_name] = images
+        images = []
+        for directory in chosen_directories:
+            images.extend(
+                file for file in directory.iterdir()
+                if file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS
+            )
+        # Evita repetir exatamente o mesmo caminho, preservando arquivos distintos.
+        images_by_class[class_name] = sorted(set(images))
+
 
     if not images_by_class:
         raise SystemExit("ERRO: as pastas reconhecidas não contêm imagens suportadas.")
