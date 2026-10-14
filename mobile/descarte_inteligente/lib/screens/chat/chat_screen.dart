@@ -11,12 +11,10 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   static const _navy = Color(0xFF101C2C);
-  static const _navySoft = Color(0xFF1C3045);
   static const _green = Color(0xFF168A68);
   static const _mint = Color(0xFF55D6A2);
   static const _cyan = Color(0xFF53D9F5);
   static const _background = Color(0xFFF4F7FB);
-  static const _text = Color(0xFF182638);
   static const _muted = Color(0xFF68788B);
 
   final _messageController = TextEditingController();
@@ -35,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   static const _suggestions = [
     _Suggestion('Pilha usada', 'Como descarto uma pilha usada?', Icons.battery_3_bar_outlined),
-    _Suggestion('Garrafa PET', 'Como descarto uma garrafa PET?', Icons.water_bottle_outlined),
+    _Suggestion('Garrafa PET', 'Como descarto uma garrafa PET?', Icons.recycling),
     _Suggestion('Papelão', 'Como preparo o papelão para reciclagem?', Icons.inventory_2_outlined),
   ];
 
