@@ -137,13 +137,13 @@ class _ChatScreenState extends State<ChatScreen> {
         foregroundColor: _text,
         elevation: 0,
         scrolledUnderElevation: 0,
-        toolbarHeight: 70,
+        toolbarHeight: 60,
         titleSpacing: 4,
         title: Row(
           children: [
             Container(
-              width: 42,
-              height: 42,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [_green, _cyan],
@@ -152,7 +152,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(Icons.park_rounded, color: _background, size: 26),
+              child: const Icon(Icons.park_rounded, color: _background, size: 18),
             ),
             const SizedBox(width: 11),
             const Expanded(
@@ -210,20 +210,20 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildWelcome() {
     return SingleChildScrollView(
       controller: _scrollController,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 76,
-            height: 76,
+            width: 54,
+            height: 54,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [Color(0xFF123F43), Color(0xFF102D43)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(26),
+              borderRadius: BorderRadius.circular(19),
               border: Border.all(color: _green.withValues(alpha: 0.45)),
               boxShadow: [
                 BoxShadow(
@@ -233,15 +233,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            child: const Icon(Icons.eco_rounded, color: _green, size: 42),
+            child: const Icon(Icons.eco_rounded, color: _green, size: 30),
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 12),
           const Text(
             'O QUE VAMOS',
             style: TextStyle(
               color: _muted,
-              fontSize: 13,
-              letterSpacing: 2.2,
+              fontSize: 11.5,
+              letterSpacing: 1.8,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -250,18 +250,18 @@ class _ChatScreenState extends State<ChatScreen> {
             'RECICLAR HOJE?',
             style: TextStyle(
               color: _text,
-              fontSize: 31,
+              fontSize: 25,
               height: 1.1,
               fontWeight: FontWeight.w900,
               letterSpacing: -0.8,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 7),
           const Text(
             'Tire suas dúvidas, descubra como separar seus resíduos e dê o próximo passo para um futuro mais sustentável.',
-            style: TextStyle(color: _muted, fontSize: 14, height: 1.55),
+            style: TextStyle(color: _muted, fontSize: 12.5, height: 1.4),
           ),
-          const SizedBox(height: 26),
+          const SizedBox(height: 14),
           Row(
             children: [
               const Expanded(
@@ -278,16 +278,16 @@ class _ChatScreenState extends State<ChatScreen> {
               Icon(Icons.touch_app_outlined, color: _green.withValues(alpha: 0.9), size: 18),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _suggestions.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              mainAxisExtent: 154,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              mainAxisExtent: 118,
             ),
             itemBuilder: (context, index) {
               final item = _suggestions[index];
@@ -297,9 +297,9 @@ class _ChatScreenState extends State<ChatScreen> {
               );
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 6),
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: _surface,
               borderRadius: BorderRadius.circular(17),
@@ -325,7 +325,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildComposer() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 11, 14, 12),
+      padding: const EdgeInsets.fromLTRB(12, 7, 12, 8),
       decoration: const BoxDecoration(
         color: Color(0xFF091923),
         border: Border(top: BorderSide(color: _border)),
@@ -356,7 +356,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   hintStyle: const TextStyle(color: _muted, fontSize: 13),
                   filled: true,
                   fillColor: _surfaceRaised,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 17, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(22),
                     borderSide: const BorderSide(color: _border),
@@ -374,8 +374,8 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             const SizedBox(width: 9),
             SizedBox(
-              width: 49,
-              height: 49,
+              width: 43,
+              height: 43,
               child: FilledButton(
                 onPressed: _isSending ? null : () => _sendMessage(),
                 style: FilledButton.styleFrom(
@@ -431,9 +431,9 @@ class _SuggestionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: _ChatScreenState._border),
           ),
           child: Column(
@@ -442,8 +442,8 @@ class _SuggestionCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 38,
-                    height: 38,
+                    width: 30,
+                    height: 30,
                     decoration: BoxDecoration(
                       color: item.accent.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
@@ -465,7 +465,7 @@ class _SuggestionCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: _ChatScreenState._text,
-                  fontSize: 13.5,
+                  fontSize: 12.5,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -476,7 +476,7 @@ class _SuggestionCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: _ChatScreenState._muted,
-                  fontSize: 10.5,
+                  fontSize: 9.5,
                   height: 1.3,
                 ),
               ),
