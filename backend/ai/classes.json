@@ -1,65 +1,47 @@
 {
   "plastic": {
     "category": "Plástico",
-    "examples": [
-      "Garrafa PET",
-      "embalagem plástica"
-    ]
+    "image_model": "initial",
+    "examples": ["Garrafa PET", "embalagem plástica"]
   },
   "paper_cardboard": {
-    "category": "Papel",
-    "examples": [
-      "papel",
-      "jornal",
-      "papelão"
-    ]
+    "category": "Papel e papelão",
+    "image_model": "initial",
+    "examples": ["folha", "jornal", "caixa de papelão"]
   },
   "glass": {
     "category": "Vidro",
-    "examples": [
-      "garrafa",
-      "pote de vidro"
-    ]
+    "image_model": "initial",
+    "examples": ["garrafa de vidro", "pote de vidro"]
   },
   "metal": {
     "category": "Metal",
-    "examples": [
-      "lata de alumínio",
-      "lata de aço"
-    ]
+    "image_model": "initial",
+    "examples": ["lata de alumínio", "lata de aço"]
   },
   "electronics": {
     "category": "Eletrônico",
-    "examples": [
-      "cabo",
-      "carregador",
-      "pequeno aparelho"
-    ]
+    "image_model": "future",
+    "examples": ["cabo", "carregador", "pequeno aparelho"]
   },
   "batteries": {
     "category": "Pilhas e baterias",
-    "examples": [
-      "pilha AA",
-      "bateria portátil"
-    ]
+    "image_model": "text_first",
+    "examples": ["pilha AA", "bateria portátil"]
   },
   "cooking_oil": {
     "category": "Óleo de cozinha",
-    "examples": [
-      "óleo de cozinha usado em recipiente"
-    ]
+    "image_model": "text_first",
+    "examples": ["óleo de cozinha usado em recipiente"]
   },
   "organic": {
     "category": "Orgânico",
-    "examples": [
-      "cascas",
-      "restos de alimentos"
-    ]
+    "image_model": "text_first",
+    "examples": ["cascas", "restos de alimentos"]
   },
   "reject": {
     "category": "Rejeito",
-    "examples": [
-      "material sem reciclagem viável conforme orientação local"
-    ]
+    "image_model": "text_first",
+    "examples": ["material sem reciclagem viável conforme orientação local"]
   }
 }
