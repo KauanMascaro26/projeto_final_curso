@@ -113,13 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: CustomScrollView(
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 14),
                     const Text(
                       'Identifique, aprenda e descarte',
                       style: TextStyle(
@@ -141,9 +141,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 11),
+                    const SizedBox(height: 15),
                     _buildChatCard(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 15),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -169,9 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 11),
+                    const SizedBox(height: 15),
                     _buildCollectionCard(),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 14),
                     _buildImpactCard(),
                   ],
                 ),
@@ -368,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _openCollectionPoints,
         borderRadius: BorderRadius.circular(20),
         child: Ink(
-          padding: const EdgeInsets.all(13),
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
           decoration: BoxDecoration(
             color: _surface,
             borderRadius: BorderRadius.circular(20),
@@ -424,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildImpactCard() {
     return Container(
-      padding: const EdgeInsets.all(11),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 15),
       decoration: BoxDecoration(
         color: const Color(0xFF0B202A),
         borderRadius: BorderRadius.circular(20),
@@ -508,7 +508,7 @@ class _ActionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 160),
+          constraints: const BoxConstraints(minHeight: 168),
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
