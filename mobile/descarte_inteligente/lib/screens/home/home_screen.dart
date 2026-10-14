@@ -233,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF101C2C),
-            const Color(0xFF168A68),
+            Color(0xFF101C2C),
+            Color(0xFF168A68),
           ],
         ),
         borderRadius: BorderRadius.vertical(
