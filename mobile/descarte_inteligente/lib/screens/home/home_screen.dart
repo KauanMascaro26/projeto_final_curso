@@ -508,7 +508,7 @@ class _ActionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          constraints: BoxConstraints(minHeight: disabled ? 148 : 160),
+          constraints: const BoxConstraints(minHeight: 160),
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
