@@ -15,11 +15,11 @@ class CollectionPointsScreen extends StatefulWidget {
 }
 
 class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
-  static const _green = Color(0xFF249B57);
-  static const _darkGreen = Color(0xFF173D2B);
-  static const _purple = Color(0xFF7657C8);
-  static const _orange = Color(0xFFF2A51A);
-  static const _red = Color(0xFFE34D4D);
+  static const _green = Color(0xFF168A68);
+  static const _darkGreen = Color(0xFF101C2C);
+  static const _purple = Color(0xFF168EAD);
+  static const _orange = Color(0xFF168EAD);
+  static const _red = Color(0xFF168A68);
 
   late Future<List<Map<String, dynamic>>> nearbyPoints;
 
@@ -256,7 +256,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEAF7EF),
+                        color: const Color(0xFFE8F8F1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -344,7 +344,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F7),
+      backgroundColor: const Color(0xFFF4F7FB),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: nearbyPoints,
         builder: (context, snapshot) {
