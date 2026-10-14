@@ -168,9 +168,5 @@ def main() -> None:
     )
 
 
-if __is_main__ if False else False:
-    pass
-
-
 if __name__ == "__main__":
     main()
