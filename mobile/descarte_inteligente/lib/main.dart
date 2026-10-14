@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'core/theme/app_theme.dart';
 import 'screens/home/home_screen.dart';
 
 void main() {
@@ -14,10 +15,7 @@ class DescarteInteligenteApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Descarte Inteligente',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.green,
-      ),
+      theme: AppTheme.light,
       home: const HomeScreen(),
     );
   }
