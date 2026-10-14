@@ -12,11 +12,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const _green = Color(0xFF2E9B5B);
-  static const _darkGreen = Color(0xFF173D2B);
-  static const _blue = Color(0xFF2F80ED);
-  static const _yellow = Color(0xFFF2B233);
-  static const _purple = Color(0xFF7657C8);
+  static const _green = Color(0xFF168A68);
+  static const _darkGreen = Color(0xFF101C2C);
+  static const _blue = Color(0xFF168EAD);
+  static const _yellow = Color(0xFF168EAD);
+  static const _purple = Color(0xFF168A68);
 
   int _currentIndex = 0;
 
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F7),
+      backgroundColor: const Color(0xFFF4F7FB),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -233,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            _darkGreen,
-            _green,
+            const Color(0xFF101C2C),
+            const Color(0xFF168A68),
           ],
         ),
         borderRadius: BorderRadius.vertical(
@@ -294,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           decoration: BoxDecoration(
-            color: const Color(0xFFEAF7EF),
+            color: const Color(0xFFE8F8F1),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: _green.withValues(alpha: 0.12),
