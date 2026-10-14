@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from app.database import get_connection
 from math import radians, sin, cos, sqrt, atan2
 
@@ -127,6 +127,137 @@ def get_nearby_collection_points(
         )
 
         return points_with_distance
+
+    finally:
+        connection.close()
+
+
+@app.get("/api/waste-types")
+def get_waste_types():
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    wt.id,
+                    wt.nome,
+                    wt.descricao,
+                    wt.orientacao_descarte,
+                    wt.preparacao,
+                    wt.reciclavel,
+                    wc.nome AS categoria
+                FROM waste_types wt
+                JOIN waste_categories wc
+                    ON wc.id = wt.categoria_id
+                WHERE wt.ativo = TRUE
+                ORDER BY wt.nome
+            """)
+
+            rows = cursor.fetchall()
+
+            return [
+                {
+                    "id": row[0],
+                    "nome": row[1],
+                    "descricao": row[2],
+                    "orientacao_descarte": row[3],
+                    "preparacao": row[4],
+                    "reciclavel": row[5],
+                    "categoria": row[6],
+                }
+                for row in rows
+            ]
+
+    finally:
+        connection.close()
+
+
+@app.get("/api/waste-types/search")
+def search_waste_types(q: str):
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    wt.id,
+                    wt.nome,
+                    wt.descricao,
+                    wt.orientacao_descarte,
+                    wt.preparacao,
+                    wt.reciclavel,
+                    wc.nome AS categoria
+                FROM waste_types wt
+                JOIN waste_categories wc
+                    ON wc.id = wt.categoria_id
+                WHERE wt.ativo = TRUE
+                  AND (
+                      wt.nome ILIKE %s
+                      OR wt.descricao ILIKE %s
+                      OR wc.nome ILIKE %s
+                  )
+                ORDER BY wt.nome
+            """, (f"%{q}%", f"%{q}%", f"%{q}%"))
+
+            rows = cursor.fetchall()
+
+            return [
+                {
+                    "id": row[0],
+                    "nome": row[1],
+                    "descricao": row[2],
+                    "orientacao_descarte": row[3],
+                    "preparacao": row[4],
+                    "reciclavel": row[5],
+                    "categoria": row[6],
+                }
+                for row in rows
+            ]
+
+    finally:
+        connection.close()
+
+
+@app.get("/api/waste-types/{waste_id}")
+def get_waste_type(waste_id: int):
+    connection = get_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    wt.id,
+                    wt.nome,
+                    wt.descricao,
+                    wt.orientacao_descarte,
+                    wt.preparacao,
+                    wt.reciclavel,
+                    wc.nome AS categoria
+                FROM waste_types wt
+                JOIN waste_categories wc
+                    ON wc.id = wt.categoria_id
+                WHERE wt.id = %s
+                  AND wt.ativo = TRUE
+            """, (waste_id,))
+
+            row = cursor.fetchone()
+
+            if row is None:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Resíduo não encontrado.",
+                )
+
+            return {
+                "id": row[0],
+                "nome": row[1],
+                "descricao": row[2],
+                "orientacao_descarte": row[3],
+                "preparacao": row[4],
+                "reciclavel": row[5],
+                "categoria": row[6],
+            }
 
     finally:
         connection.close()
