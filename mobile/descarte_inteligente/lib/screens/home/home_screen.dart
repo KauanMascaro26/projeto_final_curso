@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'de forma correta.',
                       style: TextStyle(
                         color: _green,
-                        fontSize: 25,
+                        fontSize: 22,
                         height: 1.15,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     _buildChatCard(),
-                    const SizedBox(height: 9),
+                    const SizedBox(height: 12),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -169,9 +169,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     _buildCollectionCard(),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     _buildImpactCard(),
                   ],
                 ),
@@ -508,8 +508,8 @@ class _ActionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 136),
-          padding: const EdgeInsets.all(11),
+          constraints: BoxConstraints(minHeight: disabled ? 148 : 160),
+          padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: const Color(0xFF204653)),
