@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../chat/chat_screen.dart';
 import '../collection_points/collection_points_screen.dart';
 import '../identification/identification_screen.dart';
 
@@ -24,6 +25,15 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => const IdentificationScreen(),
+      ),
+    );
+  }
+
+  void _openChat() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ChatScreen(),
       ),
     );
   }
@@ -196,9 +206,9 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Início',
           ),
           NavigationDestination(
-            icon: Icon(Icons.camera_alt_outlined),
-            selectedIcon: Icon(Icons.camera_alt),
-            label: 'Identificar',
+            icon: Icon(Icons.search),
+            selectedIcon: Icon(Icons.search_rounded),
+            label: 'Pesquisar',
           ),
           NavigationDestination(
             icon: Icon(Icons.location_on_outlined),
@@ -351,11 +361,19 @@ class _HomeScreenState extends State<HomeScreen> {
       childAspectRatio: 0.90,
       children: [
         _FeatureCard(
-          icon: Icons.camera_alt_outlined,
+          icon: Icons.chat_bubble_outline_rounded,
           iconColor: _green,
           backgroundColor: const Color(0xFFEAF7EF),
-          title: 'Identificar resíduo',
-          description: 'Tire uma foto ou descreva o resíduo e descubra como descartá-lo.',
+          title: 'Chat inteligente',
+          description: 'Tire dúvidas sobre descarte e preparação de materiais.',
+          onTap: _openChat,
+        ),
+        _FeatureCard(
+          icon: Icons.search_rounded,
+          iconColor: _green,
+          backgroundColor: const Color(0xFFEAF7EF),
+          title: 'Pesquisar resíduo',
+          description: 'Pesquise um material e veja as orientações corretas.',
           onTap: _openIdentification,
         ),
         _FeatureCard(
@@ -381,6 +399,14 @@ class _HomeScreenState extends State<HomeScreen> {
           title: 'Dicas sustentáveis',
           description: 'Pequenas atitudes geram um grande impacto no dia a dia.',
           onTap: _showSustainabilityTips,
+        ),
+        _FeatureCard(
+          icon: Icons.camera_alt_outlined,
+          iconColor: Colors.grey,
+          backgroundColor: const Color(0xFFF0F1F0),
+          title: 'Identificar por foto',
+          description: 'O reconhecimento por imagem estará disponível em breve.',
+          onTap: null,
         ),
       ],
     );
@@ -451,7 +477,7 @@ class _FeatureCard extends StatelessWidget {
   final Color backgroundColor;
   final String title;
   final String description;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _FeatureCard({
     required this.icon,
@@ -509,22 +535,35 @@ class _FeatureCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const Spacer(),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.75),
-                    shape: BoxShape.circle,
+              if (onTap == null)
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text(
+                    'Em breve',
+                    style: TextStyle(
+                      color: iconColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.arrow_forward,
-                    color: iconColor,
-                    size: 18,
+                )
+              else
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward,
+                      color: iconColor,
+                      size: 18,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
