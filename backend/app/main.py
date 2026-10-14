@@ -329,7 +329,7 @@ def _normalize_chat_text(value: str) -> str:
         character for character in normalized
         if not unicodedata.combining(character)
     )
-    return re.sub(r"[^a-z0-9\\s]", " ", without_accents).strip()
+    return re.sub(r"[^a-z0-9\s]", " ", without_accents).strip()
 
 
 @app.post("/api/chat")
@@ -348,7 +348,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
         if len(token) >= 3
     }
     greeting_tokens = {
-        "oi", "ola", "olá", "bom", "boa", "dia", "tarde", "noite",
+        "oi", "ola", "bom", "boa", "dia", "tarde", "noite",
         "obrigado", "obrigada", "valeu", "ajuda", "ajudar",
     }
 
