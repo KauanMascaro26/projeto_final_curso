@@ -105,11 +105,10 @@ def _address_queries(point: dict) -> list[str]:
     return list(dict.fromkeys(q.strip() for q in queries if q.strip()))
 
 
-def geocode_all(geolocator: Nominatim, points: list[dict]) -> None:
-    """Resolve coordinates before touching the database and reject out-of-city results."""
+def geocode_all(geolocator: Nominatim, points: list[dict]) -> list[dict]:
+    """Resolve coordinates; keep only safe results and report unresolved/duplicate points."""
     failures = []
     request_count = 0
-    # Broad safety bounds around São Carlos; prevents results in unrelated places.
     min_lat, max_lat = -22.12, -21.88
     min_lon, max_lon = -48.02, -47.78
 
@@ -141,19 +140,39 @@ def geocode_all(geolocator: Nominatim, points: list[dict]) -> None:
 
         if location is None:
             detail = f" — último erro: {last_error}" if last_error else ""
-            failures.append(f"{point['nome']} — {point['endereco']}{detail}")
-            print(f"Não localizado com segurança: {point['nome']}")
+            failures.append(f"{point['nome']}{detail}")
+            print(f"Não localizado com segurança; será ignorado nesta execução: {point['nome']}")
             continue
         point["latitude"] = float(location.latitude)
         point["longitude"] = float(location.longitude)
         print(f"Localizado: {point['nome']} ({point['latitude']:.6f}, {point['longitude']:.6f})")
 
+    # Do not insert several unrelated businesses at precisely the same geocoder result.
+    # Keep the first and report later matches for manual verification.
+    seen_coordinates = {}
+    safe_points = []
+    for point in points:
+        if "latitude" not in point or "longitude" not in point:
+            continue
+        key = (round(point["latitude"], 5), round(point["longitude"], 5))
+        if key in seen_coordinates and point["endereco"] != seen_coordinates[key]["endereco"]:
+            failures.append(point["nome"] + " (coordenada duplicada com " + seen_coordinates[key]["nome"] + ")")
+            print(
+                f"Coordenada duplicada; será ignorado nesta execução: {point['nome']} "
+                f"(mesmo resultado de {seen_coordinates[key]['nome']})"
+            )
+            continue
+        seen_coordinates[key] = point
+        safe_points.append(point)
+
     if failures:
-        raise RuntimeError(
-            "Nenhuma alteração foi feita no banco. Não foi possível localizar com segurança:\\n- "
-            + "\\n- ".join(failures)
-            + "\\nO script não cadastrou coordenadas ausentes ou fora de São Carlos."
-        )
+        print("\\nATENÇÃO: alguns pontos foram ignorados por falta de coordenadas seguras:")
+        for failure in failures:
+            print(f"- {failure}")
+    if not safe_points:
+        raise RuntimeError("Nenhum ponto foi localizado com segurança. O banco não foi alterado.")
+    print(f"\\nPontos com coordenadas aceitas: {len(safe_points)} de {len(points)}.")
+    return safe_points
 
 
 def main() -> None:
@@ -174,7 +193,7 @@ def main() -> None:
         point.setdefault("origem", "publico")
 
     print(f"Geocodificando {len(points)} endereços. Isso pode levar cerca de 30 segundos.")
-    geocode_all(geolocator, points)
+    points = geocode_all(geolocator, points)
 
     connection = get_connection()
     try:
