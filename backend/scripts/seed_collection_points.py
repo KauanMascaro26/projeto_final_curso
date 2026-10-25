@@ -17,7 +17,6 @@ from pathlib import Path
 
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderServiceError, GeocoderTimedOut
-from psycopg.types.array import ListDumper
 
 # Permite executar o script a partir da pasta backend.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -84,20 +83,48 @@ PRIVATE_POINTS = [
 ]
 
 
+def _address_queries(address: str) -> list[str]:
+    """Create less restrictive alternatives when OSM cannot match the full address."""
+    queries = [address]
+    simplified = address.replace(", Brasil", "").replace(", Brazil", "")
+    if ", esquina com " in simplified:
+        simplified = simplified.split(", esquina com ", 1)[0] + ", São Carlos, SP"
+    queries.append(simplified)
+
+    parts = simplified.split(",")
+    if len(parts) >= 2:
+        queries.append(f"{parts[0]}, {parts[1]}, São Carlos, São Paulo, Brasil")
+    if parts:
+        queries.append(f"{parts[0]}, São Carlos, São Paulo, Brasil")
+    return list(dict.fromkeys(q.strip() for q in queries if q.strip()))
+
+
 def geocode_all(geolocator: Nominatim, points: list[dict]) -> None:
-    """Resolve all coordinates before opening a DB transaction."""
+    """Resolve all coordinates before opening a DB transaction, with fallback queries."""
     failures = []
-    for index, point in enumerate(points):
-        if index:
-            time.sleep(1.1)  # Nominatim public service: max. 1 request/second.
-        query = point["endereco"]
-        try:
-            location = geolocator.geocode(query, exactly_one=True, country_codes="br")
-        except (GeocoderServiceError, GeocoderTimedOut) as exc:
-            location = None
-            print(f"Aviso de geocodificação para {point['nome']}: {exc}")
+    request_count = 0
+    for point in points:
+        location = None
+        last_error = None
+        for query in _address_queries(point["endereco"]):
+            if request_count:
+                time.sleep(1.2)  # Respect Nominatim's public-service rate limit.
+            request_count += 1
+            try:
+                location = geolocator.geocode(
+                    query, exactly_one=True, country_codes="br", timeout=15
+                )
+            except (GeocoderServiceError, GeocoderTimedOut) as exc:
+                last_error = exc
+                print(f"Aviso de geocodificação para {point['nome']} ({query}): {exc}")
+                continue
+            if location is not None:
+                break
+
         if location is None:
-            failures.append(f"{point['nome']} — {query}")
+            detail = f" — último erro: {last_error}" if last_error else ""
+            failures.append(f"{point['nome']} — {point['endereco']}{detail}")
+            print(f"Não localizado: {point['nome']}")
             continue
         point["latitude"] = float(location.latitude)
         point["longitude"] = float(location.longitude)
@@ -105,9 +132,9 @@ def geocode_all(geolocator: Nominatim, points: list[dict]) -> None:
 
     if failures:
         raise RuntimeError(
-            "Nenhuma alteração foi feita no banco. Não foi possível localizar:\n- "
-            + "\n- ".join(failures)
-            + "\nRevise os endereços e execute novamente."
+            "Nenhuma alteração foi feita no banco. Não foi possível localizar:\\n- "
+            + "\\n- ".join(failures)
+            + "\\nConfira os endereços ou ajuste manualmente as coordenadas e execute novamente."
         )
 
 
@@ -151,7 +178,11 @@ def main() -> None:
                     if found is not None:
                         resolved_types[display_name] = found
 
-                required = {name for point in points for name in point["types"]}
+                required = {
+                    name.strip().casefold()
+                    for point in points
+                    for name in point["types"]
+                }
                 missing = sorted(required - set(resolved_types))
                 if missing:
                     raise RuntimeError(
