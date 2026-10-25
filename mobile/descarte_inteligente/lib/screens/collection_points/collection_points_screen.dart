@@ -117,6 +117,13 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
             (point['latitude'] as num).toDouble(),
             (point['longitude'] as num).toDouble(),
           ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            ['empresa', 'privado', 'instituicao'].contains(
+              point['origem']?.toString().toLowerCase(),
+            )
+                ? BitmapDescriptor.hueAzure
+                : BitmapDescriptor.hueGreen,
+          ),
           infoWindow: InfoWindow(
             title: point['nome'],
             snippet: '${point['distancia_km']} km de distância',
@@ -532,6 +539,15 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                 },
               ),
             ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 16,
+              runSpacing: 6,
+              children: const [
+                _MapLegendItem(color: Color(0xFF2E9D59), label: 'Prefeitura'),
+                _MapLegendItem(color: Color(0xFF168EAD), label: 'Empresas e instituições'),
+              ],
+            ),
           ],
         ),
       ),
@@ -669,6 +685,30 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+
+class _MapLegendItem extends StatelessWidget {
+  const _MapLegendItem({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87)),
+      ],
     );
   }
 }
