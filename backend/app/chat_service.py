@@ -59,7 +59,8 @@ def _get_disposal_context() -> dict:
                     endereco,
                     tipos_residuos,
                     latitude,
-                    longitude
+                    longitude,
+                    origem
                 FROM collection_points
                 ORDER BY nome
             """)
@@ -87,6 +88,7 @@ def _get_disposal_context() -> dict:
                 "tipos_residuos": row[3],
                 "latitude": row[4],
                 "longitude": row[5],
+                "origem": row[6],
             }
             for row in point_rows
         ]
