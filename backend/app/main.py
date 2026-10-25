@@ -48,7 +48,8 @@ def get_collection_points():
                     endereco,
                     tipos_residuos,
                     latitude,
-                    longitude
+                    longitude,
+                    origem
                 FROM collection_points
                 ORDER BY id
             """)
@@ -63,6 +64,7 @@ def get_collection_points():
                     "tipos_residuos": row[3],
                     "latitude": row[4],
                     "longitude": row[5],
+                    "origem": row[6],
                 }
                 for row in rows
             ]
@@ -87,7 +89,8 @@ def get_nearby_collection_points(
                     endereco,
                     tipos_residuos,
                     latitude,
-                    longitude
+                    longitude,
+                    origem
                 FROM collection_points
             """)
 
@@ -122,6 +125,7 @@ def get_nearby_collection_points(
                 "tipos_residuos": row[3],
                 "latitude": row[4],
                 "longitude": row[5],
+                "origem": row[6],
                 "distancia_km": round(distance, 2),
             })
 
@@ -291,7 +295,8 @@ def get_collection_points_for_waste(waste_id: int):
                     cp.endereco,
                     cp.tipos_residuos,
                     cp.latitude,
-                    cp.longitude
+                    cp.longitude,
+                    cp.origem
                 FROM collection_points cp
                 JOIN waste_collection_point_types wcpt
                     ON wcpt.collection_point_id = cp.id
@@ -309,6 +314,7 @@ def get_collection_points_for_waste(waste_id: int):
                     "tipos_residuos": row[3],
                     "latitude": row[4],
                     "longitude": row[5],
+                    "origem": row[6],
                 }
                 for row in rows
             ]
