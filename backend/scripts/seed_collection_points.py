@@ -87,10 +87,13 @@ def _address_queries(point: dict) -> list[str]:
     """Try the place name and progressively simpler address queries."""
     name = point["nome"]
     address = point["endereco"].replace(", Brasil", "").replace(", Brazil", "")
+    # Prefer the address first: searching by business name can return a different
+    # branch or a similarly named business elsewhere in Brazil.
     queries = [
-        f"{name}, São Carlos, São Paulo, Brasil",
         point["endereco"],
         address,
+        f"{address}, São Carlos, São Paulo, Brasil",
+        f"{name}, São Carlos, São Paulo, Brasil",
     ]
     if ", esquina com " in address:
         queries.append(address.split(", esquina com ", 1)[0] + ", São Carlos, SP")
