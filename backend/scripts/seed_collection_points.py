@@ -83,15 +83,18 @@ PRIVATE_POINTS = [
 ]
 
 
-def _address_queries(address: str) -> list[str]:
-    """Create less restrictive alternatives when OSM cannot match the full address."""
-    queries = [address]
-    simplified = address.replace(", Brasil", "").replace(", Brazil", "")
-    if ", esquina com " in simplified:
-        simplified = simplified.split(", esquina com ", 1)[0] + ", São Carlos, SP"
-    queries.append(simplified)
-
-    parts = simplified.split(",")
+def _address_queries(point: dict) -> list[str]:
+    """Try the place name and progressively simpler address queries."""
+    name = point["nome"]
+    address = point["endereco"].replace(", Brasil", "").replace(", Brazil", "")
+    queries = [
+        f"{name}, São Carlos, São Paulo, Brasil",
+        point["endereco"],
+        address,
+    ]
+    if ", esquina com " in address:
+        queries.append(address.split(", esquina com ", 1)[0] + ", São Carlos, SP")
+    parts = address.split(",")
     if len(parts) >= 2:
         queries.append(f"{parts[0]}, {parts[1]}, São Carlos, São Paulo, Brasil")
     if parts:
@@ -100,31 +103,43 @@ def _address_queries(address: str) -> list[str]:
 
 
 def geocode_all(geolocator: Nominatim, points: list[dict]) -> None:
-    """Resolve all coordinates before opening a DB transaction, with fallback queries."""
+    """Resolve coordinates before touching the database and reject out-of-city results."""
     failures = []
     request_count = 0
+    # Broad safety bounds around São Carlos; prevents results in unrelated places.
+    min_lat, max_lat = -22.12, -21.88
+    min_lon, max_lon = -48.02, -47.78
+
     for point in points:
         location = None
         last_error = None
-        for query in _address_queries(point["endereco"]):
+        for query in _address_queries(point):
             if request_count:
-                time.sleep(1.2)  # Respect Nominatim's public-service rate limit.
+                time.sleep(1.2)
             request_count += 1
             try:
-                location = geolocator.geocode(
-                    query, exactly_one=True, country_codes="br", timeout=15
+                candidate = geolocator.geocode(
+                    query, exactly_one=True, country_codes="br", timeout=20
                 )
             except (GeocoderServiceError, GeocoderTimedOut) as exc:
                 last_error = exc
                 print(f"Aviso de geocodificação para {point['nome']} ({query}): {exc}")
                 continue
-            if location is not None:
+            if candidate is None:
+                continue
+            lat, lon = float(candidate.latitude), float(candidate.longitude)
+            if min_lat <= lat <= max_lat and min_lon <= lon <= max_lon:
+                location = candidate
                 break
+            print(
+                f"Resultado fora da área de São Carlos ignorado para {point['nome']}: "
+                f"({lat:.6f}, {lon:.6f})"
+            )
 
         if location is None:
             detail = f" — último erro: {last_error}" if last_error else ""
             failures.append(f"{point['nome']} — {point['endereco']}{detail}")
-            print(f"Não localizado: {point['nome']}")
+            print(f"Não localizado com segurança: {point['nome']}")
             continue
         point["latitude"] = float(location.latitude)
         point["longitude"] = float(location.longitude)
@@ -132,9 +147,9 @@ def geocode_all(geolocator: Nominatim, points: list[dict]) -> None:
 
     if failures:
         raise RuntimeError(
-            "Nenhuma alteração foi feita no banco. Não foi possível localizar:\\n- "
+            "Nenhuma alteração foi feita no banco. Não foi possível localizar com segurança:\\n- "
             + "\\n- ".join(failures)
-            + "\\nConfira os endereços ou ajuste manualmente as coordenadas e execute novamente."
+            + "\\nO script não cadastrou coordenadas ausentes ou fora de São Carlos."
         )
 
 
