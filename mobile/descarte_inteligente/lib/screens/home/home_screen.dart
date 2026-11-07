@@ -230,8 +230,23 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: NavigationBar(
         height: 62,
         backgroundColor: const Color(0xFF091923),
-        indicatorColor: _green.withValues(alpha: 0.15),
+        indicatorColor: _green.withValues(alpha: 0.18),
         surfaceTintColor: Colors.transparent,
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            color: selected ? _green : _muted,
+            fontSize: 11,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected ? _green : _muted,
+            size: 22,
+          );
+        }),
         selectedIndex: _currentIndex,
         onDestinationSelected: _onNavigation,
         destinations: const [
