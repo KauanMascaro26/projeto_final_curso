@@ -442,7 +442,10 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
 
           if (allPoints.isEmpty) {
             return const Center(
-              child: Text('Nenhum ponto de coleta encontrado.'),
+              child: Text(
+                'Nenhum ponto de coleta encontrado.',
+                style: TextStyle(color: _darkGreen),
+              ),
             );
           }
 
@@ -451,14 +454,54 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: _buildMap(allPoints),
+                  child: _buildMap(points),
                 ),
                 _buildTopPanel(),
-                _buildBottomCard(points.isEmpty ? allPoints.first : points.first),
+                if (points.isNotEmpty)
+                  _buildBottomCard(points.first)
+                else
+                  _buildNoFilteredPointsCard(),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildNoFilteredPointsCard() {
+    return Positioned(
+      left: 16,
+      right: 16,
+      bottom: 42,
+      child: Material(
+        color: _surface,
+        elevation: 8,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            children: [
+              const Icon(Icons.search_off_rounded, color: _cyan, size: 28),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Nenhum ponto corresponde à pesquisa ou ao filtro selecionado.',
+                  style: TextStyle(color: _darkGreen, height: 1.4),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    selectedFilter = 'Todos';
+                    searchText = '';
+                  });
+                },
+                child: const Text('Limpar'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
