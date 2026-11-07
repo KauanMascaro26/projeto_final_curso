@@ -51,7 +51,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          final items = snapshot.data ?? [];
+          final items = (snapshot.data ?? [])
+              .where((item) => item['type'] == 'point')
+              .toList();
           if (items.isEmpty) {
             return const Center(
               child: Padding(
@@ -68,7 +70,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     ),
                     SizedBox(height: 6),
                     Text(
-                      'Salve resíduos e pontos de coleta para encontrá-los rapidamente aqui.',
+                      'Salve pontos de coleta para encontrá-los rapidamente aqui.',
                       style: TextStyle(color: _muted, height: 1.4),
                       textAlign: TextAlign.center,
                     ),
@@ -84,11 +86,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             itemBuilder: (context, index) {
               final item = items[index];
               final data = Map<String, dynamic>.from(item['data'] as Map);
-              final isWaste = item['type'] == 'waste';
               final title = (data['nome'] ?? 'Item salvo').toString();
-              final subtitle = isWaste
-                  ? (data['categoria'] ?? 'Resíduo').toString()
-                  : (data['endereco'] ?? 'Ponto de coleta').toString();
+              final subtitle = (data['endereco'] ?? 'Endereço não informado').toString();
               return Container(
                 decoration: BoxDecoration(
                   color: _surface,
@@ -97,7 +96,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
                 child: ListTile(
                   leading: Icon(
-                    isWaste ? Icons.recycling : Icons.location_on_outlined,
+                    Icons.location_on_outlined,
                     color: _green,
                   ),
                   title: Text(title, style: const TextStyle(color: _text, fontWeight: FontWeight.bold)),
