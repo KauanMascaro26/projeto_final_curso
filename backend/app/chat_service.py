@@ -53,7 +53,7 @@ def _distance_km(latitude: float, longitude: float, point_lat: float, point_lon:
     return 6371 * 2 * atan2(sqrt(value), sqrt(1 - value))
 
 
-def _get_disposal_context(message: str, latitude: float | None, longitude: float | None) -> tuple[dict, dict | None, list[dict]]:
+def _get_disposal_context(message: str, history: list[ChatTurn], latitude: float | None, longitude: float | None) -> tuple[dict, dict | None, list[dict]]:
     connection = get_connection()
     try:
         with connection.cursor() as cursor:
@@ -76,14 +76,26 @@ def _get_disposal_context(message: str, latitude: float | None, longitude: float
                 for row in waste_rows
             ]
 
-            normalized_message = f" {_normalize(message)} "
-            matched = next(
-                (
-                    waste for waste in sorted(wastes, key=lambda item: len(_normalize(item["nome"])), reverse=True)
-                    if f" {_normalize(waste['nome'])} " in normalized_message
-                ),
-                None,
+            searchable_messages = [message] + [
+                turn.content for turn in reversed(history) if turn.role == "user"
+            ]
+            ordered_wastes = sorted(
+                wastes,
+                key=lambda item: len(_normalize(item["nome"])),
+                reverse=True,
             )
+            matched = None
+            for candidate in searchable_messages:
+                normalized_candidate = f" {_normalize(candidate)} "
+                matched = next(
+                    (
+                        waste for waste in ordered_wastes
+                        if f" {_normalize(waste['nome'])} " in normalized_candidate
+                    ),
+                    None,
+                )
+                if matched:
+                    break
 
             points = []
             if matched:
@@ -130,7 +142,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
 
     try:
         context, matched_waste, relevant_points = _get_disposal_context(
-            message, request.latitude, request.longitude
+            message, request.history, request.latitude, request.longitude
         )
     except Exception as exc:
         logger.exception("Erro ao consultar os dados de descarte.")
@@ -138,6 +150,21 @@ def chat_with_disposal_assistant(request: ChatRequest):
             status_code=503,
             detail="Não foi possível consultar os dados de descarte agora.",
         ) from exc
+
+    normalized_message = _normalize(message)
+    location_terms = {"local", "ponto", "perto", "proximo", "onde", "levar"}
+    asks_for_location = bool(location_terms.intersection(normalized_message.split()))
+
+    if not matched_waste and asks_for_location:
+        return {
+            "answer": (
+                "Claro! Para encontrar o ponto de coleta mais próximo que realmente "
+                "receba o material, preciso saber: o que você deseja descartar?"
+            ),
+            "matched_waste": None,
+            "collection_points": [],
+            "suggestions": [item["nome"] for item in context["residuos_cadastrados"][:4]],
+        }
 
     assistant_context = {
         **context,
