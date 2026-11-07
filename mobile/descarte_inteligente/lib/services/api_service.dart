@@ -128,12 +128,21 @@ class ApiService {
   static Future<Map<String, dynamic>> sendChatMessage(
     String message, {
     List<Map<String, String>> history = const [],
+    double? latitude,
+    double? longitude,
   }) async {
     final response = await http
         .post(
           Uri.parse('${ApiConstants.baseUrl}/api/chat'),
           headers: {'Content-Type': 'application/json; charset=UTF-8'},
-          body: jsonEncode({'message': message, 'history': history}),
+          body: jsonEncode({
+            'message': message,
+            'history': history,
+            if (latitude != null && longitude != null) ...{
+              'latitude': latitude,
+              'longitude': longitude,
+            },
+          }),
         )
         .timeout(const Duration(seconds: 20));
 
