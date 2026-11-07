@@ -95,17 +95,21 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                   ),
                   const SizedBox(height: 8),
                   Chip(
-                    label: Text(waste['categoria']?.toString() ?? 'Sem categoria'),
-                    avatar: const Icon(Icons.category_outlined, size: 18),
+                    backgroundColor: _surfaceRaised,
+                    label: Text(
+                      waste['categoria']?.toString() ?? 'Sem categoria',
+                      style: const TextStyle(color: _cyan, fontWeight: FontWeight.w600),
+                    ),
+                    avatar: const Icon(Icons.category_outlined, size: 18, color: _cyan),
                   ),
                   if (description.isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    Text(description, style: const TextStyle(fontSize: 15)),
+                    Text(description, style: const TextStyle(color: _muted, fontSize: 15, height: 1.4)),
                   ],
                   const SizedBox(height: 20),
                   const Text(
                     'Como descartar',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: _darkGreen, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -117,7 +121,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                     const SizedBox(height: 18),
                     const Text(
                       'Preparação do material',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: _darkGreen, fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(preparation, style: const TextStyle(color: _muted, fontSize: 15, height: 1.4)),
@@ -186,12 +190,15 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                     onSubmitted: (value) => _loadWasteTypes(query: value),
                     decoration: InputDecoration(
                       hintText: 'Ex.: garrafa PET, pilha, papelão',
-                      prefixIcon: const Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search, color: _cyan),
+                      prefixIconColor: _cyan,
+                      hintStyle: const TextStyle(color: _muted),
+                      style: const TextStyle(color: _darkGreen),
                       filled: true,
                       fillColor: _surfaceRaised,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: _border),
+                        borderSide: const BorderSide(color: _border),
                       ),
                     ),
                   ),
@@ -220,6 +227,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                     _searchController.clear();
                     _loadWasteTypes();
                   },
+                  style: TextButton.styleFrom(foregroundColor: _cyan),
                   icon: const Icon(Icons.close),
                   label: const Text('Limpar pesquisa'),
                 ),
