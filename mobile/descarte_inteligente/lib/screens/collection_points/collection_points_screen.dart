@@ -864,6 +864,7 @@ class _PointFavoriteButton extends StatefulWidget {
 
 class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
   static const _activeGreen = Color(0xFF16845B);
+  static const _outlineGreen = Color(0xFF55D6A2);
   late Future<bool> _savedFuture;
   bool _isSaved = false;
   bool _isLoading = false;
@@ -919,7 +920,7 @@ class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
       future: _savedFuture,
-      builder: (context, snapshot) {
+      builder: (context, _) {
         return IconButton(
           tooltip: _isSaved ? 'Remover dos favoritos' : 'Salvar nos favoritos',
           onPressed: _hasLoaded && !_isLoading ? _toggle : null,
@@ -934,7 +935,7 @@ class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
               child: Icon(
                 _isSaved ? Icons.favorite : Icons.favorite_border,
                 key: ValueKey(_isSaved),
-                color: _isSaved ? _activeGreen : _green,
+                color: _isSaved ? _activeGreen : _outlineGreen,
               ),
             ),
           ),
