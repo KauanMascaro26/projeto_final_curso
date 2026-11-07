@@ -77,22 +77,36 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     final latitude = (point['latitude'] as num).toDouble();
     final longitude = (point['longitude'] as num).toDouble();
 
-    final url = Uri.parse(
-      'https://www.google.com/maps/dir/?api=1'
-      '&destination=$latitude,$longitude',
+    final url = Uri.https(
+      'www.google.com',
+      '/maps/dir/',
+      {
+        'api': '1',
+        'destination': '$latitude,$longitude',
+      },
     );
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(
+    try {
+      final opened = await launchUrl(
         url,
         mode: LaunchMode.externalApplication,
       );
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Não foi possível abrir o Google Maps.'),
-        ),
-      );
+
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Não foi possível abrir o Google Maps.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao abrir o mapa: $e'),
+          ),
+        );
+      }
     }
   }
 
