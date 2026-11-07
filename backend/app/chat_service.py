@@ -115,11 +115,18 @@ def _get_disposal_context(message: str, history: list[ChatTurn], latitude: float
             )
             matched = None
             for candidate in searchable_messages:
-                normalized_candidate = f" {_normalize_waste_name(candidate)} "
+                candidate_normalized = _normalize_waste_name(candidate)
+                candidate_tokens = set(candidate_normalized.split())
                 matched = next(
                     (
                         waste for waste in ordered_wastes
-                        if f" {_normalize_waste_name(waste['nome'])} " in normalized_candidate
+                        if (
+                            f" {_normalize_waste_name(waste['nome'])} " in f" {candidate_normalized} "
+                            or any(
+                                len(token) >= 4 and token in candidate_tokens
+                                for token in _normalize_waste_name(waste["nome"]).split()
+                            )
+                        )
                     ),
                     None,
                 )
