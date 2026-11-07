@@ -142,38 +142,91 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 68,
-                height: 68,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [_green, _cyan],
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF103D3D), Color(0xFF102B40)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(22)),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: _green.withValues(alpha: 0.45)),
                 ),
-                child: const Icon(Icons.park_rounded, color: _background, size: 38),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 58,
+                      height: 58,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [_green, _cyan],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(19)),
+                      ),
+                      child: const Icon(
+                        Icons.park_rounded,
+                        color: _background,
+                        size: 34,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Descarte Inteligente',
+                      style: TextStyle(
+                        color: _text,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    const Text(
+                      'Tecnologia a favor de uma cidade mais sustentável.',
+                      style: TextStyle(color: _muted, height: 1.5, fontSize: 13),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               const Text(
-                'Descarte Inteligente',
+                'O que você encontra aqui',
                 style: TextStyle(
                   color: _text,
-                  fontSize: 23,
+                  fontSize: 17,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Tecnologia a favor de uma cidade mais sustentável.',
-                style: TextStyle(color: _muted, height: 1.5, fontSize: 14),
+              const SizedBox(height: 12),
+              _buildProfileFeature(
+                icon: Icons.search_rounded,
+                accent: _cyan,
+                title: 'Identificação de resíduos',
+                description: 'Consulte materiais e encontre orientações para o descarte correto.',
               ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 10),
+              _buildProfileFeature(
+                icon: Icons.chat_bubble_outline_rounded,
+                accent: _green,
+                title: 'Assistente ecológico',
+                description: 'Tire dúvidas e receba orientações sobre separação e descarte.',
+              ),
+              const SizedBox(height: 10),
+              _buildProfileFeature(
+                icon: Icons.location_on_outlined,
+                accent: const Color(0xFFB8A0FF),
+                title: 'Pontos de coleta',
+                description: 'Consulte os locais cadastrados e visualize sua localização no mapa.',
+              ),
+              const SizedBox(height: 24),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -185,30 +238,98 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Sobre o projeto',
-                      style: TextStyle(
-                        color: _green,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    Row(
+                      children: [
+                        Icon(Icons.info_outline_rounded, color: _green, size: 19),
+                        SizedBox(width: 8),
+                        Text(
+                          'Informações importantes',
+                          style: TextStyle(
+                            color: _text,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 10),
                     Text(
-                      'Este aplicativo está em desenvolvimento e tem como objetivo orientar a identificação e o descarte correto de resíduos em São Carlos - SP.',
-                      style: TextStyle(color: _muted, height: 1.5),
+                      'O aplicativo está em desenvolvimento e tem como foco orientar a identificação e o descarte correto de resíduos em São Carlos - SP.',
+                      style: TextStyle(color: _muted, height: 1.5, fontSize: 12.5),
                     ),
-                    SizedBox(height: 14),
+                    SizedBox(height: 10),
                     Text(
-                      'Os pontos de coleta são apresentados conforme os dados cadastrados no aplicativo. Confirme as condições de recebimento diretamente com o estabelecimento antes de se deslocar.',
-                      style: TextStyle(color: _muted, height: 1.5),
+                      'Os pontos exibidos dependem dos dados cadastrados. Antes de se deslocar, confirme diretamente com o estabelecimento se ele recebe o material desejado.',
+                      style: TextStyle(color: _muted, height: 1.5, fontSize: 12.5),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              const Center(
+                child: Text(
+                  'Descarte Inteligente • São Carlos - SP',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: _muted, fontSize: 11),
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildProfileFeature({
+    required IconData icon,
+    required Color accent,
+    required String title,
+    required String description,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(color: _border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: accent, size: 23),
+          ),
+          const SizedBox(width: 13),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: _text,
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: _muted,
+                    fontSize: 11.5,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
