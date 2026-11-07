@@ -10,8 +10,14 @@ class IdentificationScreen extends StatefulWidget {
 }
 
 class _IdentificationScreenState extends State<IdentificationScreen> {
-  static const _green = Color(0xFF168A68);
-  static const _darkGreen = Color(0xFF101C2C);
+  static const _background = Color(0xFF07131D);
+  static const _surface = Color(0xFF0D202B);
+  static const _surfaceRaised = Color(0xFF122B38);
+  static const _green = Color(0xFF55D6A2);
+  static const _cyan = Color(0xFF53D9F5);
+  static const _darkGreen = Color(0xFFF2F8FA);
+  static const _muted = Color(0xFFADC1CC);
+  static const _border = Color(0xFF204653);
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -66,7 +72,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: _surface,
       builder: (context) {
         final preparation = (waste['preparacao'] ?? '').toString();
         final description = (waste['descricao'] ?? '').toString();
@@ -105,7 +111,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                   Text(
                     waste['orientacao_descarte']?.toString() ??
                         'Não há orientação cadastrada.',
-                    style: const TextStyle(fontSize: 15, height: 1.4),
+                    style: const TextStyle(color: _muted, fontSize: 15, height: 1.4),
                   ),
                   if (preparation.isNotEmpty) ...[
                     const SizedBox(height: 18),
@@ -114,7 +120,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-                    Text(preparation, style: const TextStyle(fontSize: 15, height: 1.4)),
+                    Text(preparation, style: const TextStyle(color: _muted, fontSize: 15, height: 1.4)),
                   ],
                   const SizedBox(height: 16),
                   Row(
@@ -131,7 +137,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                           waste['reciclavel'] == true
                               ? 'Material reciclável'
                               : 'Pode exigir um ponto de recebimento específico',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          style: const TextStyle(color: _darkGreen, fontWeight: FontWeight.w600),
                         ),
                       ),
                     ],
@@ -148,11 +154,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FB),
+      backgroundColor: _background,
       appBar: AppBar(
         title: const Text('Identificar resíduo'),
-        backgroundColor: _darkGreen,
-        foregroundColor: Colors.white,
+        backgroundColor: _background,
+        foregroundColor: _darkGreen,
       ),
       body: Column(
         children: [
@@ -160,12 +166,13 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
             decoration: const BoxDecoration(
-              color: _darkGreen,
+              color: _surface,
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+              border: Border(bottom: BorderSide(color: _border)),
             ),
             child: const Text(
               'O que você precisa descartar?\nPesquise um material para ver as orientações corretas.',
-              style: TextStyle(color: Colors.white, fontSize: 16, height: 1.4),
+              style: TextStyle(color: _darkGreen, fontSize: 16, height: 1.4),
             ),
           ),
           Padding(
@@ -181,10 +188,10 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                       hintText: 'Ex.: garrafa PET, pilha, papelão',
                       prefixIcon: const Icon(Icons.search),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: _surfaceRaised,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
+                        borderSide: BorderSide(color: _border),
                       ),
                     ),
                   ),
@@ -228,9 +235,9 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.cloud_off_outlined, size: 48),
+                              const Icon(Icons.cloud_off_outlined, size: 48, color: _muted),
                               const SizedBox(height: 12),
-                              Text(_errorMessage!, textAlign: TextAlign.center),
+                              Text(_errorMessage!, textAlign: TextAlign.center, style: const TextStyle(color: _muted)),
                               const SizedBox(height: 12),
                               FilledButton.icon(
                                 onPressed: () => _loadWasteTypes(
@@ -250,6 +257,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                               child: Text(
                                 'Nenhum resíduo encontrado. Tente outra palavra.',
                                 textAlign: TextAlign.center,
+                                style: TextStyle(color: _muted),
                               ),
                             ),
                           )
@@ -260,11 +268,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                             itemBuilder: (context, index) {
                               final waste = _wasteTypes[index];
                               return Card(
-                                color: Colors.white,
+                                color: _surface,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(18),
-                                  side: const BorderSide(color: Color(0xFFE5ECE6)),
+                                  side: const BorderSide(color: _border),
                                 ),
                                 child: ListTile(
                                   contentPadding: const EdgeInsets.symmetric(
@@ -282,7 +290,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                                   ),
                                   title: Text(
                                     waste['nome']?.toString() ?? 'Resíduo',
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(color: _darkGreen, fontWeight: FontWeight.bold),
                                   ),
                                   subtitle: Padding(
                                     padding: const EdgeInsets.only(top: 5),
@@ -291,10 +299,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                                       '${waste['descricao'] ?? ''}',
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(color: _muted),
                                     ),
                                   ),
                                   isThreeLine: true,
-                                  trailing: const Icon(Icons.chevron_right),
+                                  trailing: const Icon(Icons.chevron_right, color: _muted),
                                   onTap: () => _showWasteDetails(waste),
                                 ),
                               );
