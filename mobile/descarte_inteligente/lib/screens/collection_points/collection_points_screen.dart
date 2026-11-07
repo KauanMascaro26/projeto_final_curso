@@ -502,6 +502,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
             ),
             const SizedBox(height: 10),
             TextField(
+              style: const TextStyle(color: _darkGreen),
               onChanged: (value) {
                 setState(() {
                   searchText = value;
@@ -688,9 +689,10 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
               const Text(
                 'Não foi possível obter os pontos de coleta.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
+                  color: _darkGreen,
                 ),
               ),
               const SizedBox(height: 8),
