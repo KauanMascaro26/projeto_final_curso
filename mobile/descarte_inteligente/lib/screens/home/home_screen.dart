@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../chat/chat_screen.dart';
 import '../collection_points/collection_points_screen.dart';
 import '../identification/identification_screen.dart';
+import '../favorites/favorites_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -424,6 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const ChatScreen(),
           const IdentificationScreen(),
           const CollectionPointsScreen(),
+          const FavoritesScreen(),
           _buildAboutScreen(),
         ],
       ),
@@ -462,6 +464,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.location_on_outlined),
             selectedIcon: Icon(Icons.location_on_rounded, color: _green),
             label: 'Pontos',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.favorite_border_rounded),
+            selectedIcon: Icon(Icons.favorite_rounded, color: _green),
+            label: 'Favoritos',
           ),
           NavigationDestination(
             icon: Icon(Icons.info_outline_rounded),
