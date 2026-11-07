@@ -171,15 +171,32 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   }
 
   bool _matchesCategory(String type, String category) {
-    final value = type.toLowerCase();
+    final value = type
+        .toLowerCase()
+        .replaceAll('á', 'a')
+        .replaceAll('ã', 'a')
+        .replaceAll('â', 'a')
+        .replaceAll('é', 'e')
+        .replaceAll('ê', 'e')
+        .replaceAll('í', 'i')
+        .replaceAll('ó', 'o')
+        .replaceAll('ô', 'o')
+        .replaceAll('õ', 'o')
+        .replaceAll('ú', 'u');
 
     switch (category) {
       case 'Recicláveis':
-        return value.contains('recicl');
+        return [
+          'recicl', 'garrafa', 'pet', 'papel', 'papelao',
+          'vidro', 'lata', 'aluminio', 'metal', 'plastico',
+        ].any(value.contains);
       case 'Eletrônicos':
-        return value.contains('eletr');
+        return [
+          'eletron', 'celular', 'computador', 'notebook',
+          'computador', ' tv', 'televisao',
+        ].any(value.contains);
       case 'Óleo':
-        return value.contains('óleo') || value.contains('oleo');
+        return value.contains('oleo');
       case 'Pilhas':
         return value.contains('pilha') || value.contains('bateria');
       default:
@@ -456,7 +473,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                 Positioned.fill(
                   child: _buildMap(points),
                 ),
-                _buildTopPanel(),
+                _buildTopPanel(allPoints),
                 if (points.isNotEmpty)
                   _buildBottomCard(points.first)
                 else
@@ -526,13 +543,24 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     );
   }
 
-  Widget _buildTopPanel() {
-    final filters = [
-      ('Todos', Icons.grid_view_rounded),
+  Widget _buildTopPanel(List<Map<String, dynamic>> allPoints) {
+    const categories = [
       ('Recicláveis', Icons.recycling),
       ('Eletrônicos', Icons.computer_outlined),
       ('Pilhas', Icons.battery_alert_outlined),
       ('Óleo', Icons.water_drop_outlined),
+    ];
+
+    final availableFilters = categories.where((category) {
+      return allPoints.any((point) {
+        final types = List<String>.from(point['tipos_residuos'] ?? const []);
+        return types.any((type) => _matchesCategory(type, category.$1));
+      });
+    }).toList();
+
+    final filters = [
+      ('Todos', Icons.grid_view_rounded),
+      ...availableFilters,
     ];
 
     return Positioned(
@@ -540,97 +568,95 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       left: 0,
       right: 0,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
+        padding: const EdgeInsets.fromLTRB(14, 8, 14, 9),
         decoration: BoxDecoration(
           color: _surface.withValues(alpha: 0.97),
           borderRadius: const BorderRadius.vertical(
-            bottom: Radius.circular(28),
+            bottom: Radius.circular(20),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.30),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
                 IconButton(
+                  visualDensity: VisualDensity.compact,
+                  constraints: const BoxConstraints.tightFor(width: 38, height: 38),
+                  padding: EdgeInsets.zero,
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back, size: 21),
                   color: _darkGreen,
                 ),
-                const SizedBox(width: 2),
                 const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Pontos de coleta',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: _darkGreen,
-                        ),
-                      ),
-                      Text(
-                        'Encontre os locais mais próximos',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: _muted,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    'Pontos de coleta',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: _darkGreen,
+                    ),
                   ),
                 ),
                 IconButton(
+                  visualDensity: VisualDensity.compact,
+                  constraints: const BoxConstraints.tightFor(width: 38, height: 38),
+                  padding: EdgeInsets.zero,
                   onPressed: refreshLocation,
-                  icon: const Icon(Icons.my_location),
+                  icon: const Icon(Icons.my_location, size: 20),
                   color: _green,
                   tooltip: 'Atualizar localização',
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            TextField(
-              style: const TextStyle(color: _darkGreen),
-              onChanged: (value) {
-                setState(() {
-                  searchText = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Buscar por bairro ou local...',
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: _surfaceRaised,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide.none,
-                ),
-                hintStyle: const TextStyle(color: _muted),
-                prefixIconColor: _cyan,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 14,
+            SizedBox(
+              height: 42,
+              child: TextField(
+                style: const TextStyle(color: _darkGreen, fontSize: 13),
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Buscar local ou endereço...',
+                  hintStyle: const TextStyle(color: _muted, fontSize: 13),
+                  prefixIcon: const Icon(Icons.search, size: 19),
+                  prefixIconColor: _cyan,
+                  filled: true,
+                  fillColor: _surfaceRaised,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(13),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 7),
             SizedBox(
-              height: 42,
+              height: 32,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: filters.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 6),
                 itemBuilder: (context, index) {
                   final filter = filters[index];
                   final selected = selectedFilter == filter.$1;
 
                   return ChoiceChip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 3),
                     selected: selected,
                     onSelected: (_) {
                       setState(() {
@@ -639,33 +665,20 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     },
                     avatar: Icon(
                       filter.$2,
-                      size: 17,
+                      size: 14,
                       color: selected ? _background : _muted,
                     ),
-                    label: Text(filter.$1),
+                    label: Text(filter.$1, style: const TextStyle(fontSize: 11)),
                     labelStyle: TextStyle(
                       color: selected ? _background : _muted,
                       fontWeight: FontWeight.w600,
                     ),
                     selectedColor: _green,
                     backgroundColor: _surfaceRaised,
-                    side: BorderSide(
-                      color: selected
-                          ? _green
-                          : _border,
-                    ),
+                    side: BorderSide(color: selected ? _green : _border),
                   );
                 },
               ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 16,
-              runSpacing: 6,
-              children: const [
-                _MapLegendItem(color: _green, label: 'Prefeitura'),
-                _MapLegendItem(color: _cyan, label: 'Empresas e instituições'),
-              ],
             ),
           ],
         ),
@@ -683,22 +696,22 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     return Positioned(
       left: 16,
       right: 16,
-      bottom: 42,
+      bottom: 24,
       child: Material(
         color: _surface,
-        elevation: 8,
-        shadowColor: Colors.black.withValues(alpha: 0.40),
-        borderRadius: BorderRadius.circular(22),
+        elevation: 7,
+        shadowColor: Colors.black.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(17),
         child: InkWell(
           onTap: () => _showPointDetails(point),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(17),
           child: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
                     color: _green.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(15),
@@ -706,10 +719,10 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                   child: const Icon(
                     Icons.location_on,
                     color: _green,
-                    size: 28,
+                    size: 22,
                   ),
                 ),
-                const SizedBox(width: 13),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -719,24 +732,24 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: _darkGreen,
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
                         displayAddress,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 11,
                           color: _muted,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
-                        '${distance.toStringAsFixed(2)} km',
+                        '${distance.toStringAsFixed(2)} km de você',
                         style: const TextStyle(
                           color: _green,
                           fontWeight: FontWeight.bold,
@@ -747,7 +760,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                 ),
                 const Icon(
                   Icons.arrow_forward_ios,
-                  size: 17,
+                  size: 15,
                   color: _green,
                 ),
               ],
