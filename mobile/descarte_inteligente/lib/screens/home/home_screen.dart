@@ -143,7 +143,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 17),
                     _buildChatCard(),
-                    const SizedBox(height: 17),
+                    const SizedBox(height: 22),
+                    const Text(
+                      'Explore o aplicativo',
+                      style: TextStyle(
+                        color: _text,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Escolha como deseja começar.',
+                      style: TextStyle(
+                        color: _muted,
+                        fontSize: 12.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -256,9 +274,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 3),
-              Text(
-                'Tecnologia por um futuro sustentável',
-                style: TextStyle(color: _muted, fontSize: 11.5),
+              Row(
+                children: [
+                  Icon(Icons.location_on_outlined, color: _green, size: 13),
+                  SizedBox(width: 3),
+                  Text(
+                    'São Carlos - SP',
+                    style: TextStyle(
+                      color: _muted,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
