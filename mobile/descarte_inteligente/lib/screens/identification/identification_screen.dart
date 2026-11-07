@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/api_service.dart';
 
@@ -145,6 +146,144 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showCompatiblePoints(waste);
+                      },
+                      icon: const Icon(Icons.location_on_outlined),
+                      label: const Text('Ver pontos de coleta compatíveis'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _green,
+                        foregroundColor: _background,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+  Future<void> _showCompatiblePoints(Map<String, dynamic> waste) async {
+    final wasteId = (waste['id'] as num).toInt();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: _surface,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            child: SizedBox(
+              height: MediaQuery.of(sheetContext).size.height * 0.62,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Pontos para ${waste['nome']}',
+                    style: const TextStyle(
+                      color: _darkGreen,
+                      fontSize: 21,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Locais associados a este resíduo no cadastro do aplicativo.',
+                    style: TextStyle(color: _muted, height: 1.4),
+                  ),
+                  const SizedBox(height: 14),
+                  Expanded(
+                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: ApiService.getCollectionPointsForWaste(wasteId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(
+                            child: Text(
+                              'Não foi possível carregar os pontos. Tente novamente.',
+                              style: TextStyle(color: _muted),
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }
+                        final points = snapshot.data ?? [];
+                        if (points.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'Ainda não há pontos associados a este resíduo.',
+                              style: TextStyle(color: _muted),
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }
+                        return ListView.separated(
+                          itemCount: points.length,
+                          separatorBuilder: (_, _) => const SizedBox(height: 9),
+                          itemBuilder: (context, index) {
+                            final point = points[index];
+                            final name = point['nome']?.toString() ?? 'Ponto de coleta';
+                            final address = point['endereco']?.toString() ?? 'Endereço não informado';
+                            final latitude = (point['latitude'] as num?)?.toDouble();
+                            final longitude = (point['longitude'] as num?)?.toDouble();
+                            return Container(
+                              padding: const EdgeInsets.all(13),
+                              decoration: BoxDecoration(
+                                color: _surfaceRaised,
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(color: _border),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.location_on_outlined, color: _green),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(name, style: const TextStyle(color: _darkGreen, fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 4),
+                                        Text(address, style: const TextStyle(color: _muted, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                  if (latitude != null && longitude != null)
+                                    IconButton(
+                                      tooltip: 'Abrir rota',
+                                      icon: const Icon(Icons.directions, color: _cyan),
+                                      onPressed: () async {
+                                        final uri = Uri.https('www.google.com', '/maps/dir/', {
+                                          'api': '1',
+                                          'destination': '$latitude,$longitude',
+                                        });
+                                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                      },
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Confirme diretamente com o estabelecimento se ele recebe o material antes de se deslocar.',
+                    style: TextStyle(color: _muted, fontSize: 12, height: 1.4),
                   ),
                 ],
               ),
