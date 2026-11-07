@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
             tooltip: 'Sobre',
             onPressed: _showAbout,
             icon: const Icon(
-              Icons.person_outline_rounded,
+              Icons.info_outline_rounded,
               color: _muted,
               size: 22,
             ),
