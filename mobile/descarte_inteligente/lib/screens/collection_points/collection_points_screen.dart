@@ -367,6 +367,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                       );
                     }).toList(),
                   ),
+                  const SizedBox(height: 20),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
