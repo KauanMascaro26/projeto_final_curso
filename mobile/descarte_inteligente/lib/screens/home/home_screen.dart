@@ -23,92 +23,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _currentIndex = 0;
 
-  void _openChat() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ChatScreen()),
-    );
-  }
+  void _openChat() => setState(() => _currentIndex = 1);
 
-  void _openIdentification() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const IdentificationScreen()),
-    );
-  }
+  void _openIdentification() => setState(() => _currentIndex = 2);
 
-  void _openCollectionPoints() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const CollectionPointsScreen()),
-    );
-  }
+  void _openCollectionPoints() => setState(() => _currentIndex = 3);
 
-  void _showProfile() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: _surface,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'Descarte Inteligente',
-                style: TextStyle(
-                  color: _text,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Tecnologia a favor de uma cidade mais sustentável.',
-                style: TextStyle(color: _muted, height: 1.5),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Este aplicativo está em desenvolvimento. Os pontos de coleta serão atualizados após o levantamento dos locais reais.',
-                style: TextStyle(color: _muted, height: 1.5),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  void _showProfile() => setState(() => _currentIndex = 4);
 
   void _onNavigation(int index) {
     setState(() => _currentIndex = index);
-    switch (index) {
-      case 0:
-        break;
-      case 1:
-        _openChat();
-        break;
-      case 2:
-        _openIdentification();
-        break;
-      case 3:
-        _openCollectionPoints();
-        break;
-      case 4:
-        _showProfile();
-        break;
-    }
-    if (index != 0 && mounted) {
-      setState(() => _currentIndex = 0);
-    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _background,
-      body: SafeArea(
+  Widget _buildHomeContent() {
+    return SafeArea(
         bottom: false,
         child: CustomScrollView(
           slivers: [
@@ -197,6 +125,30 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),;
+  }
+
+  Widget _buildProfileScreen() {
+    return Scaffold(
+      backgroundColor: _background,
+      appBar: AppBar(
+        backgroundColor: _background,
+        foregroundColor: _text,
+        elevation: 0,
+        title: const Text(
+          'Sobre o aplicativo',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+      ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          _buildHomeContent(),
+          const ChatScreen(),
+          const IdentificationScreen(),
+          const CollectionPointsScreen(),
+          _buildProfileScreen(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         height: 62,
