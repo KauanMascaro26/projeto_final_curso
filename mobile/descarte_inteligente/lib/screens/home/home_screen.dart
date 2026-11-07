@@ -240,13 +240,6 @@ class _HomeScreenState extends State<HomeScreen> {
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
           );
         }),
-        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
-          final selected = states.contains(WidgetState.selected);
-          return IconThemeData(
-            color: selected ? _green : _muted,
-            size: 22,
-          );
-        }),
         selectedIndex: _currentIndex,
         onDestinationSelected: _onNavigation,
         destinations: const [
