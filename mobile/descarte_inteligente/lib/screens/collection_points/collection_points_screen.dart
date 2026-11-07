@@ -244,18 +244,6 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     }
   }
 
-  Future<void> _togglePointFavorite(Map<String, dynamic> point) async {
-    final id = (point['id'] as num).toInt();
-    final wasSaved = await FavoriteService.contains('point', id);
-    await FavoriteService.toggle(type: 'point', data: point);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(wasSaved ? 'Ponto removido dos favoritos.' : 'Ponto salvo nos favoritos.'),
-      ),
-    );
-  }
-
   void _showPointDetails(Map<String, dynamic> point) {
     final collectionPoint = CollectionPoint.fromJson(point);
     final displayAddress = collectionPoint.endereco.replaceAll('São', 'Sao').replaceAll('são', 'sao');
@@ -296,11 +284,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                           ),
                         ),
                       ),
-                      IconButton(
-                        tooltip: 'Salvar nos favoritos',
-                        onPressed: () => _togglePointFavorite(point),
-                        icon: const Icon(Icons.favorite_border, color: _green),
-                      ),
+                      _PointFavoriteButton(point: point),
                       IconButton(
                         onPressed: () => Navigator.pop(context),
                         icon: const Icon(Icons.close),
