@@ -140,6 +140,83 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 68,
+                height: 68,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [_green, _cyan],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(22)),
+                ),
+                child: const Icon(Icons.park_rounded, color: _background, size: 38),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Descarte Inteligente',
+                style: TextStyle(
+                  color: _text,
+                  fontSize: 23,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Tecnologia a favor de uma cidade mais sustentável.',
+                style: TextStyle(color: _muted, height: 1.5, fontSize: 14),
+              ),
+              const SizedBox(height: 22),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _surface,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: _border),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sobre o projeto',
+                      style: TextStyle(
+                        color: _green,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Este aplicativo está em desenvolvimento e tem como objetivo orientar a identificação e o descarte correto de resíduos em São Carlos - SP.',
+                      style: TextStyle(color: _muted, height: 1.5),
+                    ),
+                    SizedBox(height: 14),
+                    Text(
+                      'Os pontos de coleta são apresentados conforme os dados cadastrados no aplicativo. Confirme as condições de recebimento diretamente com o estabelecimento antes de se deslocar.',
+                      style: TextStyle(color: _muted, height: 1.5),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: _background,
       body: IndexedStack(
         index: _currentIndex,
         children: [
