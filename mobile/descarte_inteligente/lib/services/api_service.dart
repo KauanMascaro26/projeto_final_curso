@@ -161,4 +161,25 @@ class ApiService {
     );
   }
 
+
+  static Future<List<Map<String, dynamic>>> getCollectionPointsForWaste(
+    int wasteId,
+  ) async {
+    final response = await http.get(
+      Uri.parse('${ApiConstants.baseUrl}/api/waste-types/$wasteId/collection-points'),
+    );
+
+    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    if (response.statusCode == 200) {
+      return (decoded as List<dynamic>)
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+
+    final detail = decoded is Map<String, dynamic>
+        ? decoded['detail']?.toString()
+        : null;
+    throw Exception(detail ?? 'Erro ao buscar pontos compatíveis: ${response.statusCode}');
+  }
+
 }
