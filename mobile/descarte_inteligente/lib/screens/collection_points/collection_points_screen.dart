@@ -209,6 +209,23 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     return Icons.recycling;
   }
 
+  String _originLabel(String origin) {
+    switch (origin.toLowerCase()) {
+      case 'publico':
+      case 'público':
+      case 'prefeitura':
+        return 'Ponto público';
+      case 'empresa':
+      case 'privado':
+        return 'Empresa ou estabelecimento privado';
+      case 'instituicao':
+      case 'instituição':
+        return 'Instituição';
+      default:
+        return 'Origem: $origin';
+    }
+  }
+
   void _showPointDetails(Map<String, dynamic> point) {
     final collectionPoint = CollectionPoint.fromJson(point);
     final displayAddress = collectionPoint.endereco.replaceAll('São', 'Sao').replaceAll('são', 'sao');
@@ -275,6 +292,17 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(Icons.account_balance_outlined, color: _cyan, size: 19),
+                      const SizedBox(width: 8),
+                      Text(
+                        _originLabel(collectionPoint.origem),
+                        style: const TextStyle(color: _muted, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
                   if (distance != null) ...[
                     const SizedBox(height: 12),
                     Container(
@@ -338,6 +366,28 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         ),
                       );
                     }).toList(),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _surfaceRaised,
+                      borderRadius: BorderRadius.circular(13),
+                      border: Border.all(color: _border),
+                    ),
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.info_outline, color: _cyan, size: 18),
+                        SizedBox(width: 9),
+                        Expanded(
+                          child: Text(
+                            'Os materiais exibidos correspondem ao cadastro do aplicativo. Confirme com o local se o recebimento está disponível antes de ir até lá.',
+                            style: TextStyle(color: _muted, fontSize: 12, height: 1.4),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
