@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/favorite_service.dart';
 
@@ -34,6 +35,45 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Removido dos favoritos.')),
     );
+  }
+
+  Future<void> _openInGoogleMaps(Map<String, dynamic> point) async {
+    final latitude = (point['latitude'] as num?)?.toDouble();
+    final longitude = (point['longitude'] as num?)?.toDouble();
+    final address = (point['endereco'] ?? '').toString();
+    final destination = latitude != null && longitude != null
+        ? '$latitude,$longitude'
+        : address;
+
+    if (destination.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Este ponto não possui localização cadastrada.')),
+      );
+      return;
+    }
+
+    final url = Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'destination': destination,
+    });
+
+    try {
+      final opened = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível abrir o Google Maps.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erro ao abrir o Google Maps.')),
+        );
+      }
+    }
   }
 
   @override
@@ -95,16 +135,23 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   border: Border.all(color: const Color(0xFF204653)),
                 ),
                 child: ListTile(
+                  onTap: () => _openInGoogleMaps(data),
                   leading: Icon(
                     Icons.location_on_outlined,
                     color: _green,
                   ),
                   title: Text(title, style: const TextStyle(color: _text, fontWeight: FontWeight.bold)),
                   subtitle: Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: _muted)),
-                  trailing: IconButton(
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.map_outlined, color: _muted, size: 19),
+                      IconButton(
                     tooltip: 'Remover dos favoritos',
                     icon: const Icon(Icons.favorite, color: _green),
-                    onPressed: () => _remove(item['type'].toString(), (item['id'] as num).toInt()),
+                        onPressed: () => _remove(item['type'].toString(), (item['id'] as num).toInt()),
+                      ),
+                    ],
                   ),
                 ),
               );
