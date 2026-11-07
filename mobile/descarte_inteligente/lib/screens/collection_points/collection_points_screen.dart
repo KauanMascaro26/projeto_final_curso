@@ -15,11 +15,17 @@ class CollectionPointsScreen extends StatefulWidget {
 }
 
 class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
-  static const _green = Color(0xFF168A68);
-  static const _darkGreen = Color(0xFF101C2C);
-  static const _purple = Color(0xFF168EAD);
-  static const _orange = Color(0xFF168EAD);
-  static const _red = Color(0xFF168A68);
+  static const _background = Color(0xFF07131D);
+  static const _surface = Color(0xFF0D202B);
+  static const _surfaceRaised = Color(0xFF122B38);
+  static const _green = Color(0xFF55D6A2);
+  static const _cyan = Color(0xFF53D9F5);
+  static const _darkGreen = Color(0xFFF2F8FA);
+  static const _muted = Color(0xFFADC1CC);
+  static const _border = Color(0xFF204653);
+  static const _purple = _cyan;
+  static const _orange = _cyan;
+  static const _red = _green;
 
   late Future<List<Map<String, dynamic>>> nearbyPoints;
 
@@ -112,16 +118,6 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
 
   Set<Marker> buildMarkers(List<Map<String, dynamic>> points) {
     final markers = <Marker>{};
-
-    if (userLatitude != null && userLongitude != null) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('user'),
-          position: LatLng(userLatitude!, userLongitude!),
-          infoWindow: const InfoWindow(title: 'Você está aqui'),
-        ),
-      );
-    }
 
     for (final point in points) {
       markers.add(
@@ -222,7 +218,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: _surface,
       builder: (context) {
         return SafeArea(
           child: Padding(
@@ -262,7 +258,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         child: Text(
                           displayAddress,
                           style: const TextStyle(
-                            color: Colors.black54,
+                            color: _muted,
                             height: 1.3,
                           ),
                         ),
@@ -277,7 +273,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F8F1),
+                        color: _green.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -345,7 +341,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                       label: const Text('Ver rota no Google Maps'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _green,
-                        foregroundColor: Colors.white,
+                        foregroundColor: _background,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -365,7 +361,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FB),
+      backgroundColor: _background,
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: nearbyPoints,
         builder: (context, snapshot) {
@@ -440,13 +436,13 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.96),
+          color: _surface.withValues(alpha: 0.97),
           borderRadius: const BorderRadius.vertical(
             bottom: Radius.circular(28),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: Colors.black.withValues(alpha: 0.30),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -479,7 +475,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         'Encontre os locais mais próximos',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black54,
+                          color: _muted,
                         ),
                       ),
                     ],
@@ -504,11 +500,13 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                 hintText: 'Buscar por bairro ou local...',
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: const Color(0xFFF4F6F4),
+                fillColor: _surfaceRaised,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide.none,
                 ),
+                hintStyle: const TextStyle(color: _muted),
+                prefixIconColor: _cyan,
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 14,
                 ),
@@ -535,11 +533,11 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     avatar: Icon(
                       filter.$2,
                       size: 17,
-                      color: selected ? Colors.white : _darkGreen,
+                      color: selected ? _background : _muted,
                     ),
                     label: Text(filter.$1),
                     labelStyle: TextStyle(
-                      color: selected ? Colors.white : _darkGreen,
+                      color: selected ? _background : _muted,
                       fontWeight: FontWeight.w600,
                     ),
                     selectedColor: _green,
@@ -547,7 +545,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     side: BorderSide(
                       color: selected
                           ? _green
-                          : Colors.black.withValues(alpha: 0.08),
+                          : _border,
                     ),
                   );
                 },
@@ -558,8 +556,8 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
               spacing: 16,
               runSpacing: 6,
               children: const [
-                _MapLegendItem(color: Color(0xFF2E9D59), label: 'Prefeitura'),
-                _MapLegendItem(color: Color(0xFF168EAD), label: 'Empresas e instituições'),
+                _MapLegendItem(color: _green, label: 'Prefeitura'),
+                _MapLegendItem(color: _cyan, label: 'Empresas e instituições'),
               ],
             ),
           ],
@@ -580,9 +578,9 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       right: 16,
       bottom: 42,
       child: Material(
-        color: Colors.white,
+        color: _surface,
         elevation: 8,
-        shadowColor: Colors.black.withValues(alpha: 0.18),
+        shadowColor: Colors.black.withValues(alpha: 0.40),
         borderRadius: BorderRadius.circular(22),
         child: InkWell(
           onTap: () => _showPointDetails(point),
@@ -616,6 +614,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: _darkGreen,
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -625,7 +624,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.black54,
+                          color: _muted,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -654,7 +653,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
 
   Widget _buildErrorState() {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F7),
+      backgroundColor: _background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
