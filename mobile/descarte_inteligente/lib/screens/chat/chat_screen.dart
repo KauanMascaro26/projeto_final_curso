@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/api_service.dart';
+import '../../services/location_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -93,13 +95,32 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      final response = await ApiService.sendChatMessage(message, history: history);
+      double? latitude;
+      double? longitude;
+      try {
+        final position = await LocationService.getCurrentLocation();
+        latitude = position.latitude;
+        longitude = position.longitude;
+      } catch (_) {
+        // O chat continua funcionando mesmo sem permissão de localização.
+      }
+
+      final response = await ApiService.sendChatMessage(
+        message,
+        history: history,
+        latitude: latitude,
+        longitude: longitude,
+      );
       if (!mounted) return;
+      final points = (response['collection_points'] as List<dynamic>? ?? [])
+          .whereType<Map<String, dynamic>>()
+          .toList();
       setState(() {
         _messages.add(_ChatMessage(
           text: response['answer']?.toString() ??
               'Não recebi uma resposta válida do assistente.',
           isUser: false,
+          collectionPoints: points,
         ));
         _isSending = false;
       });
@@ -491,8 +512,9 @@ class _SuggestionCard extends StatelessWidget {
 class _ChatMessage {
   final String text;
   final bool isUser;
+  final List<Map<String, dynamic>> collectionPoints;
 
-  const _ChatMessage({required this.text, required this.isUser});
+  const _ChatMessage({required this.text, required this.isUser, this.collectionPoints = const []});
 }
 
 class _MessageBubble extends StatelessWidget {
@@ -527,9 +549,37 @@ class _MessageBubble extends StatelessWidget {
             color: message.isUser ? _ChatScreenState._greenDark : _ChatScreenState._border,
           ),
         ),
-        child: Text(
-          message.text,
-          style: TextStyle(color: foreground, fontSize: 14.5, height: 1.5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(message.text, style: TextStyle(color: foreground, fontSize: 14.5, height: 1.5)),
+            if (!message.isUser && message.collectionPoints.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              const Text('PONTOS COMPATÍVEIS', style: TextStyle(color: _ChatScreenState._green, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1)),
+              const SizedBox(height: 8),
+              ...message.collectionPoints.map((point) {
+                final name = point['nome']?.toString() ?? 'Ponto de coleta';
+                final address = point['endereco']?.toString() ?? '';
+                final distance = point['distancia_km'];
+                final lat = (point['latitude'] as num?)?.toDouble();
+                final lon = (point['longitude'] as num?)?.toDouble();
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(11),
+                  decoration: BoxDecoration(color: _ChatScreenState._surfaceRaised, borderRadius: BorderRadius.circular(14), border: Border.all(color: _ChatScreenState._border)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(name, style: const TextStyle(color: _ChatScreenState._text, fontWeight: FontWeight.w800, fontSize: 13)),
+                    if (address.isNotEmpty) ...[const SizedBox(height: 4), Text(address, style: const TextStyle(color: _ChatScreenState._muted, fontSize: 11.5))],
+                    if (distance != null) ...[const SizedBox(height: 5), Text('${(distance as num).toStringAsFixed(2)} km em linha reta', style: const TextStyle(color: _ChatScreenState._green, fontSize: 11, fontWeight: FontWeight.w700))],
+                    if (lat != null && lon != null) ...[const SizedBox(height: 8), Align(alignment: Alignment.centerLeft, child: TextButton.icon(
+                      onPressed: () async { final uri = Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'destination': '$lat,$lon'}); await launchUrl(uri, mode: LaunchMode.externalApplication); },
+                      icon: const Icon(Icons.directions, size: 17), label: const Text('Abrir rota'),
+                      style: TextButton.styleFrom(foregroundColor: _ChatScreenState._cyan, padding: EdgeInsets.zero),
+                    ))],
+                  ]),
+                );
+              }),
+            ],
+          ],
         ),
       ),
     );
