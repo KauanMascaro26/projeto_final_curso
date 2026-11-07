@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openCollectionPoints() => setState(() => _currentIndex = 3);
 
-  void _showProfile() => setState(() => _currentIndex = 4);
+  void _showAbout() => setState(() => _currentIndex = 4);
 
   void _onNavigation(int index) {
     setState(() => _currentIndex = index);
@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
   }
 
-  Widget _buildProfileScreen() {
+  Widget _buildAboutScreen() {
     return Scaffold(
       backgroundColor: _background,
       appBar: AppBar(
@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: _text,
         elevation: 0,
         title: const Text(
-          'Sobre o aplicativo',
+          'Sobre',
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -206,25 +206,104 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildProfileFeature(
+              _buildAboutFeature(
                 icon: Icons.search_rounded,
                 accent: _cyan,
                 title: 'Identificação de resíduos',
                 description: 'Consulte materiais e encontre orientações para o descarte correto.',
               ),
               const SizedBox(height: 10),
-              _buildProfileFeature(
+              _buildAboutFeature(
                 icon: Icons.chat_bubble_outline_rounded,
                 accent: _green,
                 title: 'Assistente ecológico',
                 description: 'Tire dúvidas e receba orientações sobre separação e descarte.',
               ),
               const SizedBox(height: 10),
-              _buildProfileFeature(
+              _buildAboutFeature(
                 icon: Icons.location_on_outlined,
                 accent: const Color(0xFFB8A0FF),
                 title: 'Pontos de coleta',
                 description: 'Consulte os locais cadastrados e visualize sua localização no mapa.',
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Como funciona',
+                style: TextStyle(
+                  color: _text,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildAboutFeature(
+                icon: Icons.manage_search_rounded,
+                accent: _cyan,
+                title: '1. Encontre o resíduo',
+                description: 'Pesquise pelo nome do material para consultar informações e orientações.',
+              ),
+              const SizedBox(height: 10),
+              _buildAboutFeature(
+                icon: Icons.lightbulb_outline_rounded,
+                accent: _green,
+                title: '2. Entenda como descartar',
+                description: 'Use o assistente ecológico para esclarecer dúvidas sobre preparo e separação.',
+              ),
+              const SizedBox(height: 10),
+              _buildAboutFeature(
+                icon: Icons.map_outlined,
+                accent: const Color(0xFFB8A0FF),
+                title: '3. Consulte os pontos',
+                description: 'Visualize os locais cadastrados no mapa e confira as informações disponíveis.',
+              ),
+              const SizedBox(height: 24),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: _surface,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: _border),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.memory_rounded, color: _cyan, size: 19),
+                        SizedBox(width: 8),
+                        Text(
+                          'Tecnologias do projeto',
+                          style: TextStyle(
+                            color: _text,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Flutter e Dart • Aplicativo mobile',
+                      style: TextStyle(color: _text, fontWeight: FontWeight.w700, fontSize: 12.5),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'Python e FastAPI • Serviços de backend',
+                      style: TextStyle(color: _muted, fontSize: 12.5),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'PostgreSQL • Banco de dados',
+                      style: TextStyle(color: _muted, fontSize: 12.5),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'Inteligência artificial e geolocalização • Apoio à identificação e consulta de pontos',
+                      style: TextStyle(color: _muted, fontSize: 12.5, height: 1.4),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               Container(
@@ -280,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProfileFeature({
+  Widget _buildAboutFeature({
     required IconData icon,
     required Color accent,
     required String title,
@@ -345,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const ChatScreen(),
           const IdentificationScreen(),
           const CollectionPointsScreen(),
-          _buildProfileScreen(),
+          _buildAboutScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -385,9 +464,9 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Pontos',
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded, color: _green),
-            label: 'Perfil',
+            icon: Icon(Icons.info_outline_rounded),
+            selectedIcon: Icon(Icons.info_rounded, color: _green),
+            label: 'Sobre',
           ),
         ],
       ),
@@ -458,8 +537,8 @@ class _HomeScreenState extends State<HomeScreen> {
             border: Border.all(color: _border),
           ),
           child: IconButton(
-            tooltip: 'Sobre o aplicativo',
-            onPressed: _showProfile,
+            tooltip: 'Sobre',
+            onPressed: _showAbout,
             icon: const Icon(
               Icons.person_outline_rounded,
               color: _muted,
