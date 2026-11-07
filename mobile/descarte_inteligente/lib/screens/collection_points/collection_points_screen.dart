@@ -717,6 +717,8 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
 
 
 class _MapLegendItem extends StatelessWidget {
+  static const _muted = Color(0xFFADC1CC);
+
   const _MapLegendItem({required this.color, required this.label});
 
   final Color color;
