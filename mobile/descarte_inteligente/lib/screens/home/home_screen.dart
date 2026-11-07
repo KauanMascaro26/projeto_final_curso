@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _border = Color(0xFF204653);
 
   int _currentIndex = 0;
+  Key _favoritesKey = UniqueKey();
 
   void _openChat() => setState(() => _currentIndex = 1);
 
@@ -33,7 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showAbout() => setState(() => _currentIndex = 5);
 
   void _onNavigation(int index) {
-    setState(() => _currentIndex = index);
+    setState(() {
+      _currentIndex = index;
+      if (index == 4) _favoritesKey = UniqueKey();
+    });
   }
 
   Widget _buildHomeContent() {
@@ -425,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const ChatScreen(),
           const IdentificationScreen(),
           const CollectionPointsScreen(),
-          const FavoritesScreen(),
+          FavoritesScreen(key: _favoritesKey),
           _buildAboutScreen(),
         ],
       ),
