@@ -220,9 +220,19 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       showDragHandle: true,
       backgroundColor: _surface,
       builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+        return Theme(
+          data: Theme.of(context).copyWith(
+            brightness: Brightness.dark,
+            colorScheme: const ColorScheme.dark(
+              primary: _green,
+              secondary: _cyan,
+              surface: _surface,
+              onSurface: _darkGreen,
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,6 +361,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                   ),
                 ],
               ),
+            ),
             ),
           ),
         );
@@ -541,7 +552,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                     selectedColor: _green,
-                    backgroundColor: Colors.white,
+                    backgroundColor: _surfaceRaised,
                     side: BorderSide(
                       color: selected
                           ? _green
@@ -686,7 +697,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
               const Text(
                 'Verifique sua localização e a conexão com o servidor.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.black54),
+                style: TextStyle(color: _muted),
               ),
               const SizedBox(height: 18),
               ElevatedButton.icon(
@@ -720,7 +731,7 @@ class _MapLegendItem extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87)),
+        Text(label, style: const TextStyle(fontSize: 12, color: _muted)),
       ],
     );
   }
