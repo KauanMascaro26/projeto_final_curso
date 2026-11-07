@@ -188,33 +188,70 @@ def chat_with_disposal_assistant(request: ChatRequest):
         ) from exc
 
     normalized_message = _normalize(message)
+    message_words = set(normalized_message.split())
     location_terms = {"local", "ponto", "perto", "proximo", "onde", "levar", "lugar"}
-    asks_for_location = bool(location_terms.intersection(normalized_message.split()))
+    asks_for_location = bool(location_terms.intersection(message_words))
+    asks_nearest = (
+        "mais proximo" in normalized_message
+        or "mais proxima" in normalized_message
+        or "perto de mim" in normalized_message
+        or "perto" in message_words
+    )
     assistant_was_asking_for_material = any(
         turn.role == "assistant"
         and any(term in _normalize(turn.content) for term in (
             "o que voce deseja descartar",
             "qual material voce deseja descartar",
             "qual residuo voce deseja descartar",
+            "o que voce quer descartar",
         ))
-        for turn in request.history[-3:]
+        for turn in request.history[-4:]
     )
     is_material_clarification_answer = (
         assistant_was_asking_for_material
-        and len(normalized_message.split()) <= 5
-        and matched_waste is not None
+        and len(normalized_message.split()) <= 6
     )
     location_intent = asks_for_location or is_material_clarification_answer
 
     if not matched_waste and location_intent:
+        clarification = (
+            "Ainda não consegui identificar o material pelo nome informado. "
+            "Você pode dizer, por exemplo, pilha, bateria, garrafa PET ou papelão?"
+            if is_material_clarification_answer
+            else "Qual material você deseja descartar? Com essa informação consigo filtrar os pontos compatíveis."
+        )
         return {
-            "answer": (
-                "Claro! Para encontrar o ponto de coleta mais próximo que realmente "
-                "receba o material, preciso saber: o que você deseja descartar?"
-            ),
+            "answer": clarification,
             "matched_waste": None,
             "collection_points": [],
             "suggestions": [item["nome"] for item in context["residuos_cadastrados"][:4]],
+        }
+
+    if matched_waste and not relevant_points:
+        logger.info("Resíduo identificado sem pontos associados: waste_id=%s nome=%s", matched_waste["id"], matched_waste["nome"])
+        return {
+            "answer": (
+                f"Identifiquei o resíduo como **{matched_waste['nome']}**, mas não há "
+                "pontos de coleta associados a ele no cadastro do aplicativo. "
+                "Prefiro não indicar um endereço sem confirmação."
+            ),
+            "matched_waste": matched_waste,
+            "collection_points": [],
+            "suggestions": [],
+        }
+
+    if matched_waste and asks_nearest and request.latitude is None:
+        logger.info("Busca por ponto mais próximo sem coordenadas: waste_id=%s", matched_waste["id"])
+        return {
+            "answer": (
+                f"Encontrei pontos cadastrados para **{matched_waste['nome']}**. "
+                "Para identificar qual fica mais perto de você, preciso da sua localização. "
+                "Ative a permissão de localização do aplicativo e tente novamente. "
+                "Enquanto isso, deixei abaixo os pontos compatíveis encontrados."
+            ),
+            "matched_waste": matched_waste,
+            "collection_points": relevant_points[:3],
+            "suggestions": [],
         }
 
     point_limit = _requested_point_limit(message)
