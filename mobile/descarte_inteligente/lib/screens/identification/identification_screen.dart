@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/api_service.dart';
-import '../../services/favorite_service.dart';
 
 class IdentificationScreen extends StatefulWidget {
   const IdentificationScreen({super.key});
@@ -69,18 +68,6 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
     }
   }
 
-  Future<void> _toggleWasteFavorite(Map<String, dynamic> waste) async {
-    final id = (waste['id'] as num).toInt();
-    final wasSaved = await FavoriteService.contains('waste', id);
-    await FavoriteService.toggle(type: 'waste', data: waste);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(wasSaved ? 'Resíduo removido dos favoritos.' : 'Resíduo salvo nos favoritos.'),
-      ),
-    );
-  }
-
   void _showWasteDetails(Map<String, dynamic> waste) {
     showModalBottomSheet<void>(
       context: context,
@@ -108,15 +95,6 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton.icon(
-                      onPressed: () => _toggleWasteFavorite(waste),
-                      icon: const Icon(Icons.favorite_border, size: 18),
-                      label: const Text('Salvar nos favoritos'),
-                      style: TextButton.styleFrom(foregroundColor: _green),
-                    ),
-                  ),
                   Chip(
                     backgroundColor: _surfaceRaised,
                     label: Text(
