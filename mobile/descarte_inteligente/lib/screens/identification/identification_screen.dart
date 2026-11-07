@@ -188,12 +188,12 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                     controller: _searchController,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (value) => _loadWasteTypes(query: value),
+                    style: const TextStyle(color: _darkGreen),
                     decoration: InputDecoration(
                       hintText: 'Ex.: garrafa PET, pilha, papelão',
                       prefixIcon: const Icon(Icons.search, color: _cyan),
                       prefixIconColor: _cyan,
                       hintStyle: const TextStyle(color: _muted),
-                      style: const TextStyle(color: _darkGreen),
                       filled: true,
                       fillColor: _surfaceRaised,
                       border: OutlineInputBorder(
