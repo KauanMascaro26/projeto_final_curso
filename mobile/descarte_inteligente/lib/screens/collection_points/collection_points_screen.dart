@@ -851,3 +851,95 @@ class _MapLegendItem extends StatelessWidget {
     );
   }
 }
+
+
+class _PointFavoriteButton extends StatefulWidget {
+  const _PointFavoriteButton({required this.point});
+
+  final Map<String, dynamic> point;
+
+  @override
+  State<_PointFavoriteButton> createState() => _PointFavoriteButtonState();
+}
+
+class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
+  static const _activeGreen = Color(0xFF16845B);
+  late Future<bool> _savedFuture;
+  bool _isSaved = false;
+  bool _isLoading = false;
+  bool _hasLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _savedFuture = _loadSaved();
+  }
+
+  Future<bool> _loadSaved() async {
+    final id = (widget.point['id'] as num).toInt();
+    final saved = await FavoriteService.contains('point', id);
+    if (mounted) {
+      setState(() {
+        _isSaved = saved;
+        _hasLoaded = true;
+      });
+    }
+    return saved;
+  }
+
+  Future<void> _toggle() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    try {
+      await FavoriteService.toggle(type: 'point', data: widget.point);
+      if (!mounted) return;
+      setState(() {
+        _isSaved = !_isSaved;
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isSaved
+                ? 'Ponto salvo nos favoritos.'
+                : 'Ponto removido dos favoritos.',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível atualizar os favoritos.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _savedFuture,
+      builder: (context, snapshot) {
+        return IconButton(
+          tooltip: _isSaved ? 'Remover dos favoritos' : 'Salvar nos favoritos',
+          onPressed: _hasLoaded && !_isLoading ? _toggle : null,
+          icon: AnimatedScale(
+            scale: _isSaved ? 1.18 : 1.0,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutBack,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 180),
+              transitionBuilder: (child, animation) =>
+                  ScaleTransition(scale: animation, child: child),
+              child: Icon(
+                _isSaved ? Icons.favorite : Icons.favorite_border,
+                key: ValueKey(_isSaved),
+                color: _isSaved ? _activeGreen : _green,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
