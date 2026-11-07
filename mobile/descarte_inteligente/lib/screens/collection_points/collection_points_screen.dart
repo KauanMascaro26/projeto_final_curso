@@ -653,6 +653,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                   final selected = selectedFilter == filter.$1;
 
                   return ChoiceChip(
+                    showCheckmark: false,
                     visualDensity: VisualDensity.compact,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     padding: const EdgeInsets.symmetric(horizontal: 5),
