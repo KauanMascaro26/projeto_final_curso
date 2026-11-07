@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/collection_point.dart';
 import '../../services/api_service.dart';
+import '../../services/favorite_service.dart';
 import '../../services/location_service.dart';
 
 class CollectionPointsScreen extends StatefulWidget {
@@ -243,6 +244,18 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     }
   }
 
+  Future<void> _togglePointFavorite(Map<String, dynamic> point) async {
+    final id = (point['id'] as num).toInt();
+    final wasSaved = await FavoriteService.contains('point', id);
+    await FavoriteService.toggle(type: 'point', data: point);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(wasSaved ? 'Ponto removido dos favoritos.' : 'Ponto salvo nos favoritos.'),
+      ),
+    );
+  }
+
   void _showPointDetails(Map<String, dynamic> point) {
     final collectionPoint = CollectionPoint.fromJson(point);
     final displayAddress = collectionPoint.endereco.replaceAll('São', 'Sao').replaceAll('são', 'sao');
@@ -282,6 +295,11 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                             color: _darkGreen,
                           ),
                         ),
+                      ),
+                      IconButton(
+                        tooltip: 'Salvar nos favoritos',
+                        onPressed: () => _togglePointFavorite(point),
+                        icon: const Icon(Icons.favorite_border, color: _green),
                       ),
                       IconButton(
                         onPressed: () => Navigator.pop(context),
