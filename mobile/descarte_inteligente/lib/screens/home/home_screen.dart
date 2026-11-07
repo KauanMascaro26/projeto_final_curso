@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openCollectionPoints() => setState(() => _currentIndex = 3);
 
-  void _showAbout() => setState(() => _currentIndex = 4);
+  void _showAbout() => setState(() => _currentIndex = 5);
 
   void _onNavigation(int index) {
     setState(() => _currentIndex = index);
