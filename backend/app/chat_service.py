@@ -117,13 +117,27 @@ def _get_disposal_context(message: str, history: list[ChatTurn], latitude: float
             for candidate in searchable_messages:
                 candidate_normalized = _normalize_waste_name(candidate)
                 candidate_tokens = set(candidate_normalized.split())
+
+                # Vocabulário de equivalências comuns usado na conversa.
+                aliases = {
+                    "pilha": {"bateria"},
+                    "bateria": {"pilha"},
+                    "eletronico": {"celular", "computador", "notebook"},
+                    "celular": {"eletronico"},
+                    "oleo": {"oleo de cozinha"},
+                    "pet": {"garrafa"},
+                    "papelao": {"papel"},
+                }
+                expanded_tokens = set(candidate_tokens)
+                for token in candidate_tokens:
+                    expanded_tokens.update(aliases.get(token, set()))
                 matched = next(
                     (
                         waste for waste in ordered_wastes
                         if (
                             f" {_normalize_waste_name(waste['nome'])} " in f" {candidate_normalized} "
                             or any(
-                                len(token) >= 4 and token in candidate_tokens
+                                len(token) >= 4 and token in expanded_tokens
                                 for token in _normalize_waste_name(waste["nome"]).split()
                             )
                         )
