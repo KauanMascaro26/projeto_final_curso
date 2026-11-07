@@ -45,6 +45,16 @@ def _normalize(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", value).strip()
 
 
+
+def _normalize_waste_name(value: str) -> str:
+    normalized = _normalize(value)
+    # Canonicaliza plurais regulares em português: pilhas -> pilha, baterias -> bateria.
+    return " ".join(
+        word[:-1] if len(word) > 3 and word.endswith("s") else word
+        for word in normalized.split()
+    )
+
+
 def _distance_km(latitude: float, longitude: float, point_lat: float, point_lon: float) -> float:
     lat1, lon1 = radians(latitude), radians(longitude)
     lat2, lon2 = radians(point_lat), radians(point_lon)
@@ -100,16 +110,16 @@ def _get_disposal_context(message: str, history: list[ChatTurn], latitude: float
             ]
             ordered_wastes = sorted(
                 wastes,
-                key=lambda item: len(_normalize(item["nome"])),
+                key=lambda item: len(_normalize_waste_name(item["nome"])),
                 reverse=True,
             )
             matched = None
             for candidate in searchable_messages:
-                normalized_candidate = f" {_normalize(candidate)} "
+                normalized_candidate = f" {_normalize_waste_name(candidate)} "
                 matched = next(
                     (
                         waste for waste in ordered_wastes
-                        if f" {_normalize(waste['nome'])} " in normalized_candidate
+                        if f" {_normalize_waste_name(waste['nome'])} " in normalized_candidate
                     ),
                     None,
                 )
@@ -171,10 +181,25 @@ def chat_with_disposal_assistant(request: ChatRequest):
         ) from exc
 
     normalized_message = _normalize(message)
-    location_terms = {"local", "ponto", "perto", "proximo", "onde", "levar"}
+    location_terms = {"local", "ponto", "perto", "proximo", "onde", "levar", "lugar"}
     asks_for_location = bool(location_terms.intersection(normalized_message.split()))
+    assistant_was_asking_for_material = any(
+        turn.role == "assistant"
+        and any(term in _normalize(turn.content) for term in (
+            "o que voce deseja descartar",
+            "qual material voce deseja descartar",
+            "qual residuo voce deseja descartar",
+        ))
+        for turn in request.history[-3:]
+    )
+    is_material_clarification_answer = (
+        assistant_was_asking_for_material
+        and len(normalized_message.split()) <= 5
+        and matched_waste is not None
+    )
+    location_intent = asks_for_location or is_material_clarification_answer
 
-    if not matched_waste and asks_for_location:
+    if not matched_waste and location_intent:
         return {
             "answer": (
                 "Claro! Para encontrar o ponto de coleta mais próximo que realmente "
