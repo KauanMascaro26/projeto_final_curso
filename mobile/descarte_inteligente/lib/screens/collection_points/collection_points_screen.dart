@@ -531,6 +531,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       ('Todos', Icons.grid_view_rounded),
       ('Recicláveis', Icons.recycling),
       ('Eletrônicos', Icons.computer_outlined),
+      ('Pilhas', Icons.battery_alert_outlined),
       ('Óleo', Icons.water_drop_outlined),
     ];
 
