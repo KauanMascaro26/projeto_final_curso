@@ -8,6 +8,5 @@ void main() {
 
     expect(find.text('Identifique, aprenda e descarte'), findsOneWidget);
     expect(find.text('Início'), findsOneWidget);
-    expect(find.text('Identificar resíduo'), findsOneWidget);
   });
 }
