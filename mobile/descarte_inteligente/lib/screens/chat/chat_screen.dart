@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/api_service.dart';
@@ -121,6 +122,7 @@ class _ChatScreenState extends State<ChatScreen> {
               'Não recebi uma resposta válida do assistente.',
           isUser: false,
           collectionPoints: points,
+          needsLocationSelection: response['needs_location_selection'] == true,
         ));
         _isSending = false;
       });
@@ -135,6 +137,151 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     }
 
+    _scrollToBottom();
+  }
+
+  Future<LatLng?> _pickLocationOnMap() async {
+    LatLng? selectedLocation;
+
+    return showModalBottomSheet<LatLng>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _surface,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final initialPosition = const LatLng(-22.0175, -47.8908);
+            return SizedBox(
+              height: MediaQuery.sizeOf(context).height * 0.72,
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(20, 4, 20, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Escolha sua localização',
+                          style: TextStyle(
+                            color: _text,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          'Toque no mapa para marcar um ponto de referência. Não é necessário ativar o GPS.',
+                          style: TextStyle(color: _muted, fontSize: 12, height: 1.4),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: GoogleMap(
+                      initialCameraPosition: const CameraPosition(
+                        target: LatLng(-22.0175, -47.8908),
+                        zoom: 13,
+                      ),
+                      onTap: (position) {
+                        setSheetState(() => selectedLocation = position);
+                      },
+                      markers: selectedLocation == null
+                          ? const {}
+                          : {
+                              Marker(
+                                markerId: const MarkerId('selected_location'),
+                                position: selectedLocation!,
+                                draggable: true,
+                                onDragEnd: (position) {
+                                  setSheetState(() => selectedLocation = position);
+                                },
+                              ),
+                            },
+                      myLocationButtonEnabled: false,
+                      myLocationEnabled: false,
+                      zoomControlsEnabled: true,
+                    ),
+                  ),
+                  SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: selectedLocation == null
+                              ? null
+                              : () => Navigator.pop(sheetContext, selectedLocation),
+                          icon: const Icon(Icons.check),
+                          label: const Text('Usar esta localização'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: _green,
+                            foregroundColor: _background,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _selectLocationForSearch() async {
+    if (_isSending) return;
+    final location = await _pickLocationOnMap();
+    if (location == null || !mounted) return;
+
+    final lastUserIndex = _messages.lastIndexWhere((item) => item.isUser);
+    if (lastUserIndex < 0) return;
+    final originalMessage = _messages[lastUserIndex].text;
+    final history = _messages
+        .take(lastUserIndex)
+        .map((item) => <String, String>{
+              'role': item.isUser ? 'user' : 'assistant',
+              'content': item.text,
+            })
+        .toList();
+
+    setState(() => _isSending = true);
+    _scrollToBottom();
+
+    try {
+      final response = await ApiService.sendChatMessage(
+        originalMessage,
+        history: history,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      );
+      if (!mounted) return;
+      final points = (response['collection_points'] as List<dynamic>? ?? [])
+          .whereType<Map<String, dynamic>>()
+          .toList();
+      setState(() {
+        _messages.add(_ChatMessage(
+          text: response['answer']?.toString() ??
+              'Não recebi uma resposta válida do assistente.',
+          isUser: false,
+          collectionPoints: points,
+        ));
+        _isSending = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _messages.add(const _ChatMessage(
+          text: 'Não consegui consultar os pontos com essa localização. Tente novamente.',
+          isUser: false,
+        ));
+        _isSending = false;
+      });
+    }
     _scrollToBottom();
   }
 
@@ -218,7 +365,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       if (_isSending && index == _messages.length) {
                         return const _ThinkingBubble();
                       }
-                      return _MessageBubble(message: _messages[index]);
+                      return _MessageBubble(
+                        message: _messages[index],
+                        onChooseLocation: _messages[index].needsLocationSelection
+                            ? _selectLocationForSearch
+                            : null,
+                      );
                     },
                   ),
           ),
@@ -513,14 +665,24 @@ class _ChatMessage {
   final String text;
   final bool isUser;
   final List<Map<String, dynamic>> collectionPoints;
+  final bool needsLocationSelection;
 
-  const _ChatMessage({required this.text, required this.isUser, this.collectionPoints = const []});
+  const _ChatMessage({
+    required this.text,
+    required this.isUser,
+    this.collectionPoints = const [],
+    this.needsLocationSelection = false,
+  });
 }
 
 class _MessageBubble extends StatelessWidget {
   final _ChatMessage message;
+  final VoidCallback? onChooseLocation;
 
-  const _MessageBubble({required this.message});
+  const _MessageBubble({
+    required this.message,
+    this.onChooseLocation,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -553,6 +715,18 @@ class _MessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(message.text, style: TextStyle(color: foreground, fontSize: 14.5, height: 1.5)),
+            if (!message.isUser && message.needsLocationSelection && onChooseLocation != null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: onChooseLocation,
+                icon: const Icon(Icons.map_outlined, size: 18),
+                label: const Text('Escolher localização no mapa'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: _ChatScreenState._green,
+                  side: const BorderSide(color: _ChatScreenState._green),
+                ),
+              ),
+            ],
             if (!message.isUser && message.collectionPoints.isNotEmpty) ...[
               const SizedBox(height: 14),
               const Text('PONTOS COMPATÍVEIS', style: TextStyle(color: _ChatScreenState._green, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1)),
