@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -6,37 +8,81 @@ import '../core/constants/api_constants.dart';
 import '../models/collection_point.dart';
 
 class ApiService {
-  static Future<String> testConnection() async {
-    final response = await http.get(
-      Uri.parse('${ApiConstants.baseUrl}/api/test'),
-    );
+  static const Duration _requestTimeout = Duration(seconds: 15);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(utf8.decode(response.bodyBytes));
-      return data['message'];
+  static Future<dynamic> _getJson(
+    Uri uri, {
+    required String errorMessage,
+  }) async {
+    late http.Response response;
+
+    try {
+      response = await http.get(uri).timeout(_requestTimeout);
+    } on TimeoutException {
+      throw Exception('A solicitação demorou demais. Tente novamente.');
+    } on SocketException {
+      throw Exception(
+        'Não foi possível conectar ao servidor. Verifique sua conexão.',
+      );
+    } on http.ClientException {
+      throw Exception(
+        'Falha na comunicação com o servidor. Tente novamente.',
+      );
     }
 
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(utf8.decode(response.bodyBytes));
+    } on FormatException {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        throw Exception('O servidor retornou uma resposta inválida.');
+      }
+      decoded = null;
+    }
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return decoded;
+    }
+
+    final detail = decoded is Map<String, dynamic>
+        ? decoded['detail']?.toString()
+        : null;
+
     throw Exception(
-      'Erro na API: ${response.statusCode}',
+      detail?.isNotEmpty == true
+          ? detail
+          : '$errorMessage (${response.statusCode})',
     );
   }
 
-  static Future<List<CollectionPoint>> getCollectionPoints() async {
-    final response = await http.get(
-      Uri.parse('${ApiConstants.baseUrl}/api/collection-points'),
+  static Future<String> testConnection() async {
+    final data = await _getJson(
+      Uri.parse('${ApiConstants.baseUrl}/api/test'),
+      errorMessage: 'Erro ao testar a conexão com a API',
     );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-
-      return data
-          .map((json) => CollectionPoint.fromJson(json))
-          .toList();
+    if (data is Map<String, dynamic> && data['message'] is String) {
+      return data['message'] as String;
     }
 
-    throw Exception(
-      'Erro ao buscar pontos de coleta: ${response.statusCode}',
+    throw Exception('Resposta inesperada ao testar a conexão com a API.');
+  }
+
+  static Future<List<CollectionPoint>> getCollectionPoints() async {
+    final data = await _getJson(
+      Uri.parse('${ApiConstants.baseUrl}/api/collection-points'),
+      errorMessage: 'Erro ao buscar pontos de coleta',
     );
+
+    if (data is! List) {
+      throw Exception('Formato inválido na lista de pontos de coleta.');
+    }
+
+    return data
+        .map((json) => CollectionPoint.fromJson(
+              Map<String, dynamic>.from(json as Map),
+            ))
+        .toList();
   }
 
   static Future<List<Map<String, dynamic>>> getNearbyCollectionPoints(
@@ -52,37 +98,33 @@ class ApiService {
       },
     );
 
-    final response = await http.get(uri);
+    final data = await _getJson(
+      uri,
+      errorMessage: 'Erro ao buscar pontos próximos',
+    );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-
-      return data
-          .map((point) => Map<String, dynamic>.from(point))
-          .toList();
+    if (data is! List) {
+      throw Exception('Formato inválido na lista de pontos próximos.');
     }
 
-    throw Exception(
-      'Erro ao buscar pontos próximos: ${response.statusCode}',
-    );
+    return data
+        .map((point) => Map<String, dynamic>.from(point as Map))
+        .toList();
   }
 
   static Future<List<Map<String, dynamic>>> getWasteTypes() async {
-    final response = await http.get(
+    final data = await _getJson(
       Uri.parse('${ApiConstants.baseUrl}/api/waste-types'),
+      errorMessage: 'Erro ao buscar resíduos',
     );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-
-      return data
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList();
+    if (data is! List) {
+      throw Exception('Formato inválido na lista de resíduos.');
     }
 
-    throw Exception(
-      'Erro ao buscar resíduos: ${response.statusCode}',
-    );
+    return data
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
   }
 
   static Future<List<Map<String, dynamic>>> searchWasteTypes(
@@ -94,35 +136,31 @@ class ApiService {
       queryParameters: {'q': query},
     );
 
-    final response = await http.get(uri);
+    final data = await _getJson(
+      uri,
+      errorMessage: 'Erro ao pesquisar resíduos',
+    );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-
-      return data
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList();
+    if (data is! List) {
+      throw Exception('Formato inválido na pesquisa de resíduos.');
     }
 
-    throw Exception(
-      'Erro ao pesquisar resíduos: ${response.statusCode}',
-    );
+    return data
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
   }
 
   static Future<Map<String, dynamic>> getWasteType(int wasteId) async {
-    final response = await http.get(
+    final data = await _getJson(
       Uri.parse('${ApiConstants.baseUrl}/api/waste-types/$wasteId'),
+      errorMessage: 'Erro ao buscar resíduo',
     );
 
-    if (response.statusCode == 200) {
-      return Map<String, dynamic>.from(
-        jsonDecode(utf8.decode(response.bodyBytes)),
-      );
+    if (data is! Map) {
+      throw Exception('Formato inválido nos dados do resíduo.');
     }
 
-    throw Exception(
-      'Erro ao buscar resíduo: ${response.statusCode}',
-    );
+    return Map<String, dynamic>.from(data);
   }
 
   static Future<Map<String, dynamic>> sendChatMessage(
@@ -161,25 +199,22 @@ class ApiService {
     );
   }
 
-
   static Future<List<Map<String, dynamic>>> getCollectionPointsForWaste(
     int wasteId,
   ) async {
-    final response = await http.get(
-      Uri.parse('${ApiConstants.baseUrl}/api/waste-types/$wasteId/collection-points'),
+    final data = await _getJson(
+      Uri.parse(
+        '${ApiConstants.baseUrl}/api/waste-types/$wasteId/collection-points',
+      ),
+      errorMessage: 'Erro ao buscar pontos compatíveis',
     );
 
-    final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-    if (response.statusCode == 200) {
-      return (decoded as List<dynamic>)
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList();
+    if (data is! List) {
+      throw Exception('Formato inválido na lista de pontos compatíveis.');
     }
 
-    final detail = decoded is Map<String, dynamic>
-        ? decoded['detail']?.toString()
-        : null;
-    throw Exception(detail ?? 'Erro ao buscar pontos compatíveis: ${response.statusCode}');
+    return data
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
   }
-
 }
