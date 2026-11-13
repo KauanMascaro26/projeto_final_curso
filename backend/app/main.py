@@ -1,13 +1,23 @@
 import logging
+import time
+from collections import defaultdict, deque
+from math import atan2, cos, radians, sin, sqrt
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
-from app.database import get_connection
 from app.chat_service import router as chat_router
-from math import radians, sin, cos, sqrt, atan2
+from app.database import get_connection
 
 
 logger = logging.getLogger(__name__)
+
+# Limites por IP e por processo. Em produção com múltiplas instâncias,
+# substituir/centralizar o controle em Redis ou no gateway da infraestrutura.
+RATE_LIMIT_WINDOW_SECONDS = 60
+API_RATE_LIMIT = 120
+CHAT_RATE_LIMIT = 10
+_rate_limit_buckets = defaultdict(deque)
+_last_bucket_cleanup = 0.0
 
 
 app = FastAPI(
@@ -17,6 +27,52 @@ app = FastAPI(
 )
 
 app.include_router(chat_router)
+
+
+@app.middleware("http")
+async def apply_security_headers_and_rate_limits(request: Request, call_next):
+    global _last_bucket_cleanup
+
+    path = request.url.path
+    if path.startswith("/api/"):
+        client_ip = request.client.host if request.client else "unknown"
+        is_chat = path == "/api/chat"
+        limit = CHAT_RATE_LIMIT if is_chat else API_RATE_LIMIT
+        bucket_key = (client_ip, "chat" if is_chat else "api")
+        now = time.monotonic()
+        bucket = _rate_limit_buckets[bucket_key]
+
+        while bucket and now - bucket[0] >= RATE_LIMIT_WINDOW_SECONDS:
+            bucket.popleft()
+
+        if len(bucket) >= limit:
+            retry_after = max(
+                1,
+                int(RATE_LIMIT_WINDOW_SECONDS - (now - bucket[0])),
+            )
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Muitas requisições. Aguarde um instante e tente novamente."},
+                headers={"Retry-After": str(retry_after)},
+            )
+
+        bucket.append(now)
+
+        # Evita que endereços que já não fazem requisições fiquem acumulados.
+        if now - _last_bucket_cleanup >= RATE_LIMIT_WINDOW_SECONDS:
+            expired_keys = [
+                key for key, timestamps in _rate_limit_buckets.items()
+                if not timestamps or now - timestamps[-1] >= RATE_LIMIT_WINDOW_SECONDS
+            ]
+            for key in expired_keys:
+                _rate_limit_buckets.pop(key, None)
+            _last_bucket_cleanup = now
+
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    return response
 
 
 @app.exception_handler(Exception)
