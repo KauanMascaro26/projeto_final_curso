@@ -2,8 +2,7 @@ import 'package:geolocator/geolocator.dart';
 
 class LocationService {
   static Future<Position> getCurrentLocation() async {
-    final serviceEnabled =
-        await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
       throw Exception('Serviço de localização desativado.');
@@ -25,6 +24,17 @@ class LocationService {
       );
     }
 
-    return Geolocator.getCurrentPosition();
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 12),
+        ),
+      );
+    } catch (error) {
+      throw Exception(
+        'Não foi possível obter sua localização. Tente novamente.',
+      );
+    }
   }
 }
