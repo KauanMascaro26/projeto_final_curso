@@ -1,7 +1,13 @@
-from fastapi import FastAPI, HTTPException
+import logging
+
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
 from app.database import get_connection
 from app.chat_service import router as chat_router
 from math import radians, sin, cos, sqrt, atan2
+
+
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
@@ -11,6 +17,19 @@ app = FastAPI(
 )
 
 app.include_router(chat_router)
+
+
+@app.exception_handler(Exception)
+async def handle_unexpected_exception(request: Request, exc: Exception):
+    logger.exception(
+        "Erro interno ao processar %s %s",
+        request.method,
+        request.url.path,
+    )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Ocorreu um erro interno. Tente novamente mais tarde."},
+    )
 
 
 @app.get("/")
@@ -75,8 +94,8 @@ def get_collection_points():
 
 @app.get("/api/collection-points/nearby")
 def get_nearby_collection_points(
-    latitude: float,
-    longitude: float,
+    latitude: float = Query(..., ge=-90, le=90),
+    longitude: float = Query(..., ge=-180, le=180),
 ):
     connection = get_connection()
 
@@ -181,7 +200,7 @@ def get_waste_types():
 
 
 @app.get("/api/waste-types/search")
-def search_waste_types(q: str):
+def search_waste_types(q: str = Query(..., min_length=1, max_length=100)):
     connection = get_connection()
 
     try:
