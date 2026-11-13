@@ -84,7 +84,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       }).toList();
     }
 
-    return ApiService.getNearbyCollectionPoints(latitude!, longitude!);
+    return ApiService.getNearbyCollectionPoints(latitude, longitude);
   }
 
   Future<void> refreshLocation() async {
@@ -830,7 +830,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
               const Text(
                 'Não foi possível obter os pontos de coleta.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: _darkGreen,
@@ -852,32 +852,6 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-
-class _MapLegendItem extends StatelessWidget {
-  static const _muted = Color(0xFFADC1CC);
-
-  const _MapLegendItem({required this.color, required this.label});
-
-  final Color color;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 6),
-        Text(label, style: const TextStyle(fontSize: 12, color: _muted)),
-      ],
     );
   }
 }
