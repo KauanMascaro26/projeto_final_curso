@@ -6,8 +6,8 @@ void main() {
   testWidgets('aplicativo inicia e exibe a tela inicial', (WidgetTester tester) async {
     await tester.pumpWidget(const DescarteInteligenteApp());
 
-    expect(find.text('Olá!'), findsOneWidget);
+    expect(find.text('Identifique, aprenda e descarte'), findsOneWidget);
     expect(find.text('Início'), findsOneWidget);
-    expect(find.text('Identificar'), findsOneWidget);
+    expect(find.text('Identificar resíduo'), findsOneWidget);
   });
 }
