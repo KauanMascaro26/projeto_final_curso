@@ -12,3 +12,7 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Google Maps local secrets
+secrets.properties
+local.defaults.properties
