@@ -29,21 +29,40 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Future<void> _remove(String type, int id) async {
-    await FavoriteService.remove(type, id);
-    if (!mounted) return;
-    setState(_load);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Removido dos favoritos.')),
-    );
+    try {
+      await FavoriteService.remove(type, id);
+      if (!mounted) return;
+      setState(_load);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Removido dos favoritos.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível remover o favorito.')),
+      );
+    }
   }
 
   Future<void> _openInGoogleMaps(Map<String, dynamic> point) async {
     final latitude = (point['latitude'] as num?)?.toDouble();
     final longitude = (point['longitude'] as num?)?.toDouble();
-    final address = (point['endereco'] ?? '').toString();
-    final destination = latitude != null && longitude != null
+    final hasValidCoordinates = latitude != null &&
+        longitude != null &&
+        latitude.isFinite &&
+        longitude.isFinite &&
+        latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180 &&
+        (latitude != 0 || longitude != 0);
+    final address = (point['endereco'] ?? '').toString().trim();
+    final name = (point['nome'] ?? '').toString().trim();
+    final destination = hasValidCoordinates
         ? '$latitude,$longitude'
-        : address;
+        : address.isNotEmpty
+            ? address
+            : name;
 
     if (destination.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,6 +110,31 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, color: _muted, size: 42),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Não foi possível carregar seus favoritos.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: _text, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () => setState(_load),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Tentar novamente'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
           final items = (snapshot.data ?? [])
               .where((item) => item['type'] == 'point')
               .toList();
@@ -125,8 +169,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             separatorBuilder: (_, _) => const SizedBox(height: 9),
             itemBuilder: (context, index) {
               final item = items[index];
-              final data = Map<String, dynamic>.from(item['data'] as Map);
-              final title = (data['nome'] ?? 'Item salvo').toString();
+              final rawData = item['data'];
+              final data = rawData is Map
+                  ? Map<String, dynamic>.from(rawData)
+                  : <String, dynamic>{};
+              final title = (data['nome'] ?? 'Ponto de coleta').toString();
               final subtitle = (data['endereco'] ?? 'Endereço não informado').toString();
               return Container(
                 decoration: BoxDecoration(
@@ -147,9 +194,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     children: [
                       const Icon(Icons.map_outlined, color: _muted, size: 19),
                       IconButton(
-                    tooltip: 'Remover dos favoritos',
-                    icon: const Icon(Icons.favorite, color: _green),
-                        onPressed: () => _remove(item['type'].toString(), (item['id'] as num).toInt()),
+                        tooltip: 'Remover dos favoritos',
+                        icon: const Icon(Icons.favorite, color: _green),
+                        onPressed: item['id'] is num
+                            ? () => _remove(
+                                  item['type'].toString(),
+                                  (item['id'] as num).toInt(),
+                                )
+                            : null,
                       ),
                     ],
                   ),
