@@ -151,7 +151,6 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final initialPosition = const LatLng(-22.0175, -47.8908);
             return SizedBox(
               height: MediaQuery.sizeOf(context).height * 0.72,
               child: Column(
