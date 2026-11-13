@@ -34,6 +34,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
 
   double? userLatitude;
   double? userLongitude;
+  bool _hasLocationPermission = false;
 
   String selectedFilter = 'Todos';
   String searchText = '';
@@ -45,19 +46,45 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> loadNearbyPoints() async {
-    final position = await LocationService.getCurrentLocation();
+    double? latitude;
+    double? longitude;
 
-    if (mounted) {
-      setState(() {
-        userLatitude = position.latitude;
-        userLongitude = position.longitude;
-      });
+    try {
+      final position = await LocationService.getCurrentLocation();
+      latitude = position.latitude;
+      longitude = position.longitude;
+
+      if (mounted) {
+        setState(() {
+          userLatitude = latitude;
+          userLongitude = longitude;
+          _hasLocationPermission = true;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          userLatitude = -22.0175;
+          userLongitude = -47.8908;
+          _hasLocationPermission = false;
+        });
+      }
+
+      // A localização é opcional: sem permissão, ainda exibimos os pontos
+      // cadastrados, centralizando o mapa em São Carlos.
+      final points = await ApiService.getCollectionPoints();
+      return points.map((point) => {
+        'id': point.id,
+        'nome': point.nome,
+        'endereco': point.endereco,
+        'tipos_residuos': point.tiposResiduos,
+        'latitude': point.latitude,
+        'longitude': point.longitude,
+        'origem': point.origem,
+      }).toList();
     }
 
-    return ApiService.getNearbyCollectionPoints(
-      position.latitude,
-      position.longitude,
-    );
+    return ApiService.getNearbyCollectionPoints(latitude!, longitude!);
   }
 
   Future<void> refreshLocation() async {
@@ -137,7 +164,9 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
           ),
           infoWindow: InfoWindow(
             title: point['nome'],
-            snippet: '${point['distancia_km']} km de distância',
+            snippet: point['distancia_km'] is num
+              ? '${(point['distancia_km'] as num).toStringAsFixed(2)} km de distância'
+              : (point['endereco'] ?? '').toString(),
           ),
           onTap: () => _showPointDetails(point),
         ),
@@ -534,7 +563,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
         ),
         zoom: 13.5,
       ),
-      myLocationEnabled: true,
+      myLocationEnabled: _hasLocationPermission,
       myLocationButtonEnabled: false,
       zoomControlsEnabled: false,
       mapToolbarEnabled: false,
@@ -694,7 +723,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     final displayAddress = collectionPoint.endereco
         .replaceAll('São', 'Sao')
         .replaceAll('são', 'sao');
-    final distance = (point['distancia_km'] as num).toDouble();
+    final distance = (point['distancia_km'] as num?)?.toDouble();
 
     return Positioned(
       left: 16,
@@ -751,13 +780,14 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        '${distance.toStringAsFixed(2)} km de você',
-                        style: const TextStyle(
-                          color: _green,
-                          fontWeight: FontWeight.bold,
+                      if (distance != null)
+                        Text(
+                          '${distance.toStringAsFixed(2)} km de você',
+                          style: const TextStyle(
+                            color: _green,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
