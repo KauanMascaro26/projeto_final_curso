@@ -266,6 +266,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
             "matched_waste": matched_waste,
             "collection_points": relevant_points[:3],
             "suggestions": [],
+            "needs_location_selection": True,
         }
 
     point_limit = _requested_point_limit(message)
