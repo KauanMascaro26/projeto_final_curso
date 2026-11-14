@@ -37,6 +37,16 @@ class _HomeScreenState extends State<HomeScreen> {
     _DailyFact(title: 'Embalagens limpas', text: 'Retirar restos de alimentos e líquidos das embalagens facilita a triagem dos recicláveis.', icon: Icons.local_drink_outlined),
     _DailyFact(title: 'Óleo de cozinha', text: 'O óleo usado não deve ser despejado na pia. Armazene-o em uma garrafa fechada e procure um ponto de coleta.', icon: Icons.water_drop_outlined),
     _DailyFact(title: 'Papel e papelão', text: 'Papelão seco e sem excesso de resíduos é mais adequado para encaminhamento à reciclagem.', icon: Icons.inventory_2_outlined),
+    _DailyFact(title: 'Descarte de vidro', text: 'Envolva cacos de vidro em papel resistente ou coloque-os em embalagem rígida identificada antes do descarte.', icon: Icons.wine_bar_outlined),
+    _DailyFact(title: 'Lâmpadas precisam de cuidado', text: 'Lâmpadas fluorescentes e outras com componentes especiais devem ser levadas a pontos de recebimento apropriados.', icon: Icons.lightbulb_outline_rounded),
+    _DailyFact(title: 'Eletrônicos não vão ao lixo comum', text: 'Celulares, cabos e pequenos aparelhos podem conter materiais que exigem logística reversa.', icon: Icons.devices_other_rounded),
+    _DailyFact(title: 'Reutilizar também ajuda', text: 'Antes de descartar um objeto em bom estado, considere se ele pode ser reutilizado ou doado.', icon: Icons.volunteer_activism_outlined),
+    _DailyFact(title: 'Evite misturar recicláveis', text: 'Separar papel, plástico, metal e vidro facilita a triagem e o encaminhamento dos materiais.', icon: Icons.category_outlined),
+    _DailyFact(title: 'Medicamentos têm coleta própria', text: 'Medicamentos vencidos ou sem uso devem ser entregues em pontos de coleta específicos, como farmácias participantes.', icon: Icons.medication_outlined),
+    _DailyFact(title: 'Pneus têm destinação própria', text: 'Pneus usados devem ser encaminhados a locais de recebimento adequados, nunca abandonados em terrenos ou vias públicas.', icon: Icons.tire_repair_rounded),
+    _DailyFact(title: 'Confira antes de levar', text: 'Os pontos de coleta podem aceitar materiais diferentes. Consulte as informações do local antes de se deslocar.', icon: Icons.location_on_outlined),
+    _DailyFact(title: 'Cuide dos resíduos cortantes', text: 'Agulhas e objetos perfurocortantes exigem acondicionamento seguro e orientação de descarte específica.', icon: Icons.warning_amber_rounded),
+    _DailyFact(title: 'Compostagem reduz resíduos', text: 'Restos de frutas, verduras e borra de café podem ser aproveitados em sistemas de compostagem adequados.', icon: Icons.grass_rounded),
   ];
 
   late final _DailyFact _dailyFact;
@@ -192,6 +202,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
+  String _greetingForCurrentTime() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Bom dia, ';
+    if (hour < 18) return 'Boa tarde, ';
+    return 'Boa noite, ';
+  }
+
   Widget _buildHeader() {
     return Material(
       color: Colors.transparent,
@@ -202,8 +219,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.68),
+            color: Colors.white.withValues(alpha: 0.075),
             borderRadius: BorderRadius.circular(17),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
           ),
           child: Row(
             children: [
@@ -211,40 +229,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFB4E5C2),
+                  color: const Color(0xFFB8E2C7),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF7BBE91), width: 1.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFB8E2C7).withValues(alpha: 0.18),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                    ),
+                  ],
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF164B40), size: 25),
+                child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF24563F), size: 25),
               ),
               const SizedBox(width: 11),
               Expanded(
                 child: RichText(
                   text: TextSpan(
-                    style: TextStyle(
-                      color: Color(0xFF315743),
+                    style: const TextStyle(
+                      color: Color(0xFFF1F7F2),
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.2,
                     ),
                     children: [
-                      TextSpan(text: 'Bom dia, '),
-                      TextSpan(
+                      TextSpan(text: _greetingForCurrentTime()),
+                      const TextSpan(
                         text: 'Kauan!',
-                        style: TextStyle(fontWeight: FontWeight.w900),
+                        style: TextStyle(color: Color(0xFFBDE8C9), fontWeight: FontWeight.w900),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF477A5A), size: 16),
+              const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFBDE8C9), size: 16),
             ],
           ),
         ),
       ),
     );
   }
-
 
   Widget _buildAboutScreen() {
     return Scaffold(
@@ -862,13 +885,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                Row(
-                  children: [
-                    Container(width: 24, height: 2, decoration: BoxDecoration(color: _green, borderRadius: BorderRadius.circular(2))),
-                    const SizedBox(width: 6),
-                    Container(width: 8, height: 2, decoration: BoxDecoration(color: _green.withValues(alpha: 0.45), borderRadius: BorderRadius.circular(2))),
-                  ],
-                ),
               ],
             ),
           ),
