@@ -132,8 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 17),
                     _buildCollectionCard(),
-                    const SizedBox(height: 16),
-                    _buildImpactCard(),
                   ],
                 ),
               ),
