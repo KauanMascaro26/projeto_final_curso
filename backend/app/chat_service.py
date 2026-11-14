@@ -366,11 +366,12 @@ def chat_with_disposal_assistant(request: ChatRequest):
             point_intro = "Esse é o ponto mais próximo disponível para esse resíduo. "
     else:
         selected_points = relevant_points[:point_limit]
-        if selected_points:
+        if selected_points and asks_for_location:
             point_intro = "Abaixo estão alguns pontos disponíveis para esse resíduo. "
     assistant_context = {
         "residuo_cadastrado": matched_waste,
         "pontos_compativeis": selected_points,
+        "localizacao_disponivel": request.latitude is not None and request.longitude is not None,
     }
 
     instructions = (
@@ -392,10 +393,14 @@ def chat_with_disposal_assistant(request: ChatRequest):
         "Use somente os dados fornecidos para afirmar quais locais recebem cada resíduo. "
         "Nunca invente endereços, horários, serviços, distâncias ou associações. Se não houver "
         "ponto compatível cadastrado, informe isso em uma frase curta. "
-        "Se o usuário perguntar por locais próximos e não houver localização, não peça cidade "
-        "ou CEP. Diga que pode usar a localização do aparelho ou que o usuário pode escolher "
-        "um ponto no mapa. Se a localização estiver indisponível, não finja que foi consultada. "
-        "Não peça localização quando a pergunta não envolver busca local. "
+        "Só fale sobre localização quando o usuário perguntar onde descartar, pedir pontos próximos "
+        "ou fizer uma pergunta explícita sobre locais. Se a localização não estiver disponível e "
+        "o usuário pedir locais próximos, não peça cidade ou CEP: diga brevemente que ele pode "
+        "ativar a localização ou escolher um ponto no mapa. Se a localização estiver disponível "
+        "(localizacao_disponivel=true nos dados), nunca peça permissão, ativação do GPS ou escolha "
+        "no mapa, nem diga que pode buscar pontos: a localização já foi obtida e os pontos serão "
+        "mostrados pela interface. Em perguntas sobre como preparar ou descartar, não acrescente "
+        "convites para usar GPS, mapa ou consultar pontos quando isso não foi perguntado. "
         "Em perguntas de acompanhamento, mantenha o assunto somente quando a mensagem atual "
         "for uma continuação clara; ao mudar de assunto, não reutilize o resíduo anterior. "
         "Para perguntas fora do tema, responda brevemente que o assistente é focado em descarte "
@@ -448,8 +453,25 @@ def chat_with_disposal_assistant(request: ChatRequest):
             detail="A IA não retornou texto. Confira o terminal do backend para identificar o motivo.",
         )
 
-    suggest_location = request.latitude is None and matched_waste is not None
+    suggest_location = (
+        request.latitude is None
+        and matched_waste is not None
+        and asks_for_location
+    )
     answer = f"{point_intro.strip()}\n\n{answer}" if point_intro else answer
+
+    if request.latitude is not None and request.longitude is not None:
+        location_prompt_terms = (
+            "ative a localizacao", "ativar a localizacao", "permita o acesso",
+            "permitir o acesso", "escolha um ponto no mapa",
+            "usar minha localizacao", "posso mostrar pontos",
+            "posso encontrar pontos", "ative o gps",
+        )
+        answer_paragraphs = [
+            paragraph for paragraph in answer.split("\n\n")
+            if not any(term in _normalize(paragraph) for term in location_prompt_terms)
+        ]
+        answer = "\n\n".join(answer_paragraphs).strip()
 
     return {
         "answer": answer,
