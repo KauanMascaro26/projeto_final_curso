@@ -157,7 +157,12 @@ def _requested_point_limit(message: str) -> int:
         if word in number_words and any(term in nearby for term in ("ponto", "local", "opcao")):
             return number_words[word]
 
-    if "mais proximo" in normalized or "mais proxima" in normalized:
+    if (
+        "mais proximo" in normalized
+        or "mais proxima" in normalized
+        or "outro ponto" in normalized
+        or "mais um ponto" in normalized
+    ):
         return 1
     return 3
 
@@ -272,6 +277,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
         or "mais proxima" in normalized_message
         or "perto de mim" in normalized_message
         or "perto" in message_words
+        or "onde fica" in normalized_message
     )
     assistant_was_asking_for_material = any(
         turn.role == "assistant"
