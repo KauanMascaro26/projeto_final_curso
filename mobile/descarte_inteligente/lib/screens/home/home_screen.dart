@@ -6,6 +6,8 @@ import '../chat/chat_screen.dart';
 import '../collection_points/collection_points_screen.dart';
 import '../identification/identification_screen.dart';
 import '../favorites/favorites_screen.dart';
+import '../../services/api_service.dart';
+import '../../services/favorite_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,11 +40,29 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   late final _DailyFact _dailyFact;
+  late Future<_HomeStats> _homeStats;
 
   @override
   void initState() {
     super.initState();
     _dailyFact = _dailyFacts[Random().nextInt(_dailyFacts.length)];
+    _homeStats = _loadHomeStats();
+  }
+
+  Future<_HomeStats> _loadHomeStats() async {
+    final results = await Future.wait([
+      ApiService.getCollectionPoints(),
+      ApiService.getWasteTypes(),
+      FavoriteService.getAll(),
+    ]);
+    final points = results[0] as List;
+    final materials = results[1] as List;
+    final favorites = results[2] as List;
+    return _HomeStats(
+      collectionPoints: points.length,
+      materials: materials.length,
+      favorites: favorites.length,
+    );
   }
 
   void _openChat() => setState(() => _currentIndex = 1);
@@ -66,80 +86,151 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHomeContent() {
     return SafeArea(
-        bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-              sliver: SliverToBoxAdapter(
+      bottom: false,
+      child: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 14),
+                  _buildStatsCard(),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Materiais',
+                        style: TextStyle(color: _text, fontSize: 18, fontWeight: FontWeight.w800),
+                      ),
+                      TextButton(
+                        onPressed: () => _openIdentification(),
+                        style: TextButton.styleFrom(
+                          foregroundColor: _green,
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(40, 32),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text('Ver todos'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  _buildMaterialShortcuts(),
+                  const SizedBox(height: 24),
+                  _buildDailyFactCard(),
+                  const SizedBox(height: 18),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsCard() {
+    return FutureBuilder<_HomeStats>(
+      future: _homeStats,
+      builder: (context, snapshot) {
+        final stats = snapshot.data;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 17),
+          decoration: BoxDecoration(
+            color: const Color(0xFF123D36),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: _green.withValues(alpha: 0.18)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _StatItem(
+                  icon: Icons.location_on_outlined,
+                  value: stats?.collectionPoints.toString() ?? '—',
+                  label: 'pontos cadastrados',
+                ),
+              ),
+              Container(width: 1, height: 42, color: _green.withValues(alpha: 0.20)),
+              Expanded(
+                child: _StatItem(
+                  icon: Icons.category_outlined,
+                  value: stats?.materials.toString() ?? '—',
+                  label: 'materiais',
+                ),
+              ),
+              Container(width: 1, height: 42, color: _green.withValues(alpha: 0.20)),
+              Expanded(
+                child: _StatItem(
+                  icon: Icons.favorite_border_rounded,
+                  value: stats?.favorites.toString() ?? '—',
+                  label: 'favoritos',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader() {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: _openChat,
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 7),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: _green.withValues(alpha: 0.55), width: 1.5),
+                ),
+                child: const Icon(Icons.person_rounded, color: _green, size: 26),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeader(),
-                    const SizedBox(height: 18),
-                    const Text(
-                      'Como podemos ajudar?',
-                      style: TextStyle(color: _text, fontSize: 22, height: 1.15, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+                    Text(
+                      'Bom dia, Kauan!',
+                      style: TextStyle(color: _text, fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.25),
                     ),
-                    const SizedBox(height: 5),
-                    const Text(
-                      'Encontre a melhor forma de descartar seus resíduos.',
-                      style: TextStyle(color: _muted, fontSize: 12.5, height: 1.4),
+                    SizedBox(height: 3),
+                    Text(
+                      'Descarte Inteligente',
+                      style: TextStyle(color: _muted, fontSize: 11.5),
                     ),
-                    const SizedBox(height: 16),
-                    _buildChatCard(),
-                    const SizedBox(height: 22),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Materiais', style: TextStyle(color: _text, fontSize: 17, fontWeight: FontWeight.w800)),
-                        TextButton(
-                          onPressed: () => _openIdentification(),
-                          style: TextButton.styleFrom(foregroundColor: _green, padding: EdgeInsets.zero, minimumSize: const Size(40, 32), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                          child: const Text('Ver todos'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    _buildMaterialShortcuts(),
-                    const SizedBox(height: 20),
-                    _buildDailyFactCard(),
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: _ActionCard(
-                            icon: Icons.search_rounded,
-                            title: 'Buscar resíduo',
-                            description: 'Encontre orientações por material.',
-                            accent: _cyan,
-                            onTap: _openIdentification,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _ActionCard(
-                            icon: Icons.photo_camera_outlined,
-                            title: 'Identificar por foto',
-                            description: 'Reconhecimento visual.',
-                            accent: _muted,
-                            disabled: true,
-                            onTap: null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 17),
-                    _buildCollectionCard(),
                   ],
                 ),
               ),
-            ),
-          ],
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: _surfaceRaised,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: _border),
+                ),
+                child: const Icon(Icons.auto_awesome_rounded, color: _green, size: 20),
+              ),
+            ],
+          ),
         ),
-      );
+      ),
+    );
   }
+
 
   Widget _buildAboutScreen() {
     return Scaffold(
@@ -674,8 +765,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMaterialShortcuts() {
     const materials = [
       _MaterialShortcut('Plástico', Icons.local_drink_outlined, 'plástico'),
-      _MaterialShortcut('Papel', Icons.description_outlined, 'papel'),
       _MaterialShortcut('Vidro', Icons.wine_bar_outlined, 'vidro'),
+      _MaterialShortcut('Papel', Icons.description_outlined, 'papel'),
       _MaterialShortcut('Metal', Icons.settings_outlined, 'metal'),
       _MaterialShortcut('Pilhas', Icons.battery_full_rounded, 'pilha'),
       _MaterialShortcut('Eletrônicos', Icons.devices_other_rounded, 'eletrônico'),
@@ -683,69 +774,176 @@ class _HomeScreenState extends State<HomeScreen> {
       _MaterialShortcut('Papelão', Icons.inventory_2_outlined, 'papelão'),
     ];
 
-    return Wrap(
-      spacing: 9,
-      runSpacing: 9,
-      children: materials.map((material) {
-        return Material(
-          color: _surface,
-          borderRadius: BorderRadius.circular(14),
-          child: InkWell(
-            onTap: () => _openIdentification(material.query),
-            borderRadius: BorderRadius.circular(14),
-            child: Container(
-              constraints: const BoxConstraints(minWidth: 88),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), border: Border.all(color: _border)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(material.icon, color: _green, size: 22),
-                  const SizedBox(height: 6),
-                  Text(material.label, style: const TextStyle(color: _text, fontSize: 11.5, fontWeight: FontWeight.w700)),
-                ],
+    return SizedBox(
+      height: 142,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: materials.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 11),
+        itemBuilder: (context, index) {
+          final material = materials[index];
+          return SizedBox(
+            width: 112,
+            child: Material(
+              color: _surface,
+              borderRadius: BorderRadius.circular(17),
+              child: InkWell(
+                onTap: () => _openIdentification(material.query),
+                borderRadius: BorderRadius.circular(17),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(10, 13, 10, 11),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(17),
+                    border: Border.all(color: _border),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: _green.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Icon(material.icon, color: _green, size: 29),
+                      ),
+                      const SizedBox(height: 11),
+                      Text(
+                        material.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: _text, fontSize: 12, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildDailyFactCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF103D3D), Color(0xFF102B40)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _green.withValues(alpha: 0.42)),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF164B40), Color(0xFF102B32)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: _green.withValues(alpha: 0.30)),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Container(
-            width: 42, height: 42,
-            decoration: BoxDecoration(color: _green.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(14)),
-            child: Icon(_dailyFact.icon, color: _green, size: 23),
+          Positioned(
+            right: -20,
+            top: -24,
+            child: Icon(Icons.eco_rounded, size: 142, color: Colors.white.withValues(alpha: 0.045)),
           ),
-          const SizedBox(width: 12),
-          Expanded(
+          Padding(
+            padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('VOCÊ SABIA?', style: TextStyle(color: _green, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.1)),
-                const SizedBox(height: 5),
-                Text(_dailyFact.title, style: const TextStyle(color: _text, fontSize: 14, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 5),
-                Text(_dailyFact.text, style: const TextStyle(color: _muted, fontSize: 12, height: 1.45)),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _green.withValues(alpha: 0.16),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.lightbulb_outline_rounded, color: _green, size: 14),
+                          SizedBox(width: 6),
+                          Text('VOCÊ SABIA?', style: TextStyle(color: _green, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(_dailyFact.icon, color: _green.withValues(alpha: 0.9), size: 23),
+                  ],
+                ),
+                const SizedBox(height: 17),
+                Text(
+                  _dailyFact.title,
+                  style: const TextStyle(color: _text, fontSize: 19, height: 1.15, fontWeight: FontWeight.w900, letterSpacing: -0.35),
+                ),
+                const SizedBox(height: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 290),
+                  child: Text(
+                    _dailyFact.text,
+                    style: const TextStyle(color: Color(0xFFD0E2DC), fontSize: 12.5, height: 1.5),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    Container(width: 24, height: 2, decoration: BoxDecoration(color: _green, borderRadius: BorderRadius.circular(2))),
+                    const SizedBox(width: 6),
+                    Container(width: 8, height: 2, decoration: BoxDecoration(color: _green.withValues(alpha: 0.45), borderRadius: BorderRadius.circular(2))),
+                  ],
+                ),
               ],
             ),
           ),
-          const SizedBox(width: 4),
-          const Icon(Icons.auto_awesome_rounded, color: _green, size: 17),
         ],
       ),
+    );
+  }
+
+class _HomeStats {
+  final int collectionPoints;
+  final int materials;
+  final int favorites;
+
+  const _HomeStats({
+    required this.collectionPoints,
+    required this.materials,
+    required this.favorites,
+  });
+}
+
+class _StatItem extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  const _StatItem({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: const Color(0xFF9BE7C7), size: 18),
+        const SizedBox(height: 7),
+        Text(
+          value,
+          style: const TextStyle(color: Color(0xFFF2F8FA), fontSize: 19, fontWeight: FontWeight.w900, height: 1),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Color(0xFFB7D4C9), fontSize: 9.5, fontWeight: FontWeight.w500),
+        ),
+      ],
     );
   }
 }
