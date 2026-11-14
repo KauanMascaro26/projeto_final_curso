@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/widgets/app_notification.dart';
 import '../../services/favorite_service.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -33,13 +34,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       await FavoriteService.remove(type, id);
       if (!mounted) return;
       setState(_load);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Removido dos favoritos.')),
+      AppNotification.show(
+        context,
+        'Removido dos favoritos.',
+        type: AppNotificationType.success,
       );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível remover o favorito.')),
+      AppNotification.show(
+        context,
+        'Não foi possível remover o favorito.',
+        type: AppNotificationType.error,
       );
     }
   }
@@ -65,8 +70,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             : name;
 
     if (destination.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Este ponto não possui localização cadastrada.')),
+      AppNotification.show(
+        context,
+        'Este ponto não possui localização cadastrada.',
+        type: AppNotificationType.warning,
       );
       return;
     }
@@ -82,14 +89,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         mode: LaunchMode.externalApplication,
       );
       if (!opened && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Não foi possível abrir o Google Maps.')),
+        AppNotification.show(
+          context,
+          'Não foi possível abrir o Google Maps.',
+          type: AppNotificationType.error,
         );
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro ao abrir o Google Maps.')),
+        AppNotification.show(
+          context,
+          'Erro ao abrir o Google Maps.',
+          type: AppNotificationType.error,
         );
       }
     }
