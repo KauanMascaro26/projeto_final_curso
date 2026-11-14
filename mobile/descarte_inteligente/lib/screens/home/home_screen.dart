@@ -120,13 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF164B40), Color(0xFF102B32)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: const Color(0xFFC9DCCB),
                       borderRadius: BorderRadius.circular(23),
-                      border: Border.all(color: Color(0xFF285C50)),
+                      border: Border.all(color: const Color(0xFFB5CDB9)),
                     ),
                     child: Column(
                       children: [
@@ -182,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.location_on_outlined,
                 value: stats?.collectionPoints.toString() ?? '—',
                 label: 'pontos cadastrados',
-                dark: false,
+                dark: true,
               ),
             ),
             Container(width: 1, height: 42, color: Color(0xFFBDE8C9).withValues(alpha: 0.22)),
@@ -227,9 +223,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: Color(0xFF164B40),
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(17),
-            border: Border.all(color: Color(0xFF285C50)),
           ),
           child: Row(
             children: [
@@ -254,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: RichText(
                   text: TextSpan(
                     style: const TextStyle(
-                      color: Color(0xFFF2F8FA),
+                      color: _homeGreen,
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.2,
@@ -263,13 +258,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       TextSpan(text: _greetingForCurrentTime()),
                       const TextSpan(
                         text: 'Kauan!',
-                        style: TextStyle(color: Color(0xFFBDE8C9), fontWeight: FontWeight.w900),
+                        style: TextStyle(color: _homeGreen, fontWeight: FontWeight.w900),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFBDE8C9), size: 16),
+              const Icon(Icons.arrow_forward_ios_rounded, color: _homeGreen, size: 16),
             ],
           ),
         ),
