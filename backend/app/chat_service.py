@@ -8,7 +8,7 @@ from typing import Literal
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from openai import OpenAI, OpenAIError
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.database import get_connection
 
@@ -22,11 +22,15 @@ MODEL_NAME = os.getenv("OPENAI_MODEL", "gpt-5-mini")
 
 
 class ChatTurn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=1000)
 
 
 class ChatRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     message: str = Field(min_length=1, max_length=500)
     history: list[ChatTurn] = Field(default_factory=list, max_length=12)
     latitude: float | None = Field(default=None, ge=-90, le=90)
