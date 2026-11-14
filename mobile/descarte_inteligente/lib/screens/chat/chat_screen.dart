@@ -78,20 +78,27 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  List<Map<String, String>> _buildHistory(
+  List<Map<String, dynamic>> _buildHistory(
     Iterable<_ChatMessage> messages,
   ) {
     final history = messages
         .map((item) {
           final content = item.text.trim();
-          return <String, String>{
+          final turn = <String, dynamic>{
             'role': item.isUser ? 'user' : 'assistant',
             'content': content.length > 2500
                 ? content.substring(0, 2500)
                 : content,
           };
+          if (!item.isUser && item.collectionPoints.isNotEmpty) {
+            turn['collection_point_ids'] = item.collectionPoints
+                .map((point) => point['id'])
+                .whereType<int>()
+                .toList();
+          }
+          return turn;
         })
-        .where((turn) => turn['content']!.isNotEmpty)
+        .where((turn) => (turn['content'] as String).isNotEmpty)
         .toList();
 
     return history.length <= 12
