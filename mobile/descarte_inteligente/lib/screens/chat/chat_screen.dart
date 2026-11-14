@@ -631,15 +631,18 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             const SizedBox(width: 9),
-            if (!_isSending)
-              SizedBox(
+            Opacity(
+              opacity: _isSending ? 0.42 : 1,
+              child: SizedBox(
                 width: 43,
                 height: 43,
                 child: FilledButton(
-                  onPressed: () => _sendMessage(),
+                  onPressed: _isSending ? null : () => _sendMessage(),
                   style: FilledButton.styleFrom(
                     backgroundColor: _green,
                     foregroundColor: _background,
+                    disabledBackgroundColor: _green,
+                    disabledForegroundColor: _background,
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(17),
@@ -648,6 +651,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: const Icon(Icons.arrow_upward_rounded, size: 25),
                 ),
               ),
+            ),
           ],
         ),
       ),
@@ -799,14 +803,20 @@ class _MessageBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              message.text,
-              style: const TextStyle(
-                color: _ChatScreenState._text,
-                fontSize: 14,
-                height: 1.42,
-              ),
-            ),
+            ...message.text
+                .split(RegExp(r'\\n\\s*\\n'))
+                .where((paragraph) => paragraph.trim().isNotEmpty)
+                .map((paragraph) => Padding(
+                      padding: const EdgeInsets.only(bottom: 7),
+                      child: Text(
+                        paragraph.trim(),
+                        style: const TextStyle(
+                          color: _ChatScreenState._text,
+                          fontSize: 14,
+                          height: 1.48,
+                        ),
+                      ),
+                    )),
             if (!message.isUser &&
                 message.needsLocationSelection &&
                 onChooseLocation != null) ...[
