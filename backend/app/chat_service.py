@@ -66,12 +66,21 @@ def _is_contextual_follow_up(message: str) -> bool:
     if not words or len(words) > 8:
         return False
 
+    if normalized.startswith("e "):
+        return True
+
     follow_up_terms = {
-        "e", "ele", "ela", "esse", "essa", "isso", "deste", "dessa",
-        "dele", "dela", "tambem", "onde", "perto", "proximo", "proxima",
-        "mais", "outro", "outra", "melhor", "fica", "ficaria",
+        "ele", "ela", "esse", "essa", "isso", "deste", "dessa",
+        "dele", "dela", "tambem", "perto", "proximo", "proxima",
+        "mais", "outro", "outra", "melhor",
     }
-    return bool(set(words).intersection(follow_up_terms))
+    if set(words).intersection(follow_up_terms):
+        return True
+
+    return normalized in {
+        "onde fica", "onde fica o ponto", "onde fica esse ponto",
+        "onde fica o local", "como preparo", "como descarto",
+    } or "perto de mim" in normalized or "mais proximo" in normalized or "mais proxima" in normalized
 
 
 def _match_waste(candidate: str, ordered_wastes: list[dict]) -> dict | None:
