@@ -69,8 +69,7 @@ def _is_contextual_follow_up(message: str) -> bool:
     follow_up_terms = {
         "e", "ele", "ela", "esse", "essa", "isso", "deste", "dessa",
         "dele", "dela", "tambem", "onde", "perto", "proximo", "proxima",
-        "mais", "outro", "outra", "melhor", "qual", "quanto", "preparo",
-        "preparar", "levar", "descartar", "fica", "ficaria",
+        "mais", "outro", "outra", "melhor", "fica", "ficaria",
     }
     return bool(set(words).intersection(follow_up_terms))
 
@@ -101,7 +100,7 @@ def _match_waste(candidate: str, ordered_wastes: list[dict]) -> dict | None:
         "pilha": {"bateria"},
         "bateria": {"pilha"},
         "papelao": {"papel"},
-        "oleo": {"oleo de cozinha"},
+        "oleo": {"cozinha"},
     }
     generic_tokens = {"garrafa", "residuo", "material", "descarte", "descartar"}
     expanded_tokens = set(candidate_normalized.split())
