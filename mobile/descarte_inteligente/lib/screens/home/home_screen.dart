@@ -121,12 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF245B43), Color(0xFF174735)],
+                        colors: [Color(0xFFE0EDE2), Color(0xFFD8E9DC)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(23),
-                      border: Border.all(color: Color(0xFF397458)),
+                      border: Border.all(color: Color(0xFFCCDECF)),
                     ),
                     child: Column(
                       children: [
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.location_on_outlined,
                 value: stats?.collectionPoints.toString() ?? '—',
                 label: 'pontos cadastrados',
-                dark: false,
+                dark: true,
               ),
             ),
             Container(width: 1, height: 42, color: _homeBorder),
@@ -839,19 +839,19 @@ class _HomeScreenState extends State<HomeScreen> {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF245B43), Color(0xFF174735)],
+          colors: [Color(0xFFE0EDE2), Color(0xFFD8E9DC)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Color(0xFF397458)),
+        border: Border.all(color: Color(0xFFCCDECF)),
       ),
       child: Stack(
         children: [
           Positioned(
             right: -20,
             top: -24,
-            child: Icon(Icons.eco_rounded, size: 142, color: Colors.white.withValues(alpha: 0.045)),
+            child: Icon(Icons.eco_rounded, size: 142, color: _homeGreen.withValues(alpha: 0.06)),
           ),
           Padding(
             padding: const EdgeInsets.all(18),
@@ -863,7 +863,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: _homeGreen.withValues(alpha: 0.16),
+                        color: _homeGreen.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: const Row(
@@ -876,20 +876,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const Spacer(),
-                    Icon(_dailyFact.icon, color: _homeGreen.withValues(alpha: 0.9), size: 23),
+                    Icon(_dailyFact.icon, color: _homeGreen, size: 23),
                   ],
                 ),
                 const SizedBox(height: 17),
                 Text(
                   _dailyFact.title,
-                  style: const TextStyle(color: Color(0xFFF2F8F3), fontSize: 19, height: 1.15, fontWeight: FontWeight.w900, letterSpacing: -0.35),
+                  style: const TextStyle(color: _homeText, fontSize: 19, height: 1.15, fontWeight: FontWeight.w900, letterSpacing: -0.35),
                 ),
                 const SizedBox(height: 8),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 290),
                   child: Text(
                     _dailyFact.text,
-                    style: const TextStyle(color: Color(0xFFD0E2D8), fontSize: 12.5, height: 1.5),
+                    style: const TextStyle(color: Color(0xFF52685B), fontSize: 12.5, height: 1.5),
                   ),
                 ),
                 const SizedBox(height: 15),
