@@ -30,6 +30,7 @@ class ChatTurn(BaseModel):
 
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=2500)
+    collection_point_ids: list[int] = Field(default_factory=list, max_length=10)
 
 
 class ChatRequest(BaseModel):
@@ -164,7 +165,7 @@ def _requested_point_limit(message: str) -> int:
         or "mais um ponto" in normalized
     ):
         return 1
-    return 3
+    return 2
 
 
 def _get_disposal_context(message: str, history: list[ChatTurn], latitude: float | None, longitude: float | None) -> tuple[dict, dict | None, list[dict]]:
@@ -335,8 +336,38 @@ def chat_with_disposal_assistant(request: ChatRequest):
             "needs_location_selection": True,
         }
 
-    point_limit = _requested_point_limit(message)
-    selected_points = relevant_points[:point_limit]
+    point_limit = min(_requested_point_limit(message), 2)
+    asks_another_point = (
+        "outro ponto" in normalized_message
+        or "tem outro" in normalized_message
+        or "mais um ponto" in normalized_message
+        or "mais algum ponto" in normalized_message
+    )
+    previously_shown_ids = {
+        point_id
+        for turn in request.history
+        if turn.role == "assistant"
+        for point_id in turn.collection_point_ids
+    }
+
+    point_intro = ""
+    if asks_another_point:
+        available_points = [
+            point for point in relevant_points
+            if point["id"] not in previously_shown_ids
+        ]
+        if not previously_shown_ids and len(relevant_points) > 1:
+            available_points = relevant_points[1:]
+        if available_points:
+            selected_points = available_points[:1]
+            point_intro = "Encontrei outro ponto disponível para esse resíduo. "
+        else:
+            selected_points = relevant_points[:1]
+            point_intro = "Esse é o ponto mais próximo disponível para esse resíduo. "
+    else:
+        selected_points = relevant_points[:point_limit]
+        if selected_points:
+            point_intro = "Abaixo estão alguns pontos disponíveis para esse resíduo. "
     assistant_context = {
         "residuo_cadastrado": matched_waste,
         "pontos_compativeis": selected_points,
@@ -416,6 +447,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
         )
 
     suggest_location = request.latitude is None and matched_waste is not None
+    answer = point_intro + answer
 
     return {
         "answer": answer,
