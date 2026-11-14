@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/widgets/app_notification.dart';
 import '../../models/collection_point.dart';
 import '../../services/api_service.dart';
 import '../../services/favorite_service.dart';
@@ -131,18 +132,18 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       );
 
       if (!opened && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Não foi possível abrir o Google Maps.'),
-          ),
+        AppNotification.show(
+          context,
+          'Não foi possível abrir o Google Maps.',
+          type: AppNotificationType.error,
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao abrir o mapa: $e'),
-          ),
+        AppNotification.show(
+          context,
+          'Não foi possível abrir o mapa. Tente novamente.',
+          type: AppNotificationType.error,
         );
       }
     }
@@ -885,20 +886,20 @@ class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
         _isSaved = !_isSaved;
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isSaved
-                ? 'Ponto salvo nos favoritos.'
-                : 'Ponto removido dos favoritos.',
-          ),
-        ),
+      AppNotification.show(
+        context,
+        _isSaved
+            ? 'Ponto salvo nos favoritos.'
+            : 'Ponto removido dos favoritos.',
+        type: AppNotificationType.success,
       );
     } catch (_) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível atualizar os favoritos.')),
+      AppNotification.show(
+        context,
+        'Não foi possível atualizar os favoritos.',
+        type: AppNotificationType.error,
       );
     }
   }
