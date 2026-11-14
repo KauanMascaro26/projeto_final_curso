@@ -241,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      Color(0xFFE0EDE2).withValues(alpha: 0.18),
+                      color: Color(0xFFE0EDE2).withValues(alpha: 0.18),
                       blurRadius: 12,
                       spreadRadius: 1,
                     ),
