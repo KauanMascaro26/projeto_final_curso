@@ -102,8 +102,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFCDEFD5),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF164B40), Color(0xFF102B32)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(23),
+                      border: Border.all(color: _green.withValues(alpha: 0.30)),
                     ),
                     child: Column(
                       children: [
@@ -210,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   shape: BoxShape.circle,
                   border: Border.all(color: const Color(0xFF7BBE91), width: 1.2),
                 ),
-                child: const Icon(Icons.person_rounded, color: Color(0xFF24543B), size: 25),
+                child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF164B40), size: 25),
               ),
               const SizedBox(width: 11),
               Expanded(
@@ -232,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF477A5A), size: 20),
+              const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF477A5A), size: 16),
             ],
           ),
         ),
