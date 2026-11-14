@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: _homeSurface,
+            color: const Color(0xFFE0EDE2),
             borderRadius: BorderRadius.circular(17),
             border: Border.all(color: _homeBorder),
           ),
@@ -791,7 +791,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return SizedBox(
             width: 112,
             child: Material(
-              color: _homeSurface,
+              color: const Color(0xFFE0EDE2),
               borderRadius: BorderRadius.circular(17),
               child: InkWell(
                 onTap: () => _openIdentification(material.query),
@@ -800,7 +800,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(10, 13, 10, 11),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(17),
-                    border: Border.all(color: _homeBorder),
+                    border: Border.all(color: const Color(0xFFCCDECF)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -809,7 +809,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: _homeGreen.withValues(alpha: 0.09),
+                          color: _homeGreen.withValues(alpha: 0.14),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Icon(material.icon, color: _homeGreen, size: 29),
