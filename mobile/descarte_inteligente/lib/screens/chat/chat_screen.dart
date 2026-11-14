@@ -308,6 +308,63 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
   }
 
+  Future<void> _useCurrentLocationForSearch() async {
+    if (_isSending) return;
+
+    final lastUserIndex = _messages.lastIndexWhere((item) => item.isUser);
+    if (lastUserIndex < 0) return;
+
+    try {
+      final position = await LocationService.getCurrentLocation();
+      if (!mounted) return;
+
+      final originalMessage = _messages[lastUserIndex].text;
+      final history = _buildHistory(_messages.take(lastUserIndex));
+
+      setState(() => _isSending = true);
+      _scrollToBottom();
+
+      final response = await ApiService.sendChatMessage(
+        originalMessage,
+        history: history,
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+      if (!mounted) return;
+
+      final points = (response['collection_points'] as List<dynamic>? ?? [])
+          .whereType<Map<String, dynamic>>()
+          .toList();
+
+      setState(() {
+        _messages.add(_ChatMessage(
+          text: response['answer']?.toString() ??
+              'Não recebi uma resposta válida do assistente.',
+          isUser: false,
+          collectionPoints: points,
+          needsLocationSelection: response['needs_location_selection'] == true,
+        ));
+        _isSending = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Não consegui acessar sua localização. Ative o GPS ou escolha um ponto no mapa.',
+          ),
+          action: SnackBarAction(
+            label: 'Configurações',
+            onPressed: () => LocationService.openLocationSettings(),
+          ),
+          backgroundColor: _surfaceRaised,
+        ),
+      );
+    }
+
+    _scrollToBottom();
+  }
+
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
