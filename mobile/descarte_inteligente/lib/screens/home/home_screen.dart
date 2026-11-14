@@ -121,12 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFFE0EDE2), Color(0xFFD8E9DC)],
+                        colors: [Color(0xFFC9DCCB), Color(0xFFBED4C1)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(23),
-                      border: Border.all(color: Color(0xFFCCDECF)),
+                      border: Border.all(color: Color(0xFFB5CDB9)),
                     ),
                     child: Column(
                       children: [
@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: const Color(0xFFE0EDE2),
+            color: Color(0xFFC9DCCB),
             borderRadius: BorderRadius.circular(17),
             border: Border.all(color: _homeBorder),
           ),
@@ -237,11 +237,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE5F2E9),
+                  color: Color(0xFFE0EDE2),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFE5F2E9).withValues(alpha: 0.18),
+                      Color(0xFFE0EDE2).withValues(alpha: 0.18),
                       blurRadius: 12,
                       spreadRadius: 1,
                     ),
@@ -791,7 +791,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return SizedBox(
             width: 112,
             child: Material(
-              color: const Color(0xFFE0EDE2),
+              color: Color(0xFFC9DCCB),
               borderRadius: BorderRadius.circular(17),
               child: InkWell(
                 onTap: () => _openIdentification(material.query),
@@ -800,7 +800,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(10, 13, 10, 11),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(17),
-                    border: Border.all(color: const Color(0xFFCCDECF)),
+                    border: Border.all(color: Color(0xFFB5CDB9)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -809,7 +809,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: _homeGreen.withValues(alpha: 0.14),
+                          color: Color(0xFFE0EDE2),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Icon(material.icon, color: _homeGreen, size: 29),
@@ -839,12 +839,12 @@ class _HomeScreenState extends State<HomeScreen> {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFE0EDE2), Color(0xFFD8E9DC)],
+          colors: [Color(0xFFC9DCCB), Color(0xFFBED4C1)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Color(0xFFCCDECF)),
+        border: Border.all(color: Color(0xFFB5CDB9)),
       ),
       child: Stack(
         children: [
@@ -863,7 +863,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: _homeGreen.withValues(alpha: 0.12),
+                        color: Color(0xFFE0EDE2),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: const Row(
