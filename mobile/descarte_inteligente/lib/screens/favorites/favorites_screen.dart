@@ -37,7 +37,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       AppNotification.show(
         context,
         'Removido dos favoritos.',
-        type: AppNotificationType.success,
+        type: AppNotificationType.removed,
       );
     } catch (_) {
       if (!mounted) return;
