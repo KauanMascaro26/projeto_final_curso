@@ -77,16 +77,32 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  List<Map<String, String>> _buildHistory(
+    Iterable<_ChatMessage> messages,
+  ) {
+    final history = messages
+        .map((item) {
+          final content = item.text.trim();
+          return <String, String>{
+            'role': item.isUser ? 'user' : 'assistant',
+            'content': content.length > 2500
+                ? content.substring(0, 2500)
+                : content,
+          };
+        })
+        .where((turn) => turn['content']!.isNotEmpty)
+        .toList();
+
+    return history.length <= 12
+        ? history
+        : history.sublist(history.length - 12);
+  }
+
   Future<void> _sendMessage([String? suggestedMessage]) async {
     final message = (suggestedMessage ?? _messageController.text).trim();
     if (message.isEmpty || _isSending) return;
 
-    final history = _messages
-        .map((item) => <String, String>{
-              'role': item.isUser ? 'user' : 'assistant',
-              'content': item.text,
-            })
-        .toList();
+    final history = _buildHistory(_messages);
 
     _messageController.clear();
     setState(() {
@@ -240,13 +256,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final lastUserIndex = _messages.lastIndexWhere((item) => item.isUser);
     if (lastUserIndex < 0) return;
     final originalMessage = _messages[lastUserIndex].text;
-    final history = _messages
-        .take(lastUserIndex)
-        .map((item) => <String, String>{
-              'role': item.isUser ? 'user' : 'assistant',
-              'content': item.text,
-            })
-        .toList();
+    final history = _buildHistory(_messages.take(lastUserIndex));
 
     setState(() => _isSending = true);
     _scrollToBottom();
