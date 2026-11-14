@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/api_service.dart';
+import '../../services/location_service.dart';
 
 class IdentificationScreen extends StatefulWidget {
   const IdentificationScreen({super.key});
@@ -174,8 +175,30 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
   }
 
 
+  Future<List<Map<String, dynamic>>> _loadCompatiblePoints(int wasteId) async {
+    double? latitude;
+    double? longitude;
+
+    // A localização é opcional. Se não estiver disponível ou for negada,
+    // a API retorna os pontos em ordem alfabética.
+    try {
+      final position = await LocationService.getCurrentLocation();
+      latitude = position.latitude;
+      longitude = position.longitude;
+    } catch (_) {
+      // Mantém a consulta disponível mesmo sem permissão ou sinal de GPS.
+    }
+
+    return ApiService.getCollectionPointsForWaste(
+      wasteId,
+      latitude: latitude,
+      longitude: longitude,
+    );
+  }
+
   Future<void> _showCompatiblePoints(Map<String, dynamic> waste) async {
     final wasteId = (waste['id'] as num).toInt();
+    final pointsFuture = _loadCompatiblePoints(wasteId);
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -200,13 +223,13 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'Locais associados a este resíduo no cadastro do aplicativo.',
+                    'Com sua localização autorizada, os pontos aparecem do mais próximo ao mais distante. Sem ela, são listados em ordem alfabética.',
                     style: TextStyle(color: _muted, height: 1.4),
                   ),
                   const SizedBox(height: 14),
                   Expanded(
                     child: FutureBuilder<List<Map<String, dynamic>>>(
-                      future: ApiService.getCollectionPointsForWaste(wasteId),
+                      future: pointsFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
@@ -239,6 +262,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                             final address = point['endereco']?.toString() ?? 'Endereço não informado';
                             final latitude = (point['latitude'] as num?)?.toDouble();
                             final longitude = (point['longitude'] as num?)?.toDouble();
+                            final distance = (point['distancia_km'] as num?)?.toDouble();
                             return Container(
                               padding: const EdgeInsets.all(13),
                               decoration: BoxDecoration(
@@ -257,6 +281,17 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                                         Text(name, style: const TextStyle(color: _darkGreen, fontWeight: FontWeight.bold)),
                                         const SizedBox(height: 4),
                                         Text(address, style: const TextStyle(color: _muted, fontSize: 12)),
+                                        if (distance != null) ...[
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            '${distance.toStringAsFixed(2)} km em linha reta',
+                                            style: const TextStyle(
+                                              color: _green,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   ),
