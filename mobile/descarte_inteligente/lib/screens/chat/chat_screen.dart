@@ -804,7 +804,7 @@ class _MessageBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ...message.text
-                .split(RegExp(r'\\n\\s*\\n'))
+                .split(RegExp(r'\n\s*\n'))
                 .where((paragraph) => paragraph.trim().isNotEmpty)
                 .map((paragraph) => Padding(
                       padding: const EdgeInsets.only(bottom: 7),
