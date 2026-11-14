@@ -449,7 +449,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
         )
 
     suggest_location = request.latitude is None and matched_waste is not None
-    answer = f"{point_intro.strip()}\\n\\n{answer}" if point_intro else answer
+    answer = f"{point_intro.strip()}\n\n{answer}" if point_intro else answer
 
     return {
         "answer": answer,
