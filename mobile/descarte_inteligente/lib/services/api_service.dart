@@ -165,7 +165,7 @@ class ApiService {
 
   static Future<Map<String, dynamic>> sendChatMessage(
     String message, {
-    List<Map<String, String>> history = const [],
+    List<Map<String, dynamic>> history = const [],
     double? latitude,
     double? longitude,
   }) async {
