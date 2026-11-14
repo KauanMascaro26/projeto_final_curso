@@ -1,6 +1,10 @@
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
+  static Future<bool> openLocationSettings() {
+    return Geolocator.openLocationSettings();
+  }
+
   static Future<Position> getCurrentLocation() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
