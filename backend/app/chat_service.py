@@ -67,7 +67,12 @@ def _is_contextual_follow_up(message: str) -> bool:
         return False
 
     if normalized.startswith("e "):
-        return True
+        continuation_words = {
+            "ele", "ela", "esse", "essa", "isso", "onde", "perto",
+            "proximo", "proxima", "mais", "outro", "outra", "tambem", "se",
+        }
+        if set(words[1:]).intersection(continuation_words):
+            return True
 
     follow_up_terms = {
         "ele", "ela", "esse", "essa", "isso", "deste", "dessa",
