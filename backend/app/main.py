@@ -1,10 +1,13 @@
 import logging
+import os
 import time
 from collections import defaultdict, deque
 from math import atan2, cos, radians, sin, sqrt
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from app.chat_service import router as chat_router
 from app.database import get_connection
 
@@ -28,20 +31,61 @@ def _distance_km(latitude: float, longitude: float, point_latitude: float, point
     a = max(0.0, min(1.0, a))
     return 6371 * 2 * atan2(sqrt(a), sqrt(1 - a))
 
-# Limites por IP e por processo. Em produção com múltiplas instâncias,
-# substituir/centralizar o controle em Redis ou no gateway da infraestrutura.
-RATE_LIMIT_WINDOW_SECONDS = 60
-API_RATE_LIMIT = 120
-CHAT_RATE_LIMIT = 10
+def _env_list(name: str, default: str = "") -> list[str]:
+    return [
+        item.strip()
+        for item in os.getenv(name, default).split(",")
+        if item.strip()
+    ]
+
+
+APP_ENV = os.getenv("APP_ENV", "development").strip().lower()
+IS_PRODUCTION = APP_ENV == "production"
+
+# Em produção, configure somente os hosts reais da API, sem protocolo ou caminho.
+ALLOWED_HOSTS = _env_list("ALLOWED_HOSTS", "" if IS_PRODUCTION else "*")
+if IS_PRODUCTION and (not ALLOWED_HOSTS or "*" in ALLOWED_HOSTS):
+    raise RuntimeError(
+        "Configure ALLOWED_HOSTS com os domínios autorizados antes de iniciar em produção."
+    )
+
+CORS_ALLOWED_ORIGINS = _env_list("CORS_ALLOWED_ORIGINS")
+if IS_PRODUCTION and "*" in CORS_ALLOWED_ORIGINS:
+    raise RuntimeError("CORS_ALLOWED_ORIGINS não pode conter '*' em produção.")
+
+# O rate limit local é uma proteção básica; produção com várias instâncias
+# deve centralizar os limites em um gateway ou armazenamento compartilhado.
+RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60"))
+API_RATE_LIMIT = int(os.getenv("API_RATE_LIMIT", "120"))
+CHAT_RATE_LIMIT = int(os.getenv("CHAT_RATE_LIMIT", "10"))
+if min(RATE_LIMIT_WINDOW_SECONDS, API_RATE_LIMIT, CHAT_RATE_LIMIT) < 1:
+    raise RuntimeError("As configurações de rate limiting devem ser maiores que zero.")
+
 _rate_limit_buckets = defaultdict(deque)
 _last_bucket_cleanup = 0.0
-
 
 app = FastAPI(
     title="Descarte Inteligente API",
     description="API para identificação e orientação de descarte de resíduos.",
     version="1.0.0",
+    docs_url=None if IS_PRODUCTION else "/docs",
+    redoc_url=None if IS_PRODUCTION else "/redoc",
+    openapi_url=None if IS_PRODUCTION else "/openapi.json",
 )
+
+if ALLOWED_HOSTS != ["*"]:
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=ALLOWED_HOSTS)
+
+# CORS só é necessário para clientes web; o aplicativo Flutter nativo não depende dele.
+if CORS_ALLOWED_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=CORS_ALLOWED_ORIGINS,
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["Content-Type", "Accept"],
+        max_age=600,
+    )
 
 app.include_router(chat_router)
 
@@ -89,6 +133,11 @@ async def apply_security_headers_and_rate_limits(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    if request.url.scheme == "https":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    if path == "/api/chat":
+        response.headers["Cache-Control"] = "no-store"
     return response
 
 
