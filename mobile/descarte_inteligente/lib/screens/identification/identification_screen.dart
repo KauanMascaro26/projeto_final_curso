@@ -5,7 +5,9 @@ import '../../services/api_service.dart';
 import '../../services/location_service.dart';
 
 class IdentificationScreen extends StatefulWidget {
-  const IdentificationScreen({super.key});
+  final String? initialQuery;
+
+  const IdentificationScreen({super.key, this.initialQuery});
 
   @override
   State<IdentificationScreen> createState() => _IdentificationScreenState();
@@ -31,7 +33,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
   @override
   void initState() {
     super.initState();
-    _loadWasteTypes();
+    final initialQuery = widget.initialQuery?.trim() ?? '';
+    if (initialQuery.isNotEmpty) {
+      _searchController.text = initialQuery;
+    }
+    _loadWasteTypes(query: initialQuery);
   }
 
   @override
