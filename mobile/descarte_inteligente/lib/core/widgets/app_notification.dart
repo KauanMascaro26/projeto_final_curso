@@ -13,7 +13,6 @@ class AppNotification {
 
   static const _surface = Color(0xFF0D202B);
   static const _text = Color(0xFFF2F8FA);
-  static const _muted = Color(0xFFADC1CC);
   static const _green = Color(0xFF55D6A2);
   static const _cyan = Color(0xFF53D9F5);
   static const _orange = Color(0xFFFFB45C);
