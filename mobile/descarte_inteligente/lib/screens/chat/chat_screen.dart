@@ -624,13 +624,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             const SizedBox(width: 9),
-            if (_isSending)
-              const SizedBox(
-                width: 43,
-                height: 43,
-                child: Center(child: _BrandLoader(size: 34)),
-              )
-            else
+            if (!_isSending)
               SizedBox(
                 width: 43,
                 height: 43,
