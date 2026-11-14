@@ -194,22 +194,7 @@ def _get_disposal_context(message: str, history: list[ChatTurn], latitude: float
                     if not _is_contextual_follow_up(turn.content):
                         break
 
-                expanded_tokens = set(candidate_tokens)
-                for token in candidate_tokens:
-                    expanded_tokens.update(aliases.get(token, set()))
-                distinctive_tokens = expanded_tokens - generic_tokens
 
-                scored_wastes = []
-                for waste in ordered_wastes:
-                    waste_tokens = set(_normalize_waste_name(waste["nome"]).split())
-                    overlap = distinctive_tokens.intersection(waste_tokens)
-                    if overlap:
-                        scored_wastes.append((len(overlap), waste))
-
-                if scored_wastes:
-                    scored_wastes.sort(key=lambda item: item[0], reverse=True)
-                    matched = scored_wastes[0][1]
-                    break
 
             points = []
             if matched:
