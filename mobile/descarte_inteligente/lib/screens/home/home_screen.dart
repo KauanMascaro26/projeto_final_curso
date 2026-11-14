@@ -57,11 +57,13 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
     final points = results[0] as List;
     final materials = results[1] as List;
-    final favorites = results[2] as List;
+    final favorites = (results[2] as List)
+        .where((item) => item is Map && item['type'] == 'point')
+        .length;
     return _HomeStats(
       collectionPoints: points.length,
       materials: materials.length,
-      favorites: favorites.length,
+      favorites: favorites,
     );
   }
 
@@ -81,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _currentIndex = index;
       if (index == 4) _favoritesKey = UniqueKey();
+      if (index == 0) _homeStats = _loadHomeStats();
     });
   }
 
@@ -210,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(Icons.person_rounded, color: Color(0xFF24543B), size: 25),
               ),
               const SizedBox(width: 11),
-              const Expanded(
+              Expanded(
                 child: RichText(
                   text: TextSpan(
                     style: TextStyle(
