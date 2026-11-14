@@ -98,6 +98,18 @@ class _ChatScreenState extends State<ChatScreen> {
         : history.sublist(history.length - 12);
   }
 
+  bool _asksForNearbyPoints(String message) {
+    final normalized = message.toLowerCase();
+    return normalized.contains('perto') ||
+        normalized.contains('próximo') ||
+        normalized.contains('proximo') ||
+        normalized.contains('onde fica') ||
+        normalized.contains('onde posso levar') ||
+        normalized.contains('outro ponto') ||
+        normalized.contains('outros pontos') ||
+        normalized.contains('ponto de coleta');
+  }
+
   Future<void> _sendMessage([String? suggestedMessage]) async {
     final message = (suggestedMessage ?? _messageController.text).trim();
     if (message.isEmpty || _isSending) return;
@@ -114,12 +126,14 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       double? latitude;
       double? longitude;
-      try {
-        final position = await LocationService.getCurrentLocation();
-        latitude = position.latitude;
-        longitude = position.longitude;
-      } catch (_) {
-        // O chat continua funcionando mesmo sem permissão de localização.
+      if (_asksForNearbyPoints(message)) {
+        try {
+          final position = await LocationService.getCurrentLocation();
+          latitude = position.latitude;
+          longitude = position.longitude;
+        } catch (_) {
+          // Sem localização, a API oferece a seleção manual no mapa.
+        }
       }
 
       final response = await ApiService.sendChatMessage(
@@ -379,6 +393,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         onChooseLocation: _messages[index].needsLocationSelection
                             ? _selectLocationForSearch
                             : null,
+                        onUseCurrentLocation: _messages[index].needsLocationSelection
+                            ? _useCurrentLocationForSearch
+                            : null,
                       );
                     },
                   ),
@@ -555,26 +572,29 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             const SizedBox(width: 9),
-            SizedBox(
-              width: 43,
-              height: 43,
-              child: FilledButton(
-                onPressed: _isSending ? null : () => _sendMessage(),
-                style: FilledButton.styleFrom(
-                  backgroundColor: _green,
-                  foregroundColor: _background,
-                  disabledBackgroundColor: _surfaceRaised,
-                  padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17),
+            if (_isSending)
+              const SizedBox(
+                width: 43,
+                height: 43,
+                child: Center(child: _BrandLoader(size: 34)),
+              )
+            else
+              SizedBox(
+                width: 43,
+                height: 43,
+                child: FilledButton(
+                  onPressed: () => _sendMessage(),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _green,
+                    foregroundColor: _background,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(17),
+                    ),
                   ),
-                ),
-                child: Icon(
-                  _isSending ? Icons.more_horiz_rounded : Icons.arrow_upward_rounded,
-                  size: 25,
+                  child: const Icon(Icons.arrow_upward_rounded, size: 25),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -687,10 +707,12 @@ class _ChatMessage {
 class _MessageBubble extends StatelessWidget {
   final _ChatMessage message;
   final VoidCallback? onChooseLocation;
+  final VoidCallback? onUseCurrentLocation;
 
   const _MessageBubble({
     required this.message,
     this.onChooseLocation,
+    this.onUseCurrentLocation,
   });
 
   @override
@@ -698,72 +720,201 @@ class _MessageBubble extends StatelessWidget {
     final background = message.isUser
         ? const Color(0xFF126D59)
         : _ChatScreenState._surface;
-    final foreground = _ChatScreenState._text;
 
     return Align(
       alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.sizeOf(context).width * 0.86,
+          maxWidth: MediaQuery.sizeOf(context).width * 0.88,
         ),
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(19),
-            topRight: const Radius.circular(19),
-            bottomLeft: Radius.circular(message.isUser ? 19 : 5),
-            bottomRight: Radius.circular(message.isUser ? 5 : 19),
+            topLeft: const Radius.circular(18),
+            topRight: const Radius.circular(18),
+            bottomLeft: Radius.circular(message.isUser ? 18 : 5),
+            bottomRight: Radius.circular(message.isUser ? 5 : 18),
           ),
           border: Border.all(
-            color: message.isUser ? _ChatScreenState._greenDark : _ChatScreenState._border,
+            color: message.isUser
+                ? _ChatScreenState._greenDark
+                : _ChatScreenState._border,
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(message.text, style: TextStyle(color: foreground, fontSize: 14.5, height: 1.5)),
-            if (!message.isUser && message.needsLocationSelection && onChooseLocation != null) ...[
+            Text(
+              message.text,
+              style: const TextStyle(
+                color: _ChatScreenState._text,
+                fontSize: 14,
+                height: 1.42,
+              ),
+            ),
+            if (!message.isUser &&
+                message.needsLocationSelection &&
+                onChooseLocation != null) ...[
               const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: onChooseLocation,
-                icon: const Icon(Icons.map_outlined, size: 18),
-                label: const Text('Escolher localização no mapa'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: _ChatScreenState._green,
-                  side: const BorderSide(color: _ChatScreenState._green),
-                ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: onUseCurrentLocation,
+                    icon: const Icon(Icons.my_location_rounded, size: 17),
+                    label: const Text('Usar minha localização'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: _ChatScreenState._green,
+                      side: const BorderSide(color: _ChatScreenState._green),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: onChooseLocation,
+                    icon: const Icon(Icons.map_outlined, size: 17),
+                    label: const Text('Escolher no mapa'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: _ChatScreenState._cyan,
+                      side: const BorderSide(color: _ChatScreenState._cyan),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ],
               ),
             ],
             if (!message.isUser && message.collectionPoints.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              const Text('PONTOS COMPATÍVEIS', style: TextStyle(color: _ChatScreenState._green, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1)),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
+              Text(
+                message.collectionPoints.length == 1
+                    ? 'Ponto de coleta'
+                    : 'Pontos de coleta',
+                style: const TextStyle(
+                  color: _ChatScreenState._green,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 7),
               ...message.collectionPoints.map((point) {
                 final name = point['nome']?.toString() ?? 'Ponto de coleta';
                 final address = point['endereco']?.toString() ?? '';
                 final distance = point['distancia_km'];
                 final lat = (point['latitude'] as num?)?.toDouble();
                 final lon = (point['longitude'] as num?)?.toDouble();
+
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(11),
-                  decoration: BoxDecoration(color: _ChatScreenState._surfaceRaised, borderRadius: BorderRadius.circular(14), border: Border.all(color: _ChatScreenState._border)),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(name, style: const TextStyle(color: _ChatScreenState._text, fontWeight: FontWeight.w800, fontSize: 13)),
-                    if (address.isNotEmpty) ...[const SizedBox(height: 4), Text(address, style: const TextStyle(color: _ChatScreenState._muted, fontSize: 11.5))],
-                    if (distance != null) ...[const SizedBox(height: 5), Text('${(distance as num).toStringAsFixed(2)} km em linha reta', style: const TextStyle(color: _ChatScreenState._green, fontSize: 11, fontWeight: FontWeight.w700))],
-                    if (lat != null && lon != null) ...[const SizedBox(height: 8), Align(alignment: Alignment.centerLeft, child: TextButton.icon(
-                      onPressed: () async { final uri = Uri.https('www.google.com', '/maps/dir/', {'api': '1', 'destination': '$lat,$lon'}); await launchUrl(uri, mode: LaunchMode.externalApplication); },
-                      icon: const Icon(Icons.directions, size: 17), label: const Text('Abrir rota'),
-                      style: TextButton.styleFrom(foregroundColor: _ChatScreenState._cyan, padding: EdgeInsets.zero),
-                    ))],
-                  ]),
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 7),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: _ChatScreenState._surfaceRaised,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _ChatScreenState._border),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          color: _ChatScreenState._text,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                      ),
+                      if (address.isNotEmpty) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          address,
+                          style: const TextStyle(
+                            color: _ChatScreenState._muted,
+                            fontSize: 11.5,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                      if (distance != null) ...[
+                        const SizedBox(height: 5),
+                        Text(
+                          '${(distance as num).toStringAsFixed(1)} km',
+                          style: const TextStyle(
+                            color: _ChatScreenState._green,
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                      if (lat != null && lon != null) ...[
+                        const SizedBox(height: 4),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () async {
+                              final uri = Uri.https(
+                                'www.google.com',
+                                '/maps/dir/',
+                                {
+                                  'api': '1',
+                                  'destination': '$lat,$lon',
+                                },
+                              );
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            },
+                            icon: const Icon(Icons.directions, size: 16),
+                            label: const Text('Abrir rota'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: _ChatScreenState._cyan,
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 );
               }),
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _BrandLoader extends StatelessWidget {
+  final double size;
+
+  const _BrandLoader({this.size = 34});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            width: size,
+            height: size,
+            child: const CircularProgressIndicator(
+              strokeWidth: 2.2,
+              color: _ChatScreenState._green,
+            ),
+          ),
+          Icon(
+            Icons.park_rounded,
+            color: _ChatScreenState._green,
+            size: size * 0.48,
+          ),
+        ],
       ),
     );
   }
@@ -781,15 +932,8 @@ class _ThinkingBubble extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 17,
-              height: 17,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: _ChatScreenState._green,
-              ),
-            ),
-            SizedBox(width: 10),
+            _BrandLoader(size: 30),
+            SizedBox(width: 9),
             Text(
               'Preparando sua resposta...',
               style: TextStyle(color: _ChatScreenState._muted, fontSize: 12),
