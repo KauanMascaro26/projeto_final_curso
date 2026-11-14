@@ -98,18 +98,6 @@ class _ChatScreenState extends State<ChatScreen> {
         : history.sublist(history.length - 12);
   }
 
-  bool _asksForNearbyPoints(String message) {
-    final normalized = message.toLowerCase();
-    return normalized.contains('perto') ||
-        normalized.contains('próximo') ||
-        normalized.contains('proximo') ||
-        normalized.contains('onde fica') ||
-        normalized.contains('onde posso levar') ||
-        normalized.contains('outro ponto') ||
-        normalized.contains('outros pontos') ||
-        normalized.contains('ponto de coleta');
-  }
-
   Future<void> _sendMessage([String? suggestedMessage]) async {
     final message = (suggestedMessage ?? _messageController.text).trim();
     if (message.isEmpty || _isSending) return;
@@ -126,15 +114,9 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       double? latitude;
       double? longitude;
-      if (_asksForNearbyPoints(message)) {
-        try {
-          final position = await LocationService.getCurrentLocation();
-          latitude = position.latitude;
-          longitude = position.longitude;
-        } catch (_) {
-          // Sem localização, a API oferece a seleção manual no mapa.
-        }
-      }
+      final position = await LocationService.getCurrentLocationIfPermitted();
+      latitude = position?.latitude;
+      longitude = position?.longitude;
 
       final response = await ApiService.sendChatMessage(
         message,
