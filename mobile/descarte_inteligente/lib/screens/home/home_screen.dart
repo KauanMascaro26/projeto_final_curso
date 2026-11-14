@@ -95,9 +95,21 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(),
-                  const SizedBox(height: 14),
-                  _buildStatsCard(),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFCDEFD5),
+                      borderRadius: BorderRadius.circular(23),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildHeader(),
+                        const SizedBox(height: 13),
+                        _buildStatsCard(),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,93 +149,87 @@ class _HomeScreenState extends State<HomeScreen> {
       future: _homeStats,
       builder: (context, snapshot) {
         final stats = snapshot.data;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 17),
-          decoration: BoxDecoration(
-            color: const Color(0xFF123D36),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: _green.withValues(alpha: 0.18)),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: _StatItem(
-                  icon: Icons.location_on_outlined,
-                  value: stats?.collectionPoints.toString() ?? '—',
-                  label: 'pontos cadastrados',
-                ),
+        return Row(
+          children: [
+            Expanded(
+              child: _StatItem(
+                icon: Icons.location_on_outlined,
+                value: stats?.collectionPoints.toString() ?? '—',
+                label: 'pontos cadastrados',
+                dark: true,
               ),
-              Container(width: 1, height: 42, color: _green.withValues(alpha: 0.20)),
-              Expanded(
-                child: _StatItem(
-                  icon: Icons.category_outlined,
-                  value: stats?.materials.toString() ?? '—',
-                  label: 'materiais',
-                ),
+            ),
+            Container(width: 1, height: 42, color: const Color(0xFF8DBB9B)),
+            Expanded(
+              child: _StatItem(
+                icon: Icons.category_outlined,
+                value: stats?.materials.toString() ?? '—',
+                label: 'materiais',
+                dark: true,
               ),
-              Container(width: 1, height: 42, color: _green.withValues(alpha: 0.20)),
-              Expanded(
-                child: _StatItem(
-                  icon: Icons.favorite_border_rounded,
-                  value: stats?.favorites.toString() ?? '—',
-                  label: 'favoritos',
-                ),
+            ),
+            Container(width: 1, height: 42, color: const Color(0xFF8DBB9B)),
+            Expanded(
+              child: _StatItem(
+                icon: Icons.favorite_border_rounded,
+                value: stats?.favorites.toString() ?? '—',
+                label: 'favoritos',
+                dark: true,
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
   }
 
+
   Widget _buildHeader() {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(17),
       child: InkWell(
         onTap: _openChat,
-        borderRadius: BorderRadius.circular(18),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 7),
+        borderRadius: BorderRadius.circular(17),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.68),
+            borderRadius: BorderRadius.circular(17),
+          ),
           child: Row(
             children: [
               Container(
-                width: 46,
-                height: 46,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
-                  color: _green.withValues(alpha: 0.14),
+                  color: const Color(0xFFB4E5C2),
                   shape: BoxShape.circle,
-                  border: Border.all(color: _green.withValues(alpha: 0.55), width: 1.5),
+                  border: Border.all(color: const Color(0xFF7BBE91), width: 1.2),
                 ),
-                child: const Icon(Icons.person_rounded, color: _green, size: 26),
+                child: const Icon(Icons.person_rounded, color: Color(0xFF24543B), size: 25),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 11),
               const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Bom dia, Kauan!',
-                      style: TextStyle(color: _text, fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.25),
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: Color(0xFF315743),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.2,
                     ),
-                    SizedBox(height: 3),
-                    Text(
-                      'Descarte Inteligente',
-                      style: TextStyle(color: _muted, fontSize: 11.5),
-                    ),
-                  ],
+                    children: [
+                      TextSpan(text: 'Bom dia, '),
+                      TextSpan(
+                        text: 'Kauan!',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: _surfaceRaised,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: _border),
-                ),
-                child: const Icon(Icons.auto_awesome_rounded, color: _green, size: 20),
-              ),
+              const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF477A5A), size: 20),
             ],
           ),
         ),
@@ -881,22 +887,26 @@ class _StatItem extends StatelessWidget {
   final IconData icon;
   final String value;
   final String label;
+  final bool dark;
 
   const _StatItem({
     required this.icon,
     required this.value,
     required this.label,
+    this.dark = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final foreground = dark ? const Color(0xFF315743) : const Color(0xFFF2F8FA);
+    final secondary = dark ? const Color(0xFF587A63) : const Color(0xFFB7D4C9);
     return Column(
       children: [
-        Icon(icon, color: const Color(0xFF9BE7C7), size: 18),
+        Icon(icon, color: dark ? const Color(0xFF477A5A) : const Color(0xFF9BE7C7), size: 18),
         const SizedBox(height: 7),
         Text(
           value,
-          style: const TextStyle(color: Color(0xFFF2F8FA), fontSize: 19, fontWeight: FontWeight.w900, height: 1),
+          style: TextStyle(color: foreground, fontSize: 19, fontWeight: FontWeight.w900, height: 1),
         ),
         const SizedBox(height: 5),
         Text(
@@ -904,7 +914,7 @@ class _StatItem extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Color(0xFFB7D4C9), fontSize: 9.5, fontWeight: FontWeight.w500),
+          style: TextStyle(color: secondary, fontSize: 9.5, fontWeight: FontWeight.w600),
         ),
       ],
     );
