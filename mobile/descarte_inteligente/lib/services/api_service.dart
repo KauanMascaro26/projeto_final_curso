@@ -200,12 +200,28 @@ class ApiService {
   }
 
   static Future<List<Map<String, dynamic>>> getCollectionPointsForWaste(
-    int wasteId,
-  ) async {
+    int wasteId, {
+    double? latitude,
+    double? longitude,
+  }) async {
+    if ((latitude == null) != (longitude == null)) {
+      throw ArgumentError('Latitude e longitude devem ser informadas juntas.');
+    }
+
+    final baseUri = Uri.parse(
+      '${ApiConstants.baseUrl}/api/waste-types/$wasteId/collection-points',
+    );
+    final uri = latitude == null
+        ? baseUri
+        : baseUri.replace(
+            queryParameters: {
+              'latitude': latitude.toString(),
+              'longitude': longitude.toString(),
+            },
+          );
+
     final data = await _getJson(
-      Uri.parse(
-        '${ApiConstants.baseUrl}/api/waste-types/$wasteId/collection-points',
-      ),
+      uri,
       errorMessage: 'Erro ao buscar pontos compatíveis',
     );
 
