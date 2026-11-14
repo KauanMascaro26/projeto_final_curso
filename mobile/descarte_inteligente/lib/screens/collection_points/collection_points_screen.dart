@@ -24,9 +24,13 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   static const _darkGreen = Color(0xFFF2F8FA);
   static const _muted = Color(0xFFADC1CC);
   static const _border = Color(0xFF204653);
-  static const _purple = _cyan;
-  static const _orange = _cyan;
-  static const _red = _green;
+  static const _purple = Color(0xFFB69CFF);
+  static const _orange = Color(0xFFFFB45C);
+  static const _red = Color(0xFFFF7777);
+  static const _blue = Color(0xFF69B7FF);
+  static const _yellow = Color(0xFFFFD166);
+  static const _teal = Color(0xFF55D6C2);
+  static const _grey = Color(0xFFB0BEC5);
 
   late Future<List<Map<String, dynamic>>> nearbyPoints;
 
@@ -36,7 +40,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   double? userLongitude;
   bool _hasLocationPermission = false;
 
-  String selectedFilter = 'Todos';
+  final Set<String> selectedFilters = {};
   String searchText = '';
 
   @override
@@ -101,7 +105,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       CameraUpdate.newCameraPosition(
         CameraPosition(
           target: LatLng(latitude, longitude),
-          zoom: 16,
+          zoom: 17,
         ),
       ),
     );
@@ -168,7 +172,10 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
               ? '${(point['distancia_km'] as num).toStringAsFixed(2)} km de distância'
               : (point['endereco'] ?? '').toString(),
           ),
-          onTap: () => _showPointDetails(point),
+          onTap: () {
+            focusOnPoint(point);
+            _showPointDetails(point);
+          },
         ),
       );
     }
@@ -184,9 +191,11 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     return points.where((point) {
       final types = List<String>.from(point['tipos_residuos'] ?? const []);
 
-      final matchesFilter = selectedFilter == 'Todos' ||
+      final matchesFilter = selectedFilters.isEmpty ||
           types.any(
-            (type) => _matchesCategory(type, selectedFilter),
+            (type) => selectedFilters.any(
+              (selected) => _normalizeWasteType(type) == _normalizeWasteType(selected),
+            ),
           );
 
       final name = (point['nome'] ?? '').toString().toLowerCase();
@@ -200,59 +209,35 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     }).toList();
   }
 
-  bool _matchesCategory(String type, String category) {
-    final value = type
-        .toLowerCase()
-        .replaceAll('á', 'a')
-        .replaceAll('ã', 'a')
-        .replaceAll('â', 'a')
-        .replaceAll('é', 'e')
-        .replaceAll('ê', 'e')
-        .replaceAll('í', 'i')
-        .replaceAll('ó', 'o')
-        .replaceAll('ô', 'o')
-        .replaceAll('õ', 'o')
-        .replaceAll('ú', 'u');
-
-    switch (category) {
-      case 'Recicláveis':
-        return [
-          'recicl', 'garrafa', 'pet', 'papel', 'papelao',
-          'vidro', 'lata', 'aluminio', 'metal', 'plastico',
-        ].any(value.contains);
-      case 'Eletrônicos':
-        return [
-          'eletron', 'celular', 'computador', 'notebook',
-          'computador', ' tv', 'televisao',
-        ].any(value.contains);
-      case 'Óleo':
-        return value.contains('oleo');
-      case 'Pilhas':
-        return value.contains('pilha') || value.contains('bateria');
-      default:
-        return true;
-    }
+  String _normalizeWasteType(String type) {
+    return type.trim().toLowerCase()
+        .replaceAll('á', 'a').replaceAll('ã', 'a').replaceAll('â', 'a')
+        .replaceAll('à', 'a').replaceAll('é', 'e').replaceAll('ê', 'e')
+        .replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ô', 'o')
+        .replaceAll('õ', 'o').replaceAll('ú', 'u').replaceAll('ç', 'c');
   }
 
   Color _categoryColor(String type) {
-    final value = type.toLowerCase();
-
-    if (value.contains('eletr')) return _purple;
-    if (value.contains('óleo') || value.contains('oleo')) return _orange;
-    if (value.contains('pilha') || value.contains('bateria')) return _red;
+    final value = _normalizeWasteType(type);
+    if (value.contains('pilha') || value.contains('bateria')) return _orange;
+    if (value.contains('eletron') || value.contains('celular') || value.contains('computador')) return _purple;
+    if (value.contains('oleo')) return _yellow;
+    if (value.contains('vidro')) return _teal;
+    if (value.contains('aluminio') || value.contains('metal') || value.contains('lata')) return _grey;
+    if (value.contains('papel') || value.contains('papelao')) return _yellow;
+    if (value.contains('plastico') || value.contains('pet')) return _blue;
     return _green;
   }
 
   IconData _categoryIcon(String type) {
-    final value = type.toLowerCase();
-
-    if (value.contains('eletr')) return Icons.computer_outlined;
-    if (value.contains('óleo') || value.contains('oleo')) {
-      return Icons.water_drop_outlined;
-    }
-    if (value.contains('pilha') || value.contains('bateria')) {
-      return Icons.battery_alert_outlined;
-    }
+    final value = _normalizeWasteType(type);
+    if (value.contains('pilha') || value.contains('bateria')) return Icons.battery_alert_outlined;
+    if (value.contains('eletron') || value.contains('celular') || value.contains('computador')) return Icons.devices_outlined;
+    if (value.contains('oleo')) return Icons.water_drop_outlined;
+    if (value.contains('vidro')) return Icons.wine_bar_outlined;
+    if (value.contains('aluminio') || value.contains('metal') || value.contains('lata')) return Icons.inventory_2_outlined;
+    if (value.contains('papel') || value.contains('papelao')) return Icons.description_outlined;
+    if (value.contains('plastico') || value.contains('pet')) return Icons.recycling;
     return Icons.recycling;
   }
 
@@ -541,7 +526,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
               TextButton(
                 onPressed: () {
                   setState(() {
-                    selectedFilter = 'Todos';
+                    selectedFilters.clear();
                     searchText = '';
                   });
                 },
@@ -575,24 +560,15 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   }
 
   Widget _buildTopPanel(List<Map<String, dynamic>> allPoints) {
-    const categories = [
-      ('Recicláveis', Icons.recycling),
-      ('Eletrônicos', Icons.computer_outlined),
-      ('Pilhas', Icons.battery_alert_outlined),
-      ('Óleo', Icons.water_drop_outlined),
-    ];
+    final availableFilters = allPoints
+        .expand((point) => List<String>.from(point['tipos_residuos'] ?? const []))
+        .map((type) => type.trim())
+        .where((type) => type.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
-    final availableFilters = categories.where((category) {
-      return allPoints.any((point) {
-        final types = List<String>.from(point['tipos_residuos'] ?? const []);
-        return types.any((type) => _matchesCategory(type, category.$1));
-      });
-    }).toList();
-
-    final filters = [
-      ('Todos', Icons.grid_view_rounded),
-      ...availableFilters,
-    ];
+    final filters = ['Todos', ...availableFilters];
 
     return Positioned(
       top: 0,
@@ -681,7 +657,8 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                 separatorBuilder: (_, _) => const SizedBox(width: 6),
                 itemBuilder: (context, index) {
                   final filter = filters[index];
-                  final selected = selectedFilter == filter.$1;
+                  final isAll = filter == 'Todos';
+                  final selected = isAll ? selectedFilters.isEmpty : selectedFilters.contains(filter);
 
                   return ChoiceChip(
                     showCheckmark: false,
@@ -692,15 +669,21 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     selected: selected,
                     onSelected: (_) {
                       setState(() {
-                        selectedFilter = filter.$1;
+                        if (isAll) {
+                          selectedFilters.clear();
+                        } else if (selected) {
+                          selectedFilters.remove(filter);
+                        } else {
+                          selectedFilters.add(filter);
+                        }
                       });
                     },
                     avatar: Icon(
-                      filter.$2,
+                      isAll ? Icons.grid_view_rounded : _categoryIcon(filter),
                       size: 14,
                       color: selected ? _background : _muted,
                     ),
-                    label: Text(filter.$1, style: const TextStyle(fontSize: 11)),
+                    label: Text(filter, style: const TextStyle(fontSize: 11)),
                     labelStyle: TextStyle(
                       color: selected ? _background : _muted,
                       fontWeight: FontWeight.w600,
