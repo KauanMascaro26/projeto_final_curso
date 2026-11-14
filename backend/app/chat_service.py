@@ -377,8 +377,10 @@ def chat_with_disposal_assistant(request: ChatRequest):
         "Você é o assistente do aplicativo Descarte Inteligente. Responda em português "
         "brasileiro, com naturalidade, clareza e concisão. "
         "Responda somente ao que foi perguntado. Em geral, use de duas a quatro frases "
-        "curtas. Evite introduções, agradecimentos, despedidas, títulos, listas com hífens, "
-        "repetições e explicações que o usuário não pediu. "
+        "curtas. Organize respostas com mais de uma ideia em parágrafos curtos, separando-os "
+        "com uma linha em branco. Não entregue orientações diferentes em uma única frase longa. "
+        "Use listas numeradas somente quando houver uma sequência real de etapas; evite títulos, "
+        "listas com hífens, repetições e explicações que o usuário não pediu. "
         "Para orientar o descarte, use a orientação e a preparação cadastradas quando forem "
         "relevantes. Não repita descrição, categoria, nome técnico ou outros campos do cadastro "
         "sem necessidade. Explique o preparo em passos simples somente quando a pergunta pedir "
@@ -447,7 +449,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
         )
 
     suggest_location = request.latitude is None and matched_waste is not None
-    answer = point_intro + answer
+    answer = f"{point_intro.strip()}\\n\\n{answer}" if point_intro else answer
 
     return {
         "answer": answer,
