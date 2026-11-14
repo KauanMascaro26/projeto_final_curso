@@ -27,7 +27,6 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   static const _border = Color(0xFF204653);
   static const _purple = Color(0xFFB69CFF);
   static const _orange = Color(0xFFFFB45C);
-  static const _red = Color(0xFFFF7777);
   static const _blue = Color(0xFF69B7FF);
   static const _yellow = Color(0xFFFFD166);
   static const _teal = Color(0xFF55D6C2);
@@ -891,7 +890,11 @@ class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
         _isSaved
             ? 'Ponto salvo nos favoritos.'
             : 'Ponto removido dos favoritos.',
-        type: AppNotificationType.success,
+        type: _isSaved
+            ? AppNotificationType.success
+            : AppNotificationType.removed,
+        icon: _isSaved ? Icons.favorite_rounded : Icons.heart_broken_rounded,
+        bottomOffset: 112,
       );
     } catch (_) {
       if (!mounted) return;
