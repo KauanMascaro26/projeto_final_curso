@@ -296,16 +296,34 @@ class _ChatScreenState extends State<ChatScreen> {
     final lastUserIndex = _messages.lastIndexWhere((item) => item.isUser);
     if (lastUserIndex < 0) return;
 
+    Position position;
     try {
-      final position = await LocationService.getCurrentLocation();
+      position = await LocationService.getCurrentLocation();
+    } catch (_) {
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Não consegui acessar sua localização. Ative o GPS ou escolha um ponto no mapa.',
+          ),
+          action: SnackBarAction(
+            label: 'Configurações',
+            onPressed: () => LocationService.openLocationSettings(),
+          ),
+          backgroundColor: _surfaceRaised,
+        ),
+      );
+      return;
+    }
 
-      final originalMessage = _messages[lastUserIndex].text;
-      final history = _buildHistory(_messages.take(lastUserIndex));
+    if (!mounted) return;
+    final originalMessage = _messages[lastUserIndex].text;
+    final history = _buildHistory(_messages.take(lastUserIndex));
 
-      setState(() => _isSending = true);
-      _scrollToBottom();
+    setState(() => _isSending = true);
+    _scrollToBottom();
 
+    try {
       final response = await ApiService.sendChatMessage(
         originalMessage,
         history: history,
@@ -330,16 +348,10 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     } catch (_) {
       if (!mounted) return;
+      setState(() => _isSending = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Não consegui acessar sua localização. Ative o GPS ou escolha um ponto no mapa.',
-          ),
-          action: SnackBarAction(
-            label: 'Configurações',
-            onPressed: () => LocationService.openLocationSettings(),
-          ),
-          backgroundColor: _surfaceRaised,
+        const SnackBar(
+          content: Text('Não consegui consultar os pontos agora. Tente novamente.'),
         ),
       );
     }
