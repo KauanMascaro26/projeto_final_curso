@@ -313,7 +313,7 @@ def chat_with_disposal_assistant(request: ChatRequest):
         logger.info("Resíduo identificado sem pontos associados: waste_id=%s nome=%s", matched_waste["id"], matched_waste["nome"])
         return {
             "answer": (
-                f"Identifiquei o resíduo como **{matched_waste['nome']}**, mas não há "
+                f"Identifiquei o resíduo como {matched_waste['nome']}, mas não há "
                 "pontos de coleta associados a ele no cadastro do aplicativo. "
                 "Prefiro não indicar um endereço sem confirmação."
             ),
