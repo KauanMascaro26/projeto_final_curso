@@ -182,7 +182,7 @@ class ApiService {
             },
           }),
         )
-        .timeout(const Duration(seconds: 45));
+        .timeout(const Duration(seconds: 60));
 
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
 
