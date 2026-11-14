@@ -5,6 +5,27 @@ class LocationService {
     return Geolocator.openLocationSettings();
   }
 
+  static Future<Position?> getCurrentLocationIfPermitted() async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+
+      final permission = await Geolocator.checkPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return null;
+      }
+
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 5),
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Future<Position> getCurrentLocation() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
