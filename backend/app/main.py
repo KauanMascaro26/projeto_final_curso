@@ -11,6 +11,23 @@ from app.database import get_connection
 
 logger = logging.getLogger(__name__)
 
+
+def _distance_km(latitude: float, longitude: float, point_latitude: float, point_longitude: float) -> float:
+    lat1 = radians(latitude)
+    lon1 = radians(longitude)
+    lat2 = radians(point_latitude)
+    lon2 = radians(point_longitude)
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = (
+        sin(dlat / 2) ** 2
+        + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    )
+    # Protege contra pequenas imprecisões de ponto flutuante.
+    a = max(0.0, min(1.0, a))
+    return 6371 * 2 * atan2(sqrt(a), sqrt(1 - a))
+
 # Limites por IP e por processo. Em produção com múltiplas instâncias,
 # substituir/centralizar o controle em Redis ou no gateway da infraestrutura.
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -174,24 +191,7 @@ def get_nearby_collection_points(
         points_with_distance = []
 
         for row in rows:
-            lat1 = radians(latitude)
-            lon1 = radians(longitude)
-            lat2 = radians(row[4])
-            lon2 = radians(row[5])
-
-            dlat = lat2 - lat1
-            dlon = lon2 - lon1
-
-            a = (
-                sin(dlat / 2) ** 2
-                + cos(lat1)
-                * cos(lat2)
-                * sin(dlon / 2) ** 2
-            )
-
-            c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-            distance = 6371 * c
+            distance = _distance_km(latitude, longitude, row[4], row[5])
 
             points_with_distance.append({
                 "id": row[0],
@@ -346,7 +346,17 @@ def get_waste_type(waste_id: int):
 
 
 @app.get("/api/waste-types/{waste_id}/collection-points")
-def get_collection_points_for_waste(waste_id: int):
+def get_collection_points_for_waste(
+    waste_id: int,
+    latitude: float | None = Query(default=None, ge=-90, le=90),
+    longitude: float | None = Query(default=None, ge=-180, le=180),
+):
+    if (latitude is None) != (longitude is None):
+        raise HTTPException(
+            status_code=422,
+            detail="Informe latitude e longitude juntas para ordenar por distância.",
+        )
+
     connection = get_connection()
 
     try:
@@ -381,8 +391,9 @@ def get_collection_points_for_waste(waste_id: int):
 
             rows = cursor.fetchall()
 
-            return [
-                {
+            points = []
+            for row in rows:
+                point = {
                     "id": row[0],
                     "nome": row[1],
                     "endereco": row[2],
@@ -391,8 +402,17 @@ def get_collection_points_for_waste(waste_id: int):
                     "longitude": row[5],
                     "origem": row[6],
                 }
-                for row in rows
-            ]
+                if latitude is not None and longitude is not None:
+                    point["distancia_km"] = round(
+                        _distance_km(latitude, longitude, row[4], row[5]),
+                        2,
+                    )
+                points.append(point)
+
+            if latitude is not None and longitude is not None:
+                points.sort(key=lambda point: point["distancia_km"])
+
+            return points
 
     finally:
         connection.close()
