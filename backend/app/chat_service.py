@@ -78,7 +78,7 @@ def _is_contextual_follow_up(message: str) -> bool:
     follow_up_terms = {
         "ele", "ela", "esse", "essa", "isso", "deste", "dessa",
         "dele", "dela", "tambem", "perto", "proximo", "proxima",
-        "mais", "outro", "outra", "melhor",
+        "mais", "outro", "outra", "melhor", "novamente", "repetir",
     }
     if set(words).intersection(follow_up_terms):
         return True
@@ -166,6 +166,27 @@ def _requested_point_limit(message: str) -> int:
     ):
         return 1
     return 2
+
+
+def _asks_to_repeat_points(message: str) -> bool:
+    normalized = _normalize(message)
+    repeat_terms = (
+        "mostrar novamente", "mostrar de novo", "mostre novamente",
+        "mostre de novo", "repetir os pontos", "ver novamente os pontos",
+        "quais eram os pontos", "quais foram os pontos",
+    )
+    return any(term in normalized for term in repeat_terms)
+
+
+def _asks_for_more_points(message: str) -> bool:
+    normalized = _normalize(message)
+    explicit_phrases = (
+        "outro ponto", "outros pontos", "outras opcoes", "mais pontos",
+        "mais algum ponto", "mais algum disponivel", "mais alguma opcao",
+        "alem desse", "alem deste", "alem desses", "alem destes",
+        "tem outro", "tem mais algum",
+    )
+    return any(term in normalized for term in explicit_phrases)
 
 
 def _get_disposal_context(message: str, history: list[ChatTurn], latitude: float | None, longitude: float | None) -> tuple[dict, dict | None, list[dict]]:
@@ -337,12 +358,8 @@ def chat_with_disposal_assistant(request: ChatRequest):
         }
 
     point_limit = min(_requested_point_limit(message), 2)
-    asks_another_point = (
-        "outro ponto" in normalized_message
-        or "tem outro" in normalized_message
-        or "mais um ponto" in normalized_message
-        or "mais algum ponto" in normalized_message
-    )
+    asks_to_repeat_points = _asks_to_repeat_points(message)
+    asks_another_point = _asks_for_more_points(message)
     previously_shown_ids = {
         point_id
         for turn in request.history
@@ -351,23 +368,32 @@ def chat_with_disposal_assistant(request: ChatRequest):
     }
 
     point_intro = ""
-    if asks_another_point:
-        available_points = [
+    if asks_to_repeat_points:
+        selected_points = relevant_points[:point_limit]
+        if selected_points:
+            point_intro = "Claro! Aqui estão novamente os pontos que já apareceram na conversa."
+    elif asks_another_point:
+        selected_points = [
             point for point in relevant_points
             if point["id"] not in previously_shown_ids
-        ]
-        if not previously_shown_ids and len(relevant_points) > 1:
-            available_points = relevant_points[1:]
-        if available_points:
-            selected_points = available_points[:1]
-            point_intro = "Encontrei outro ponto disponível para esse resíduo. "
+        ][:1]
+        if selected_points:
+            point_intro = "Encontrei outro ponto disponível para esse resíduo."
         else:
-            selected_points = relevant_points[:1]
-            point_intro = "Esse é o ponto mais próximo disponível para esse resíduo. "
+            return {
+                "answer": (
+                    f"Você já viu todos os pontos cadastrados que recebem "
+                    f"{matched_waste['nome']}. No momento, não há outros pontos disponíveis para mostrar."
+                ),
+                "matched_waste": matched_waste,
+                "collection_points": [],
+                "needs_location_selection": False,
+                "suggestions": [],
+            }
     else:
         selected_points = relevant_points[:point_limit]
         if selected_points and asks_for_location:
-            point_intro = "Abaixo estão alguns pontos disponíveis para esse resíduo. "
+            point_intro = "Abaixo estão alguns pontos disponíveis para esse resíduo."
     assistant_context = {
         "residuo_cadastrado": matched_waste,
         "pontos_compativeis": selected_points,
