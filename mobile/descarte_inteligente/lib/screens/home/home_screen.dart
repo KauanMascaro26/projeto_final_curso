@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../chat/chat_screen.dart';
@@ -24,10 +26,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _currentIndex = 0;
   Key _favoritesKey = UniqueKey();
+  Key _identificationKey = UniqueKey();
+  String? _initialMaterialQuery;
+
+  static const List<_DailyFact> _dailyFacts = [
+    _DailyFact(title: 'Separe antes de descartar', text: 'Manter recicláveis separados dos rejeitos ajuda a reduzir a contaminação dos materiais.', icon: Icons.recycling_rounded),
+    _DailyFact(title: 'Atenção às pilhas', text: 'Pilhas e baterias precisam de pontos de recebimento específicos. Não descarte no lixo comum.', icon: Icons.battery_charging_full_rounded),
+    _DailyFact(title: 'Embalagens limpas', text: 'Retirar restos de alimentos e líquidos das embalagens facilita a triagem dos recicláveis.', icon: Icons.local_drink_outlined),
+    _DailyFact(title: 'Óleo de cozinha', text: 'O óleo usado não deve ser despejado na pia. Armazene-o em uma garrafa fechada e procure um ponto de coleta.', icon: Icons.water_drop_outlined),
+    _DailyFact(title: 'Papel e papelão', text: 'Papelão seco e sem excesso de resíduos é mais adequado para encaminhamento à reciclagem.', icon: Icons.inventory_2_outlined),
+  ];
+
+  late final _DailyFact _dailyFact;
+
+  @override
+  void initState() {
+    super.initState();
+    _dailyFact = _dailyFacts[Random().nextInt(_dailyFacts.length)];
+  }
 
   void _openChat() => setState(() => _currentIndex = 1);
 
-  void _openIdentification() => setState(() => _currentIndex = 2);
+  void _openIdentification([String? material]) => setState(() {
+        _initialMaterialQuery = material;
+        _identificationKey = UniqueKey();
+        _currentIndex = 2;
+      });
 
   void _openCollectionPoints() => setState(() => _currentIndex = 3);
 
@@ -52,49 +76,35 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHeader(),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Como podemos ajudar?',
+                      style: TextStyle(color: _text, fontSize: 22, height: 1.15, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+                    ),
+                    const SizedBox(height: 5),
+                    const Text(
+                      'Encontre a melhor forma de descartar seus resíduos.',
+                      style: TextStyle(color: _muted, fontSize: 12.5, height: 1.4),
+                    ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Identifique, aprenda e descarte',
-                      style: TextStyle(
-                        color: _text,
-                        fontSize: 22,
-                        height: 1.15,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'de forma correta.',
-                      style: TextStyle(
-                        color: _green,
-                        fontSize: 22,
-                        height: 1.15,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 17),
                     _buildChatCard(),
                     const SizedBox(height: 22),
-                    const Text(
-                      'Explore o aplicativo',
-                      style: TextStyle(
-                        color: _text,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.2,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Materiais', style: TextStyle(color: _text, fontSize: 17, fontWeight: FontWeight.w800)),
+                        TextButton(
+                          onPressed: () => _openIdentification(),
+                          style: TextButton.styleFrom(foregroundColor: _green, padding: EdgeInsets.zero, minimumSize: const Size(40, 32), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                          child: const Text('Ver todos'),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Escolha como deseja começar.',
-                      style: TextStyle(
-                        color: _muted,
-                        fontSize: 12.5,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
+                    _buildMaterialShortcuts(),
+                    const SizedBox(height: 20),
+                    _buildDailyFactCard(),
+                    const SizedBox(height: 16),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -427,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _buildHomeContent(),
           const ChatScreen(),
-          const IdentificationScreen(),
+          IdentificationScreen(key: _identificationKey, initialQuery: _initialMaterialQuery),
           const CollectionPointsScreen(),
           FavoritesScreen(key: _favoritesKey),
           _buildAboutScreen(),
@@ -485,79 +495,41 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHeader() {
-    return Row(
-      children: [
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [_green, _cyan],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: _green.withValues(alpha: 0.16),
-                blurRadius: 18,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: const Icon(Icons.park_rounded, color: _background, size: 30),
-        ),
-        const SizedBox(width: 12),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: _openChat,
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+          decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(18), border: Border.all(color: _border)),
+          child: Row(
             children: [
-              Text(
-                'Descarte Inteligente',
-                style: TextStyle(
-                  color: _text,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.3,
+              Container(
+                width: 42, height: 42,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(colors: [_green, _cyan], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(Icons.waving_hand_rounded, color: _background, size: 23),
+              ),
+              const SizedBox(width: 11),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Olá! Que bom ter você por aqui.', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: _text, fontSize: 13, fontWeight: FontWeight.w800)),
+                    SizedBox(height: 3),
+                    Text('Toque aqui para conversar com a IA', style: TextStyle(color: _muted, fontSize: 11.5)),
+                  ],
                 ),
               ),
-              SizedBox(height: 3),
-              Row(
-                children: [
-                  Icon(Icons.location_on_outlined, color: _green, size: 13),
-                  SizedBox(width: 3),
-                  Text(
-                    'São Carlos - SP',
-                    style: TextStyle(
-                      color: _muted,
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+              const Icon(Icons.arrow_forward_ios_rounded, color: _green, size: 16),
             ],
           ),
         ),
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: _surfaceRaised,
-            shape: BoxShape.circle,
-            border: Border.all(color: _border),
-          ),
-          child: IconButton(
-            tooltip: 'Sobre',
-            onPressed: _showAbout,
-            icon: const Icon(
-              Icons.info_outline_rounded,
-              color: _muted,
-              size: 22,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -701,64 +673,97 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildImpactCard() {
+  Widget _buildMaterialShortcuts() {
+    const materials = [
+      _MaterialShortcut('Plástico', Icons.local_drink_outlined, 'plástico'),
+      _MaterialShortcut('Papel', Icons.description_outlined, 'papel'),
+      _MaterialShortcut('Vidro', Icons.wine_bar_outlined, 'vidro'),
+      _MaterialShortcut('Metal', Icons.settings_outlined, 'metal'),
+      _MaterialShortcut('Pilhas', Icons.battery_full_rounded, 'pilha'),
+      _MaterialShortcut('Eletrônicos', Icons.devices_other_rounded, 'eletrônico'),
+      _MaterialShortcut('Óleo', Icons.water_drop_outlined, 'óleo'),
+      _MaterialShortcut('Papelão', Icons.inventory_2_outlined, 'papelão'),
+    ];
+
+    return Wrap(
+      spacing: 9,
+      runSpacing: 9,
+      children: materials.map((material) {
+        return Material(
+          color: _surface,
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            onTap: () => _openIdentification(material.query),
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              constraints: const BoxConstraints(minWidth: 88),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), border: Border.all(color: _border)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(material.icon, color: _green, size: 22),
+                  const SizedBox(height: 6),
+                  Text(material.label, style: const TextStyle(color: _text, fontSize: 11.5, fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDailyFactCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 17),
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0B202A),
+        gradient: const LinearGradient(colors: [Color(0xFF103D3D), Color(0xFF102B40)], begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _border),
+        border: Border.all(color: _green.withValues(alpha: 0.42)),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: _green.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(Icons.eco_outlined, color: _green, size: 25),
+            width: 42, height: 42,
+            decoration: BoxDecoration(color: _green.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(14)),
+            child: Icon(_dailyFact.icon, color: _green, size: 23),
           ),
-          const SizedBox(width: 13),
-          const Expanded(
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Pequenas atitudes,',
-                  style: TextStyle(
-                    color: _text,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Text(
-                  'grandes mudanças.',
-                  style: TextStyle(
-                    color: _green,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'O descarte correto ajuda a construir uma cidade mais sustentável.',
-                  style: TextStyle(
-                    color: _muted,
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
+                const Text('VOCÊ SABIA?', style: TextStyle(color: _green, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.1)),
+                const SizedBox(height: 5),
+                Text(_dailyFact.title, style: const TextStyle(color: _text, fontSize: 14, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 5),
+                Text(_dailyFact.text, style: const TextStyle(color: _muted, fontSize: 12, height: 1.45)),
               ],
             ),
           ),
-          const SizedBox(width: 8),
-          const Icon(Icons.auto_awesome_rounded, color: _green, size: 25),
+          const SizedBox(width: 4),
+          const Icon(Icons.auto_awesome_rounded, color: _green, size: 17),
         ],
       ),
     );
   }
+}
+
+class _DailyFact {
+  final String title;
+  final String text;
+  final IconData icon;
+  const _DailyFact({required this.title, required this.text, required this.icon});
+}
+
+class _MaterialShortcut {
+  final String label;
+  final IconData icon;
+  final String query;
+  const _MaterialShortcut(this.label, this.icon, this.query);
 }
 
 class _ActionCard extends StatelessWidget {
