@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 enum AppNotificationType {
   success,
+  removed,
   info,
   warning,
   error,
@@ -23,6 +26,8 @@ class AppNotification {
     String message, {
     AppNotificationType type = AppNotificationType.info,
     Duration duration = const Duration(seconds: 3),
+    double bottomOffset = 16,
+    IconData? icon,
   }) {
     final messenger = ScaffoldMessenger.of(context);
     messenger
@@ -34,32 +39,69 @@ class AppNotification {
           elevation: 0,
           padding: EdgeInsets.zero,
           duration: duration,
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          margin: EdgeInsets.fromLTRB(16, 0, 16, bottomOffset),
           content: _NotificationCard(
             message: message,
             type: type,
+            duration: duration,
+            iconOverride: icon,
           ),
         ),
       );
   }
 }
 
-class _NotificationCard extends StatelessWidget {
+class _NotificationCard extends StatefulWidget {
   const _NotificationCard({
     required this.message,
     required this.type,
+    required this.duration,
+    this.iconOverride,
   });
 
   final String message;
   final AppNotificationType type;
+  final Duration duration;
+  final IconData? iconOverride;
+
+  @override
+  State<_NotificationCard> createState() => _NotificationCardState();
+}
+
+class _NotificationCardState extends State<_NotificationCard> {
+  Timer? _fadeTimer;
+  bool _visible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final fadeDelay = widget.duration - const Duration(milliseconds: 400);
+    _fadeTimer = Timer(
+      fadeDelay.isNegative ? Duration.zero : fadeDelay,
+      () {
+        if (mounted) setState(() => _visible = false);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _fadeTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final (Color color, IconData icon, String title) = switch (type) {
+    final (Color color, IconData defaultIcon, String title) = switch (widget.type) {
       AppNotificationType.success => (
           AppNotification._green,
           Icons.check_circle_outline_rounded,
           'Concluído',
+        ),
+      AppNotificationType.removed => (
+          AppNotification._cyan,
+          Icons.heart_broken_rounded,
+          'Removido',
         ),
       AppNotificationType.info => (
           AppNotification._cyan,
@@ -78,55 +120,64 @@ class _NotificationCard extends StatelessWidget {
         ),
     };
 
-    return Material(
-      color: AppNotification._surface,
-      elevation: 10,
-      shadowColor: Colors.black.withValues(alpha: 0.28),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withValues(alpha: 0.48)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.13),
-                borderRadius: BorderRadius.circular(12),
+    return AnimatedOpacity(
+      opacity: _visible ? 1 : 0,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
+      child: Material(
+        color: AppNotification._surface,
+        elevation: 10,
+        shadowColor: Colors.black.withValues(alpha: 0.28),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withValues(alpha: 0.48)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.13),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  widget.iconOverride ?? defaultIcon,
+                  color: color,
+                  size: 22,
+                ),
               ),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    message,
-                    style: const TextStyle(
-                      color: AppNotification._text,
-                      fontSize: 13,
-                      height: 1.3,
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.message,
+                      style: const TextStyle(
+                        color: AppNotification._text,
+                        fontSize: 13,
+                        height: 1.3,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
