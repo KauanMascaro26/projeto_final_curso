@@ -10,6 +10,7 @@ O núcleo de consulta do aplicativo está implementado e validado localmente:
 - Pesquisa textual de resíduos cadastrados, com descrição, categoria, orientação e preparo.
 - Consulta de pontos compatíveis com cada resíduo e abertura de rota no Google Maps.
 - Mapa de pontos de coleta, localização opcional e alternativa de consulta sem permissão de GPS.
+- Lista de pontos compatíveis ordenada pela distância em linha reta (Haversine) quando o GPS está disponível; sem permissão/localização, todos os pontos continuam disponíveis em ordem alfabética, sem exibir distâncias.
 - Backend FastAPI conectado ao PostgreSQL.
 - Favoritos armazenados localmente no dispositivo.
 
