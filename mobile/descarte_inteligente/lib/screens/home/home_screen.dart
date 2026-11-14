@@ -171,35 +171,43 @@ class _HomeScreenState extends State<HomeScreen> {
       future: _homeStats,
       builder: (context, snapshot) {
         final stats = snapshot.data;
-        return Row(
-          children: [
-            Expanded(
-              child: _StatItem(
-                icon: Icons.location_on_outlined,
-                value: stats?.collectionPoints.toString() ?? '—',
-                label: 'pontos cadastrados',
-                dark: true,
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF55D6A2),
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _StatItem(
+                  icon: Icons.location_on_outlined,
+                  value: stats?.collectionPoints.toString() ?? '—',
+                  label: 'pontos cadastrados',
+                  dark: true,
+                ),
               ),
-            ),
-            Container(width: 1, height: 42, color: Color(0xFFBDE8C9).withValues(alpha: 0.22)),
-            Expanded(
-              child: _StatItem(
-                icon: Icons.category_outlined,
-                value: stats?.materials.toString() ?? '—',
-                label: 'materiais',
-                dark: true,
+              Container(width: 1, height: 42, color: const Color(0x6655A982)),
+              Expanded(
+                child: _StatItem(
+                  icon: Icons.category_outlined,
+                  value: stats?.materials.toString() ?? '—',
+                  label: 'materiais',
+                  dark: true,
+                ),
               ),
-            ),
-            Container(width: 1, height: 42, color: _homeBorder),
-            Expanded(
-              child: _StatItem(
-                icon: Icons.favorite_border_rounded,
-                value: stats?.favorites.toString() ?? '—',
-                label: 'favoritos',
-                dark: true,
+              Container(width: 1, height: 42, color: const Color(0x6655A982)),
+              Expanded(
+                child: _StatItem(
+                  icon: Icons.favorite_border_rounded,
+                  value: stats?.favorites.toString() ?? '—',
+                  label: 'favoritos',
+                  dark: true,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
@@ -786,7 +794,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return SizedBox(
             width: 112,
             child: Material(
-              color: Color(0xFFC9DCCB),
+              color: const Color(0xFF55D6A2),
               borderRadius: BorderRadius.circular(17),
               child: InkWell(
                 onTap: () => _openIdentification(material.query),
@@ -795,7 +803,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(10, 13, 10, 11),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(17),
-                    border: Border.all(color: Color(0xFFB5CDB9)),
+                    border: Border.all(color: const Color(0x6655A982)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -804,7 +812,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: Color(0xFFE0EDE2),
+                          color: const Color(0x9955D6A2),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Icon(material.icon, color: _homeGreen, size: 29),
