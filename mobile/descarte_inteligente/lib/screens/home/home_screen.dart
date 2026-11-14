@@ -121,12 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFFC9DCCB), Color(0xFFBED4C1)],
+                        colors: [Color(0xFF164B40), Color(0xFF102B32)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(23),
-                      border: Border.all(color: Color(0xFFB5CDB9)),
+                      border: Border.all(color: Color(0xFF285C50)),
                     ),
                     child: Column(
                       children: [
@@ -182,10 +182,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.location_on_outlined,
                 value: stats?.collectionPoints.toString() ?? '—',
                 label: 'pontos cadastrados',
-                dark: true,
+                dark: false,
               ),
             ),
-            Container(width: 1, height: 42, color: _homeBorder),
+            Container(width: 1, height: 42, color: Color(0xFFBDE8C9).withValues(alpha: 0.22)),
             Expanded(
               child: _StatItem(
                 icon: Icons.category_outlined,
@@ -227,9 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: Color(0xFFC9DCCB),
+            color: Color(0xFF164B40),
             borderRadius: BorderRadius.circular(17),
-            border: Border.all(color: _homeBorder),
+            border: Border.all(color: Color(0xFF285C50)),
           ),
           child: Row(
             children: [
@@ -237,24 +237,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: Color(0xFFE0EDE2),
+                  color: Color(0xFFBDE8C9),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFFE0EDE2).withValues(alpha: 0.18),
+                      color: Color(0xFFBDE8C9).withValues(alpha: 0.18),
                       blurRadius: 12,
                       spreadRadius: 1,
                     ),
                   ],
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, color: _homeGreen, size: 25),
+                child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF164B40), size: 25),
               ),
               const SizedBox(width: 11),
               Expanded(
                 child: RichText(
                   text: TextSpan(
                     style: const TextStyle(
-                      color: _homeText,
+                      color: Color(0xFFF2F8FA),
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.2,
@@ -263,13 +263,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       TextSpan(text: _greetingForCurrentTime()),
                       const TextSpan(
                         text: 'Kauan!',
-                        style: TextStyle(color: _homeGreen, fontWeight: FontWeight.w900),
+                        style: TextStyle(color: Color(0xFFBDE8C9), fontWeight: FontWeight.w900),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios_rounded, color: _homeGreen, size: 16),
+              const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFFBDE8C9), size: 16),
             ],
           ),
         ),
