@@ -583,45 +583,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: _openChat,
-        borderRadius: BorderRadius.circular(18),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-          decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(18), border: Border.all(color: _border)),
-          child: Row(
-            children: [
-              Container(
-                width: 42, height: 42,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [_green, _cyan], begin: Alignment.topLeft, end: Alignment.bottomRight),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: const Icon(Icons.waving_hand_rounded, color: _background, size: 23),
-              ),
-              const SizedBox(width: 11),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Olá! Que bom ter você por aqui.', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: _text, fontSize: 13, fontWeight: FontWeight.w800)),
-                    SizedBox(height: 3),
-                    Text('Toque aqui para conversar com a IA', style: TextStyle(color: _muted, fontSize: 11.5)),
-                  ],
-                ),
-              ),
-              const Icon(Icons.arrow_forward_ios_rounded, color: _green, size: 16),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildChatCard() {
     return Material(
       color: Colors.transparent,
@@ -763,7 +724,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMaterialShortcuts() {
-    const materials = [
+    const materials = <_MaterialShortcut>[
       _MaterialShortcut('Plástico', Icons.local_drink_outlined, 'plástico'),
       _MaterialShortcut('Vidro', Icons.wine_bar_outlined, 'vidro'),
       _MaterialShortcut('Papel', Icons.description_outlined, 'papel'),
@@ -901,6 +862,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+}
 
 class _HomeStats {
   final int collectionPoints;
