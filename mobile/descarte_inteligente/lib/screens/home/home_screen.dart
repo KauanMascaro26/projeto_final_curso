@@ -795,7 +795,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return SizedBox(
             width: 112,
             child: Material(
-              color: const Color(0xFF55D6A2),
+              color: _homeCard,
               borderRadius: BorderRadius.circular(17),
               child: InkWell(
                 onTap: () => _openIdentification(material.query),
