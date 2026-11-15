@@ -20,7 +20,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
   Color get _surfaceRaised => _palette.surfaceRaised;
-  static const _green = AppColors.emerald;
+  Color get _green => _palette.primary;
   static const _cyan = AppColors.cyan;
   Color get _darkGreen => _palette.text;
   Color get _muted => _palette.muted;
@@ -169,7 +169,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                       label: Text('Ver pontos de coleta compatíveis'),
                       style: FilledButton.styleFrom(
                         backgroundColor: _green,
-                        foregroundColor: _background,
+                        foregroundColor: _palette.primaryForeground,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
