@@ -116,12 +116,21 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    children: [
-                      _buildHeader(),
-                      const SizedBox(height: 13),
-                      _buildStatsCard(),
-                    ],
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC9DCCB),
+                      borderRadius: BorderRadius.circular(23),
+                      border: Border.all(color: const Color(0xFFB5CDB9)),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildHeader(),
+                        const SizedBox(height: 13),
+                        _buildStatsCard(),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Row(
