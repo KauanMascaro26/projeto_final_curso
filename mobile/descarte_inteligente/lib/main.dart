@@ -12,11 +12,18 @@ class DescarteInteligenteApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Descarte Inteligente',
-      theme: AppTheme.light,
-      home: const HomeScreen(),
+    return AnimatedBuilder(
+      animation: appThemeController,
+      builder: (context, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Descarte Inteligente',
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: appThemeController.themeMode,
+          home: const HomeScreen(),
+        );
+      },
     );
   }
 }
