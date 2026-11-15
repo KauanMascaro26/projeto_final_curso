@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
+
 enum AppNotificationType {
   success,
   removed,
@@ -14,8 +16,6 @@ enum AppNotificationType {
 class AppNotification {
   AppNotification._();
 
-  static const _surface = Color(0xFF0D202B);
-  static const _text = Color(0xFFF2F8FA);
   static const _green = Color(0xFF55D6A2);
   static const _cyan = Color(0xFF53D9F5);
   static const _orange = Color(0xFFFFB45C);
@@ -125,7 +125,7 @@ class _NotificationCardState extends State<_NotificationCard> {
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeOut,
       child: Material(
-        color: AppNotification._surface,
+        color: context.appPalette.surface,
         elevation: 10,
         shadowColor: Colors.black.withValues(alpha: 0.28),
         borderRadius: BorderRadius.circular(16),
@@ -167,8 +167,8 @@ class _NotificationCardState extends State<_NotificationCard> {
                     const SizedBox(height: 2),
                     Text(
                       widget.message,
-                      style: const TextStyle(
-                        color: AppNotification._text,
+                      style: TextStyle(
+                        color: context.appPalette.text,
                         fontSize: 13,
                         height: 1.3,
                       ),
