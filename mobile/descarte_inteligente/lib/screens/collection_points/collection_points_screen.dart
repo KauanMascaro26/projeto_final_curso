@@ -274,8 +274,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
       builder: (context) {
         return Theme(
           data: Theme.of(context).copyWith(
-            brightness: Brightness.dark,
-            colorScheme: const ColorScheme.dark(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
               primary: _green,
               secondary: _cyan,
               surface: _surface,
