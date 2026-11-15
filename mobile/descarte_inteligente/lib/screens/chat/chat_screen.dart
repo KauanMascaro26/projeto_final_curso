@@ -585,7 +585,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 7, 12, 8),
       decoration: BoxDecoration(
-        color: Color(0xFF091923),
+        color: _surface,
         border: Border(top: BorderSide(color: _border)),
         boxShadow: [
           BoxShadow(
