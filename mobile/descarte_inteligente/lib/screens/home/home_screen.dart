@@ -385,7 +385,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 10),
               _buildAboutFeature(
                 icon: Icons.chat_bubble_outline_rounded,
-                accent: _green,
+                accent: _homeGreen,
                 title: 'Assistente ecológico',
                 description: 'Tire dúvidas e receba orientações sobre separação e descarte.',
               ),
