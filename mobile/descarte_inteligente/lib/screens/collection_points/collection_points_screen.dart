@@ -23,7 +23,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
   Color get _surfaceRaised => _palette.surfaceRaised;
-  static const _green = AppColors.emerald;
+  Color get _green => _palette.primary;
   static const _cyan = AppColors.cyan;
   Color get _darkGreen => _palette.text;
   Color get _muted => _palette.muted;
@@ -438,7 +438,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                       label: Text('Ver rota no Google Maps'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _green,
-                        foregroundColor: _background,
+                        foregroundColor: _palette.primaryForeground,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
