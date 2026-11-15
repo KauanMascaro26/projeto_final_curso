@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../core/theme/app_theme.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,15 +16,16 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  static const _background = Color(0xFF07131D);
-  static const _surface = Color(0xFF0D202B);
-  static const _surfaceRaised = Color(0xFF122B38);
-  static const _green = Color(0xFF55D6A2);
+  AppPalette get _palette => context.appPalette;
+  Color get _background => _palette.background;
+  Color get _surface => _palette.surface;
+  Color get _surfaceRaised => _palette.surfaceRaised;
+  static const _green = AppColors.emerald;
   static const _greenDark = Color(0xFF168A68);
-  static const _cyan = Color(0xFF53D9F5);
-  static const _text = Color(0xFFF2F8FA);
-  static const _muted = Color(0xFFADC1CC);
-  static const _border = Color(0xFF204653);
+  static const _cyan = AppColors.cyan;
+  Color get _text => _palette.text;
+  Color get _muted => _palette.muted;
+  Color get _border => _palette.border;
 
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
@@ -175,7 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
               height: MediaQuery.sizeOf(context).height * 0.72,
               child: Column(
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.fromLTRB(20, 4, 20, 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,8 +235,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           onPressed: selectedLocation == null
                               ? null
                               : () => Navigator.pop(sheetContext, selectedLocation),
-                          icon: const Icon(Icons.check),
-                          label: const Text('Usar esta localização'),
+                          icon: Icon(Icons.check),
+                          label: Text('Usar esta localização'),
                           style: FilledButton.styleFrom(
                             backgroundColor: _green,
                             foregroundColor: _background,
@@ -311,7 +314,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
+          content: Text(
             'Não consegui acessar sua localização. Ative o GPS ou escolha um ponto no mapa.',
           ),
           action: SnackBarAction(
@@ -358,7 +361,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (!mounted) return;
       setState(() => _isSending = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Não consegui consultar os pontos agora. Tente novamente.'),
         ),
       );
@@ -389,23 +392,24 @@ class _ChatScreenState extends State<ChatScreen> {
         scrolledUnderElevation: 0,
         toolbarHeight: 60,
         titleSpacing: 4,
+        actions: [AppThemeToggleButton()],
         title: Row(
           children: [
             Container(
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [_green, _cyan],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(Icons.park_rounded, color: _background, size: 18),
+              child: Icon(Icons.park_rounded, color: _background, size: 18),
             ),
-            const SizedBox(width: 11),
-            const Expanded(
+            SizedBox(width: 11),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -476,11 +480,7 @@ class _ChatScreenState extends State<ChatScreen> {
             width: 54,
             height: 54,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF123F43), Color(0xFF102D43)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: context.appPalette.card,
               borderRadius: BorderRadius.circular(19),
               border: Border.all(color: _green.withValues(alpha: 0.45)),
               boxShadow: [
@@ -491,10 +491,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            child: const Icon(Icons.eco_rounded, color: _green, size: 30),
+            child: Icon(Icons.eco_rounded, color: _green, size: 30),
           ),
-          const SizedBox(height: 12),
-          const Text(
+          SizedBox(height: 12),
+          Text(
             'O QUE VAMOS',
             style: TextStyle(
               color: _muted,
@@ -503,8 +503,8 @@ class _ChatScreenState extends State<ChatScreen> {
               fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: 4),
-          const Text(
+          SizedBox(height: 4),
+          Text(
             'RECICLAR HOJE?',
             style: TextStyle(
               color: _text,
@@ -514,15 +514,15 @@ class _ChatScreenState extends State<ChatScreen> {
               letterSpacing: -0.8,
             ),
           ),
-          const SizedBox(height: 7),
-          const Text(
+          SizedBox(height: 7),
+          Text(
             'Tire suas dúvidas, descubra como separar seus resíduos e dê o próximo passo para um futuro mais sustentável.',
             style: TextStyle(color: _muted, fontSize: 12.5, height: 1.4),
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   'ESCOLHA UM TEMA',
                   style: TextStyle(
@@ -536,7 +536,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Icon(Icons.touch_app_outlined, color: _green.withValues(alpha: 0.9), size: 18),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -555,7 +555,7 @@ class _ChatScreenState extends State<ChatScreen> {
               );
             },
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -563,7 +563,7 @@ class _ChatScreenState extends State<ChatScreen> {
               borderRadius: BorderRadius.circular(17),
               border: Border.all(color: _border),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Icon(Icons.auto_awesome_rounded, color: _cyan, size: 21),
                 SizedBox(width: 11),
@@ -584,7 +584,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildComposer() {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 7, 12, 8),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Color(0xFF091923),
         border: Border(top: BorderSide(color: _border)),
         boxShadow: [
@@ -608,29 +608,29 @@ class _ChatScreenState extends State<ChatScreen> {
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _sendMessage(),
-                style: const TextStyle(color: _text, fontSize: 14),
+                style: TextStyle(color: _text, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'O que você quer descartar?',
-                  hintStyle: const TextStyle(color: _muted, fontSize: 13),
+                  hintStyle: TextStyle(color: _muted, fontSize: 13),
                   filled: true,
                   fillColor: _surfaceRaised,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(22),
-                    borderSide: const BorderSide(color: _border),
+                    borderSide: BorderSide(color: _border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(22),
-                    borderSide: const BorderSide(color: _border),
+                    borderSide: BorderSide(color: _border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(22),
-                    borderSide: const BorderSide(color: _green, width: 1.4),
+                    borderSide: BorderSide(color: _green, width: 1.4),
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 9),
+            SizedBox(width: 9),
             Opacity(
               opacity: _isSending ? 0.42 : 1,
               child: SizedBox(
@@ -648,7 +648,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       borderRadius: BorderRadius.circular(17),
                     ),
                   ),
-                  child: const Icon(Icons.arrow_upward_rounded, size: 25),
+                  child: Icon(Icons.arrow_upward_rounded, size: 25),
                 ),
               ),
             ),
@@ -684,7 +684,7 @@ class _SuggestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: _ChatScreenState._surface,
+      color: context.appPalette.surface,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
@@ -693,7 +693,7 @@ class _SuggestionCard extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _ChatScreenState._border),
+            border: Border.all(color: context.appPalette.border),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -709,7 +709,7 @@ class _SuggestionCard extends StatelessWidget {
                     ),
                     child: Icon(item.icon, color: item.accent, size: 22),
                   ),
-                  const Spacer(),
+                  Spacer(),
                   Icon(
                     Icons.north_east_rounded,
                     color: item.accent,
@@ -717,24 +717,24 @@ class _SuggestionCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const Spacer(),
+              Spacer(),
               Text(
                 item.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: _ChatScreenState._text,
+                style: TextStyle(
+                  color: context.appPalette.text,
                   fontSize: 12.5,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 5),
               Text(
                 item.subtitle,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: _ChatScreenState._muted,
+                style: TextStyle(
+                  color: context.appPalette.muted,
                   fontSize: 9.5,
                   height: 1.3,
                 ),
@@ -776,7 +776,7 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final background = message.isUser
         ? const Color(0xFF126D59)
-        : _ChatScreenState._surface;
+        : context.appPalette.surface;
 
     return Align(
       alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -797,7 +797,7 @@ class _MessageBubble extends StatelessWidget {
           border: Border.all(
             color: message.isUser
                 ? _ChatScreenState._greenDark
-                : _ChatScreenState._border,
+                : context.appPalette.border,
           ),
         ),
         child: Column(
@@ -810,8 +810,8 @@ class _MessageBubble extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 7),
                       child: Text(
                         paragraph.trim(),
-                        style: const TextStyle(
-                          color: _ChatScreenState._text,
+                        style: TextStyle(
+                          color: context.appPalette.text,
                           fontSize: 14,
                           height: 1.48,
                         ),
@@ -820,28 +820,28 @@ class _MessageBubble extends StatelessWidget {
             if (!message.isUser &&
                 message.needsLocationSelection &&
                 onChooseLocation != null) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
                   OutlinedButton.icon(
                     onPressed: onUseCurrentLocation,
-                    icon: const Icon(Icons.my_location_rounded, size: 17),
-                    label: const Text('Usar minha localização'),
+                    icon: Icon(Icons.my_location_rounded, size: 17),
+                    label: Text('Usar minha localização'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: _ChatScreenState._green,
-                      side: const BorderSide(color: _ChatScreenState._green),
+                      side: BorderSide(color: _ChatScreenState._green),
                       visualDensity: VisualDensity.compact,
                     ),
                   ),
                   OutlinedButton.icon(
                     onPressed: onChooseLocation,
-                    icon: const Icon(Icons.map_outlined, size: 17),
-                    label: const Text('Escolher no mapa'),
+                    icon: Icon(Icons.map_outlined, size: 17),
+                    label: Text('Escolher no mapa'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: _ChatScreenState._cyan,
-                      side: const BorderSide(color: _ChatScreenState._cyan),
+                      side: BorderSide(color: _ChatScreenState._cyan),
                       visualDensity: VisualDensity.compact,
                     ),
                   ),
@@ -849,18 +849,18 @@ class _MessageBubble extends StatelessWidget {
               ),
             ],
             if (!message.isUser && message.collectionPoints.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 message.collectionPoints.length == 1
                     ? 'Ponto de coleta'
                     : 'Pontos de coleta',
-                style: const TextStyle(
+                style: TextStyle(
                   color: _ChatScreenState._green,
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 7),
+              SizedBox(height: 7),
               ...message.collectionPoints.map((point) {
                 final name = point['nome']?.toString() ?? 'Ponto de coleta';
                 final address = point['endereco']?.toString() ?? '';
@@ -873,37 +873,37 @@ class _MessageBubble extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 7),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: _ChatScreenState._surfaceRaised,
+                    color: context.appPalette.surfaceRaised,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _ChatScreenState._border),
+                    border: Border.all(color: context.appPalette.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         name,
-                        style: const TextStyle(
-                          color: _ChatScreenState._text,
+                        style: TextStyle(
+                          color: context.appPalette.text,
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
                         ),
                       ),
                       if (address.isNotEmpty) ...[
-                        const SizedBox(height: 3),
+                        SizedBox(height: 3),
                         Text(
                           address,
-                          style: const TextStyle(
-                            color: _ChatScreenState._muted,
+                          style: TextStyle(
+                            color: context.appPalette.muted,
                             fontSize: 11.5,
                             height: 1.3,
                           ),
                         ),
                       ],
                       if (distance != null) ...[
-                        const SizedBox(height: 5),
+                        SizedBox(height: 5),
                         Text(
                           '${(distance as num).toStringAsFixed(1)} km',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: _ChatScreenState._green,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
@@ -911,7 +911,7 @@ class _MessageBubble extends StatelessWidget {
                         ),
                       ],
                       if (lat != null && lon != null) ...[
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: TextButton.icon(
@@ -929,8 +929,8 @@ class _MessageBubble extends StatelessWidget {
                                 mode: LaunchMode.externalApplication,
                               );
                             },
-                            icon: const Icon(Icons.directions, size: 16),
-                            label: const Text('Abrir rota'),
+                            icon: Icon(Icons.directions, size: 16),
+                            label: Text('Abrir rota'),
                             style: TextButton.styleFrom(
                               foregroundColor: _ChatScreenState._cyan,
                               padding: EdgeInsets.zero,
@@ -967,7 +967,7 @@ class _BrandLoader extends StatelessWidget {
           SizedBox(
             width: size,
             height: size,
-            child: const CircularProgressIndicator(
+            child: CircularProgressIndicator(
               strokeWidth: 2.2,
               color: _ChatScreenState._green,
             ),
@@ -988,7 +988,7 @@ class _ThinkingBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Align(
+    return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.only(bottom: 12),
@@ -999,7 +999,7 @@ class _ThinkingBubble extends StatelessWidget {
             SizedBox(width: 9),
             Text(
               'Preparando sua resposta...',
-              style: TextStyle(color: _ChatScreenState._muted, fontSize: 12),
+              style: TextStyle(color: context.appPalette.muted, fontSize: 12),
             ),
           ],
         ),
