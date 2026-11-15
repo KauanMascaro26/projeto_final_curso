@@ -20,8 +20,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
   Color get _surfaceRaised => _palette.surfaceRaised;
-  static const _green = AppColors.emerald;
-  static const _greenDark = Color(0xFF168A68);
+  Color get _green => _palette.primary;
   static const _cyan = AppColors.cyan;
   Color get _text => _palette.text;
   Color get _muted => _palette.muted;
@@ -47,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
       subtitle: 'Descarte seguro de eletrônicos',
       prompt: 'Como descarto uma pilha usada?',
       icon: Icons.battery_3_bar_rounded,
-      accent: _green,
+      accent: AppColors.emerald,
     ),
     _Suggestion(
       title: 'Plástico e garrafas',
@@ -239,7 +238,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           label: Text('Usar esta localização'),
                           style: FilledButton.styleFrom(
                             backgroundColor: _green,
-                            foregroundColor: _background,
+                            foregroundColor: _palette.primaryForeground,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                         ),
@@ -640,7 +639,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onPressed: _isSending ? null : () => _sendMessage(),
                   style: FilledButton.styleFrom(
                     backgroundColor: _green,
-                    foregroundColor: _background,
+                    foregroundColor: _palette.primaryForeground,
                     disabledBackgroundColor: _green,
                     disabledForegroundColor: _background,
                     padding: EdgeInsets.zero,
@@ -796,7 +795,7 @@ class _MessageBubble extends StatelessWidget {
           ),
           border: Border.all(
             color: message.isUser
-                ? _ChatScreenState._greenDark
+                ? context.appPalette.primary
                 : context.appPalette.border,
           ),
         ),
@@ -830,8 +829,8 @@ class _MessageBubble extends StatelessWidget {
                     icon: Icon(Icons.my_location_rounded, size: 17),
                     label: Text('Usar minha localização'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: _ChatScreenState._green,
-                      side: BorderSide(color: _ChatScreenState._green),
+                      foregroundColor: context.appPalette.primary,
+                      side: BorderSide(color: context.appPalette.primary),
                       visualDensity: VisualDensity.compact,
                     ),
                   ),
@@ -855,7 +854,7 @@ class _MessageBubble extends StatelessWidget {
                     ? 'Ponto de coleta'
                     : 'Pontos de coleta',
                 style: TextStyle(
-                  color: _ChatScreenState._green,
+                  color: context.appPalette.primary,
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                 ),
@@ -904,7 +903,7 @@ class _MessageBubble extends StatelessWidget {
                         Text(
                           '${(distance as num).toStringAsFixed(1)} km',
                           style: TextStyle(
-                            color: _ChatScreenState._green,
+                            color: context.appPalette.primary,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
                           ),
@@ -969,12 +968,12 @@ class _BrandLoader extends StatelessWidget {
             height: size,
             child: CircularProgressIndicator(
               strokeWidth: 2.2,
-              color: _ChatScreenState._green,
+              color: context.appPalette.primary,
             ),
           ),
           Icon(
             Icons.park_rounded,
-            color: _ChatScreenState._green,
+            color: context.appPalette.primary,
             size: size * 0.48,
           ),
         ],
