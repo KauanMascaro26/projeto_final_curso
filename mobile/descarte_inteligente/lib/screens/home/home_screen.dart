@@ -34,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _homeMuted = Color(0xFF718078);
   static const _homeBorder = Color(0xFFE3ECE6);
   static const _homeCard = Color(0xFFE0EDE2);
+  static const _homeCardAccent = Color(0xFFC9DCCB);
 
   int _currentIndex = 0;
   Key _favoritesKey = UniqueKey();
@@ -232,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: Colors.transparent,
+            color: _homeCardAccent,
             borderRadius: BorderRadius.circular(17),
           ),
           child: Row(
@@ -813,7 +814,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: const Color(0x9955D6A2),
+                          color: _homeCardAccent,
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Icon(material.icon, color: _homeGreen, size: 29),
@@ -863,7 +864,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: _homeCard,
+                        color: _homeCardAccent,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: const Row(
