@@ -810,7 +810,9 @@ class _MessageBubble extends StatelessWidget {
                       child: Text(
                         paragraph.trim(),
                         style: TextStyle(
-                          color: context.appPalette.text,
+                          color: message.isUser
+                              ? Colors.white
+                              : context.appPalette.text,
                           fontSize: 14,
                           height: 1.48,
                         ),
