@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: BoxDecoration(
                       color: _homeCard,
                       borderRadius: BorderRadius.circular(23),
-                      border: Border.all(color: const Color(0xFFB5CDB9)),
+                      border: Border.all(color: _homeBorder),
                     ),
                     child: Column(
                       children: [
@@ -857,7 +857,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: _homeCard,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Color(0xFFB5CDB9)),
+        border: Border.all(color: _homeBorder),
       ),
       child: Stack(
         children: [
@@ -902,7 +902,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   constraints: BoxConstraints(maxWidth: 290),
                   child: Text(
                     _dailyFact.text,
-                    style: TextStyle(color: Color(0xFF52685B), fontSize: 12.5, height: 1.5),
+                    style: TextStyle(color: _homeMuted, fontSize: 12.5, height: 1.5),
                   ),
                 ),
                 SizedBox(height: 15),
