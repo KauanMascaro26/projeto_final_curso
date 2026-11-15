@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_theme.dart';
+
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key});
 
@@ -8,6 +10,7 @@ class ResultScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resultado'),
+        actions: [AppThemeToggleButton()],
       ),
       body: const Center(
         child: Text(
