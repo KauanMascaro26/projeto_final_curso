@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _homeText = Color(0xFF20352B);
   static const _homeMuted = Color(0xFF718078);
   static const _homeBorder = Color(0xFFE3ECE6);
+  static const _homeCard = Color(0xFFE0EDE2);
 
   int _currentIndex = 0;
   Key _favoritesKey = UniqueKey();
@@ -120,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(15, 14, 15, 17),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFC9DCCB),
+                      color: _homeCard,
                       borderRadius: BorderRadius.circular(23),
                       border: Border.all(color: const Color(0xFFB5CDB9)),
                     ),
@@ -175,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFF55D6A2),
+            color: _homeCard,
             borderRadius: BorderRadius.circular(18),
           ),
           child: Row(
@@ -841,11 +842,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFC9DCCB), Color(0xFFBED4C1)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: _homeCard,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: Color(0xFFB5CDB9)),
       ),
@@ -866,7 +863,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Color(0xFFE0EDE2),
+                        color: _homeCard,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: const Row(
