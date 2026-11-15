@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_theme.dart';
+
 import '../chat/chat_screen.dart';
 import '../collection_points/collection_points_screen.dart';
 import '../identification/identification_screen.dart';
@@ -17,24 +19,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const _background = Color(0xFF07131D);
-  static const _surface = Color(0xFF0D202B);
-  static const _surfaceRaised = Color(0xFF122B38);
-  static const _green = Color(0xFF55D6A2);
-  static const _cyan = Color(0xFF53D9F5);
-  static const _text = Color(0xFFF2F8FA);
-  static const _muted = Color(0xFFADC1CC);
-  static const _border = Color(0xFF204653);
+  AppPalette get _palette => context.appPalette;
+  Color get _background => _palette.background;
+  Color get _surface => _palette.surface;
+  Color get _surfaceRaised => _palette.surfaceRaised;
+  static const _green = AppColors.emerald;
+  static const _cyan = AppColors.cyan;
+  Color get _text => _palette.text;
+  Color get _muted => _palette.muted;
+  Color get _border => _palette.border;
 
-  // Paleta clara aplicada somente à tela inicial.
-  static const _homeBackground = Color(0xFFF7FAF8);
-  static const _homeSurface = Color(0xFFFFFFFF);
-  static const _homeGreen = Color(0xFF26734D);
-  static const _homeText = Color(0xFF20352B);
-  static const _homeMuted = Color(0xFF718078);
-  static const _homeBorder = Color(0xFFE3ECE6);
-  static const _homeCard = Color(0xFFE0EDE2);
-  static const _homeCardAccent = Color(0xFFC9DCCB);
+  Color get _homeBackground => _palette.background;
+  Color get _homeSurface => _palette.surface;
+  Color get _homeGreen => _palette.primary;
+  Color get _homeText => _palette.text;
+  Color get _homeMuted => _palette.muted;
+  Color get _homeBorder => _palette.border;
+  Color get _homeCard => _palette.card;
+  Color get _homeCardAccent => _palette.cardAccent;
 
   int _currentIndex = 0;
   Key _favoritesKey = UniqueKey();
@@ -129,16 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         _buildHeader(),
-                        const SizedBox(height: 13),
+                        SizedBox(height: 13),
                         _buildStatsCard(),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Materiais',
                         style: TextStyle(color: _homeText, fontSize: 18, fontWeight: FontWeight.w800),
                       ),
@@ -150,15 +152,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           minimumSize: const Size(40, 32),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text('Ver todos'),
+                        child: Text('Ver todos'),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   _buildMaterialShortcuts(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   _buildDailyFactCard(),
-                  const SizedBox(height: 18),
+                  SizedBox(height: 18),
                 ],
               ),
             ),
@@ -227,56 +229,77 @@ class _HomeScreenState extends State<HomeScreen> {
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(17),
-      child: InkWell(
-        onTap: _openChat,
-        borderRadius: BorderRadius.circular(17),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-          decoration: BoxDecoration(
-            color: _homeCardAccent,
-            borderRadius: BorderRadius.circular(17),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xFFBDE8C9).withValues(alpha: 0.18),
-                      blurRadius: 12,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF164B40), size: 25),
-              ),
-              const SizedBox(width: 11),
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      color: _homeGreen,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: -0.2,
-                    ),
+      child: Ink(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: _homeCardAccent,
+          borderRadius: BorderRadius.circular(17),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: _openChat,
+                borderRadius: BorderRadius.circular(15),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                  child: Row(
                     children: [
-                      TextSpan(text: _greetingForCurrentTime()),
-                      const TextSpan(
-                        text: 'Kauan!',
-                        style: TextStyle(color: _homeGreen, fontWeight: FontWeight.w900),
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: _homeCard.withValues(alpha: 0.35),
+                              blurRadius: 12,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.auto_awesome_rounded,
+                          color: Color(0xFF164B40),
+                          size: 25,
+                        ),
+                      ),
+                      SizedBox(width: 11),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: _homeGreen,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: -0.2,
+                            ),
+                            children: [
+                              TextSpan(text: _greetingForCurrentTime()),
+                              TextSpan(
+                                text: 'Kauan!',
+                                style: TextStyle(
+                                  color: _homeGreen,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: _homeGreen,
+                        size: 16,
                       ),
                     ],
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios_rounded, color: _homeGreen, size: 16),
-            ],
-          ),
+            ),
+            AppThemeToggleButton(color: _homeGreen),
+          ],
         ),
       ),
     );
@@ -289,10 +312,11 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: _background,
         foregroundColor: _text,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Sobre',
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
+        actions: [AppThemeToggleButton()],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -304,13 +328,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF103D3D), Color(0xFF102B40)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: _homeCard,
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: _green.withValues(alpha: 0.45)),
+                  border: Border.all(color: _homeBorder),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,22 +338,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       width: 58,
                       height: 58,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [_green, _cyan],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(19)),
+                      decoration: BoxDecoration(
+                        color: _homeCardAccent,
+                        borderRadius: BorderRadius.circular(19),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.park_rounded,
-                        color: _background,
+                        color: _homeGreen,
                         size: 34,
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    const Text(
+                    SizedBox(height: 18),
+                    Text(
                       'Descarte Inteligente',
                       style: TextStyle(
                         color: _text,
@@ -342,16 +358,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         letterSpacing: -0.4,
                       ),
                     ),
-                    const SizedBox(height: 7),
-                    const Text(
+                    SizedBox(height: 7),
+                    Text(
                       'Tecnologia a favor de uma cidade mais sustentável.',
                       style: TextStyle(color: _muted, height: 1.5, fontSize: 13),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: 24),
+              Text(
                 'O que você encontra aqui',
                 style: TextStyle(
                   color: _text,
@@ -359,29 +375,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildAboutFeature(
                 icon: Icons.search_rounded,
                 accent: _cyan,
                 title: 'Identificação de resíduos',
                 description: 'Consulte materiais e encontre orientações para o descarte correto.',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildAboutFeature(
                 icon: Icons.chat_bubble_outline_rounded,
                 accent: _green,
                 title: 'Assistente ecológico',
                 description: 'Tire dúvidas e receba orientações sobre separação e descarte.',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildAboutFeature(
                 icon: Icons.location_on_outlined,
                 accent: const Color(0xFFB8A0FF),
                 title: 'Pontos de coleta',
                 description: 'Consulte os locais cadastrados e visualize sua localização no mapa.',
               ),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: 24),
+              Text(
                 'Como funciona',
                 style: TextStyle(
                   color: _text,
@@ -389,28 +405,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _buildAboutFeature(
                 icon: Icons.manage_search_rounded,
                 accent: _cyan,
                 title: '1. Encontre o resíduo',
                 description: 'Pesquise pelo nome do material para consultar informações e orientações.',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildAboutFeature(
                 icon: Icons.lightbulb_outline_rounded,
                 accent: _green,
                 title: '2. Entenda como descartar',
                 description: 'Use o assistente ecológico para esclarecer dúvidas sobre preparo e separação.',
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildAboutFeature(
                 icon: Icons.map_outlined,
                 accent: const Color(0xFFB8A0FF),
                 title: '3. Consulte os pontos',
                 description: 'Visualize os locais cadastrados no mapa e confira as informações disponíveis.',
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -419,7 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: _border),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -459,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -468,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: _border),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -498,8 +514,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 18),
-              const Center(
+              SizedBox(height: 18),
+              Center(
                 child: Text(
                   'Descarte Inteligente • São Carlos - SP',
                   textAlign: TextAlign.center,
@@ -537,23 +553,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Icon(icon, color: accent, size: 23),
           ),
-          const SizedBox(width: 13),
+          SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: _text,
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: _muted,
                     fontSize: 11.5,
                     height: 1.4,
@@ -584,13 +600,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: NavigationBar(
         height: 62,
-        backgroundColor: const Color(0xFF091923),
+        backgroundColor: _palette.navigationBackground,
         indicatorColor: _green.withValues(alpha: 0.18),
         surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
           final selected = states.contains(WidgetState.selected);
           return TextStyle(
-            color: selected ? _green : _muted,
+            color: selected ? _green : _palette.navigationForeground,
             fontSize: 11,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
           );
@@ -643,13 +659,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Ink(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF103D3D), Color(0xFF102B40)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: _homeCard,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: _green.withValues(alpha: 0.72)),
+            border: Border.all(color: _homeBorder),
             boxShadow: [
               BoxShadow(
                 color: _green.withValues(alpha: 0.06),
@@ -664,21 +676,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: _green.withValues(alpha: 0.13),
+                  color: _homeCardAccent,
                   borderRadius: BorderRadius.circular(17),
-                  border: Border.all(color: _green.withValues(alpha: 0.28)),
+                  border: Border.all(color: _homeBorder),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.chat_rounded,
-                  color: _green,
+                  color: _homeGreen,
                   size: 23,
                   shadows: [
                     Shadow(color: Color(0x9955D6A2), blurRadius: 9),
                   ],
                 ),
               ),
-              const SizedBox(width: 14),
-              const Expanded(
+              SizedBox(width: 14),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -702,8 +714,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              const Icon(Icons.chevron_right_rounded, color: _green, size: 28),
+              SizedBox(width: 8),
+              Icon(Icons.chevron_right_rounded, color: _homeGreen, size: 28),
             ],
           ),
         ),
@@ -734,14 +746,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: _cyan.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.location_on_outlined,
                   color: _cyan,
                   size: 29,
                 ),
               ),
-              const SizedBox(width: 14),
-              const Expanded(
+              SizedBox(width: 14),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -765,7 +777,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_rounded, color: _cyan, size: 21),
+              Icon(Icons.arrow_forward_rounded, color: _cyan, size: 21),
             ],
           ),
         ),
@@ -790,7 +802,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: materials.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 11),
+        separatorBuilder: (_, _) => SizedBox(width: 11),
         itemBuilder: (context, index) {
           final material = materials[index];
           return SizedBox(
@@ -819,13 +831,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Icon(material.icon, color: _homeGreen, size: 29),
                       ),
-                      const SizedBox(height: 11),
+                      SizedBox(height: 11),
                       Text(
                         material.label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: _homeText, fontSize: 12, fontWeight: FontWeight.w700),
+                        style: TextStyle(color: _homeText, fontSize: 12, fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
@@ -867,7 +879,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: _homeCardAccent,
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.lightbulb_outline_rounded, color: _homeGreen, size: 14),
@@ -876,24 +888,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    const Spacer(),
+                    Spacer(),
                     Icon(_dailyFact.icon, color: _homeGreen, size: 23),
                   ],
                 ),
-                const SizedBox(height: 17),
+                SizedBox(height: 17),
                 Text(
                   _dailyFact.title,
-                  style: const TextStyle(color: _homeText, fontSize: 19, height: 1.15, fontWeight: FontWeight.w900, letterSpacing: -0.35),
+                  style: TextStyle(color: _homeText, fontSize: 19, height: 1.15, fontWeight: FontWeight.w900, letterSpacing: -0.35),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 290),
+                  constraints: BoxConstraints(maxWidth: 290),
                   child: Text(
                     _dailyFact.text,
-                    style: const TextStyle(color: Color(0xFF52685B), fontSize: 12.5, height: 1.5),
+                    style: TextStyle(color: Color(0xFF52685B), fontSize: 12.5, height: 1.5),
                   ),
                 ),
-                const SizedBox(height: 15),
+                SizedBox(height: 15),
               ],
             ),
           ),
@@ -931,17 +943,18 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = dark ? const Color(0xFF315743) : const Color(0xFFF2F8FA);
-    final secondary = dark ? const Color(0xFF587A63) : const Color(0xFFB7D4C9);
+    final palette = context.appPalette;
+    final foreground = palette.text;
+    final secondary = palette.muted;
     return Column(
       children: [
-        Icon(icon, color: dark ? const Color(0xFF477A5A) : const Color(0xFF9BE7C7), size: 18),
-        const SizedBox(height: 7),
+        Icon(icon, color: palette.primary, size: 18),
+        SizedBox(height: 7),
         Text(
           value,
           style: TextStyle(color: foreground, fontSize: 19, fontWeight: FontWeight.w900, height: 1),
         ),
-        const SizedBox(height: 5),
+        SizedBox(height: 5),
         Text(
           label,
           maxLines: 1,
@@ -988,17 +1001,17 @@ class _ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF0D202B),
+      color: context.appPalette.surface,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 172),
+          constraints: BoxConstraints(minHeight: 172),
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF204653)),
+            border: Border.all(color: context.appPalette.border),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1013,36 +1026,36 @@ class _ActionCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: accent, size: 25),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 title,
-                style: const TextStyle(
-                  color: Color(0xFFF2F8FA),
+                style: TextStyle(
+                  color: context.appPalette.text,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 5),
               Text(
                 description,
-                style: const TextStyle(
-                  color: Color(0xFFADC1CC),
+                style: TextStyle(
+                  color: context.appPalette.muted,
                   fontSize: 11.5,
                   height: 1.35,
                 ),
               ),
               if (disabled) ...[
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF172F3C),
+                    color: context.appPalette.surfaceRaised,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Em breve',
                     style: TextStyle(
-                      color: Color(0xFFADC1CC),
+                      color: context.appPalette.muted,
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700,
                     ),
