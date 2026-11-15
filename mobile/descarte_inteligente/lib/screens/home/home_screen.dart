@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   AppPalette get _palette => context.appPalette;
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
-  Color get _surfaceRaised => _palette.surfaceRaised;
   static const _green = AppColors.emerald;
   static const _cyan = AppColors.cyan;
   Color get _text => _palette.text;
@@ -30,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Color get _border => _palette.border;
 
   Color get _homeBackground => _palette.background;
-  Color get _homeSurface => _palette.surface;
   Color get _homeGreen => _palette.primary;
   Color get _homeText => _palette.text;
   Color get _homeMuted => _palette.muted;
@@ -99,7 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openCollectionPoints() => setState(() => _currentIndex = 3);
 
-  void _showAbout() => setState(() => _currentIndex = 5);
 
   void _onNavigation(int index) {
     setState(() {
@@ -649,142 +646,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildChatCard() {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(22),
-      child: InkWell(
-        onTap: _openChat,
-        borderRadius: BorderRadius.circular(22),
-        child: Ink(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: _homeCard,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: _homeBorder),
-            boxShadow: [
-              BoxShadow(
-                color: _green.withValues(alpha: 0.06),
-                blurRadius: 22,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: _homeCardAccent,
-                  borderRadius: BorderRadius.circular(17),
-                  border: Border.all(color: _homeBorder),
-                ),
-                child: Icon(
-                  Icons.chat_rounded,
-                  color: _homeGreen,
-                  size: 23,
-                  shadows: [
-                    Shadow(color: Color(0x9955D6A2), blurRadius: 9),
-                  ],
-                ),
-              ),
-              SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Chat inteligente',
-                      style: TextStyle(
-                        color: _text,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Tire suas dúvidas sobre descarte',
-                      style: TextStyle(
-                        color: _muted,
-                        fontSize: 12.5,
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 8),
-              Icon(Icons.chevron_right_rounded, color: _homeGreen, size: 28),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCollectionCard() {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: _openCollectionPoints,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 17),
-          decoration: BoxDecoration(
-            color: _surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: _border),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: _cyan.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  Icons.location_on_outlined,
-                  color: _cyan,
-                  size: 29,
-                ),
-              ),
-              SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pontos de coleta',
-                      style: TextStyle(
-                        color: _text,
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Consulte os locais cadastrados no aplicativo.',
-                      style: TextStyle(
-                        color: _muted,
-                        fontSize: 12.5,
-                        height: 1.35,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.arrow_forward_rounded, color: _cyan, size: 21),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildMaterialShortcuts() {
     const materials = <_MaterialShortcut>[
       _MaterialShortcut('Plástico', Icons.local_drink_outlined, 'plástico'),
@@ -979,93 +840,4 @@ class _MaterialShortcut {
   final IconData icon;
   final String query;
   const _MaterialShortcut(this.label, this.icon, this.query);
-}
-
-class _ActionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final Color accent;
-  final bool disabled;
-  final VoidCallback? onTap;
-
-  const _ActionCard({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.accent,
-    this.disabled = false,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: context.appPalette.surface,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          constraints: BoxConstraints(minHeight: 172),
-          padding: const EdgeInsets.all(13),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: context.appPalette.border),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.11),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: accent.withValues(alpha: 0.26)),
-                ),
-                child: Icon(icon, color: accent, size: 25),
-              ),
-              SizedBox(height: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  color: context.appPalette.text,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              SizedBox(height: 5),
-              Text(
-                description,
-                style: TextStyle(
-                  color: context.appPalette.muted,
-                  fontSize: 11.5,
-                  height: 1.35,
-                ),
-              ),
-              if (disabled) ...[
-                SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: context.appPalette.surfaceRaised,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Em breve',
-                    style: TextStyle(
-                      color: context.appPalette.muted,
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
