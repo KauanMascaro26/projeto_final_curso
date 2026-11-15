@@ -95,8 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _currentIndex = 2;
       });
 
-  void _openCollectionPoints() => setState(() => _currentIndex = 3);
-
 
   void _onNavigation(int index) {
     setState(() {
