@@ -17,7 +17,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   AppPalette get _palette => context.appPalette;
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
-  static const _green = AppColors.emerald;
+  Color get _green => _palette.primary;
   Color get _text => _palette.text;
   Color get _muted => _palette.muted;
   late Future<List<Map<String, dynamic>>> _favorites;
