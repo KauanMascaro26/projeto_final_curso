@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../core/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/widgets/app_notification.dart';
@@ -12,11 +14,12 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  static const _background = Color(0xFF07131D);
-  static const _surface = Color(0xFF0D202B);
-  static const _green = Color(0xFF55D6A2);
-  static const _text = Color(0xFFF2F8FA);
-  static const _muted = Color(0xFFADC1CC);
+  AppPalette get _palette => context.appPalette;
+  Color get _background => _palette.background;
+  Color get _surface => _palette.surface;
+  static const _green = AppColors.emerald;
+  Color get _text => _palette.text;
+  Color get _muted => _palette.muted;
   late Future<List<Map<String, dynamic>>> _favorites;
 
   @override
@@ -111,15 +114,16 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return Scaffold(
       backgroundColor: _background,
       appBar: AppBar(
-        title: const Text('Favoritos'),
+        title: Text('Favoritos'),
         backgroundColor: _background,
         foregroundColor: _text,
+        actions: [AppThemeToggleButton()],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _favorites,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(
@@ -128,18 +132,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline, color: _muted, size: 42),
-                    const SizedBox(height: 12),
-                    const Text(
+                    Icon(Icons.error_outline, color: _muted, size: 42),
+                    SizedBox(height: 12),
+                    Text(
                       'Não foi possível carregar seus favoritos.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: _text, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: () => setState(_load),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Tentar novamente'),
+                      icon: Icon(Icons.refresh),
+                      label: Text('Tentar novamente'),
                     ),
                   ],
                 ),
@@ -150,7 +154,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               .where((item) => item['type'] == 'point')
               .toList();
           if (items.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(28),
                 child: Column(
@@ -177,7 +181,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: items.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 9),
+            separatorBuilder: (_, _) => SizedBox(height: 9),
             itemBuilder: (context, index) {
               final item = items[index];
               final rawData = item['data'];
@@ -190,7 +194,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 decoration: BoxDecoration(
                   color: _surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF204653)),
+                  border: Border.all(color: _palette.border),
                 ),
                 child: ListTile(
                   onTap: () => _openInGoogleMaps(data),
@@ -198,15 +202,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     Icons.location_on_outlined,
                     color: _green,
                   ),
-                  title: Text(title, style: const TextStyle(color: _text, fontWeight: FontWeight.bold)),
-                  subtitle: Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: _muted)),
+                  title: Text(title, style: TextStyle(color: _text, fontWeight: FontWeight.bold)),
+                  subtitle: Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: _muted)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.map_outlined, color: _muted, size: 19),
+                      Icon(Icons.map_outlined, color: _muted, size: 19),
                       IconButton(
                         tooltip: 'Remover dos favoritos',
-                        icon: const Icon(Icons.favorite, color: _green),
+                        icon: Icon(Icons.favorite, color: _green),
                         onPressed: item['id'] is num
                             ? () => _remove(
                                   item['type'].toString(),
