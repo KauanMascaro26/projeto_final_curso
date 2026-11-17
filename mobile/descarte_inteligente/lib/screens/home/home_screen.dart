@@ -292,7 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            AppThemeToggleButton(color: _homeText),
           ],
         ),
       ),
@@ -306,8 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: _background,
         foregroundColor: _text,
         elevation: 0,
-        title: const Text('Sobre', style: TextStyle(fontWeight: FontWeight.w800)),
-        actions: [AppThemeToggleButton()],
+        title: const Text('Sobre', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
