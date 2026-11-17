@@ -113,11 +113,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return Scaffold(
       backgroundColor: _background,
       appBar: AppBar(
-        title: const Text('Favoritos'),
+        title: const Text('Favoritos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
         backgroundColor: _background,
         foregroundColor: _text,
         elevation: 0,
-        actions: [AppThemeToggleButton()],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _favorites,
