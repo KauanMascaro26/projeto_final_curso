@@ -144,7 +144,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                         waste['reciclavel'] == true
                             ? Icons.recycling
                             : Icons.info_outline,
-                        color: _green,
+                        color: _palette.primaryForeground,
                       ),
                       SizedBox(width: 8),
                       Expanded(
