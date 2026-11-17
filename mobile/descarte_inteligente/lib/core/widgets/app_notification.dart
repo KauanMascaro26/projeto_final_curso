@@ -16,7 +16,6 @@ enum AppNotificationType {
 class AppNotification {
   AppNotification._();
 
-  static const _green = Color(0xFF55D6A2);
   static const _cyan = Color(0xFF53D9F5);
   static const _orange = Color(0xFFFFB45C);
   static const _red = Color(0xFFFF7777);
@@ -94,7 +93,7 @@ class _NotificationCardState extends State<_NotificationCard> {
   Widget build(BuildContext context) {
     final (Color color, IconData defaultIcon, String title) = switch (widget.type) {
       AppNotificationType.success => (
-          AppNotification._green,
+          context.appPalette.primary,
           Icons.check_circle_outline_rounded,
           'Concluído',
         ),
