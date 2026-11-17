@@ -26,6 +26,17 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
   Color get _muted => _palette.muted;
   Color get _border => _palette.border;
 
+  static const List<_MaterialCategory> _materialCategories = [
+    _MaterialCategory('Plástico', Icons.local_drink_outlined, 'plástico'),
+    _MaterialCategory('Vidro', Icons.wine_bar_outlined, 'vidro'),
+    _MaterialCategory('Papel', Icons.description_outlined, 'papel'),
+    _MaterialCategory('Metal', Icons.settings_outlined, 'metal'),
+    _MaterialCategory('Pilhas', Icons.battery_full_rounded, 'pilha'),
+    _MaterialCategory('Eletrônicos', Icons.devices_other_rounded, 'eletrônico'),
+    _MaterialCategory('Óleo', Icons.water_drop_outlined, 'óleo'),
+    _MaterialCategory('Papelão', Icons.inventory_2_outlined, 'papelão'),
+  ];
+
   final TextEditingController _searchController = TextEditingController();
 
   List<Map<String, dynamic>> _wasteTypes = [];
@@ -338,12 +349,145 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
     );
   }
 
+  Widget _buildCategoryGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      itemCount: _materialCategories.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.88,
+      ),
+      itemBuilder: (context, index) {
+        final category = _materialCategories[index];
+        return Material(
+          color: _palette.surface,
+          borderRadius: BorderRadius.circular(19),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(19),
+            onTap: () {
+              _searchController.text = category.query;
+              _loadWasteTypes(query: category.query);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(19),
+                border: Border.all(color: _border),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 58,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      color: _palette.cardAccent,
+                      borderRadius: BorderRadius.circular(17),
+                    ),
+                    child: Icon(
+                      category.icon,
+                      color: _palette.text,
+                      size: 29,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    category.name,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: _palette.text,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildWasteResults() {
+    if (_wasteTypes.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            'Nenhum resíduo encontrado. Tente outra palavra.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: _muted),
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      itemCount: _wasteTypes.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final waste = _wasteTypes[index];
+        return Card(
+          color: _surface,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: BorderSide(color: _border),
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            leading: Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: _palette.cardAccent,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(Icons.recycling, color: _palette.text),
+            ),
+            title: Text(
+              waste['nome']?.toString() ?? 'Resíduo',
+              style: TextStyle(
+                color: _darkGreen,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                '${waste['categoria'] ?? 'Sem categoria'}\n'
+                '${waste['descricao'] ?? ''}',
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: _muted),
+              ),
+            ),
+            isThreeLine: true,
+            trailing: Icon(Icons.chevron_right, color: _muted),
+            onTap: () => _showWasteDetails(waste),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final showingCategories = _currentQuery.isEmpty;
+
     return Scaffold(
       backgroundColor: _background,
       appBar: AppBar(
-        title: Text('Identificar resíduo'),
+        title: Text('Buscar resíduos'),
         backgroundColor: _background,
         foregroundColor: _darkGreen,
         actions: [AppThemeToggleButton()],
@@ -352,74 +496,104 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
             decoration: BoxDecoration(
               color: _surface,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(24),
+              ),
               border: Border(bottom: BorderSide(color: _border)),
             ),
             child: Text(
-              'O que você precisa descartar?\nPesquise um material para ver as orientações corretas.',
-              style: TextStyle(color: _darkGreen, fontSize: 16, height: 1.4),
+              'Encontre o material que deseja descartar.\n'
+              'Escolha uma categoria ou pesquise pelo nome.',
+              style: TextStyle(
+                color: _darkGreen,
+                fontSize: 15,
+                height: 1.4,
+              ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (value) => _loadWasteTypes(query: value),
-                    style: TextStyle(color: _darkGreen),
-                    decoration: InputDecoration(
-                      hintText: 'Ex.: garrafa PET, pilha, papelão',
-                      prefixIcon: Icon(Icons.search, color: _cyan),
-                      prefixIconColor: _cyan,
-                      hintStyle: TextStyle(color: _muted),
-                      filled: true,
-                      fillColor: _surfaceRaised,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: _border),
+            child: TextField(
+              controller: _searchController,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (value) => _loadWasteTypes(query: value),
+              style: TextStyle(color: _darkGreen),
+              decoration: InputDecoration(
+                hintText: 'Ex.: garrafa PET, pilha, papelão',
+                prefixIcon: Icon(Icons.search, color: _muted),
+                hintStyle: TextStyle(color: _muted),
+                filled: true,
+                fillColor: _surfaceRaised,
+                suffixIcon: IconButton(
+                  tooltip: 'Pesquisar',
+                  onPressed: () =>
+                      _loadWasteTypes(query: _searchController.text),
+                  icon: Icon(Icons.arrow_forward_rounded, color: _palette.text),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: _border),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: _border),
+                ),
+              ),
+            ),
+          ),
+          if (!showingCategories)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 16, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Resultados para "$_currentQuery"',
+                      style: TextStyle(
+                        color: _darkGreen,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: 8),
-                IconButton.filled(
-                  onPressed: () => _loadWasteTypes(query: _searchController.text),
-                  style: IconButton.styleFrom(
-                    backgroundColor: _green,
-                    foregroundColor: _palette.primaryForeground,
-                    padding: const EdgeInsets.all(16),
+                  TextButton.icon(
+                    onPressed: () {
+                      _searchController.clear();
+                      _loadWasteTypes();
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: _palette.text,
+                    ),
+                    icon: Icon(Icons.close, size: 17),
+                    label: Text('Limpar'),
                   ),
-                  icon: Icon(Icons.search),
-                  tooltip: 'Pesquisar',
-                ),
-              ],
-            ),
-          ),
-          if (_currentQuery.isNotEmpty)
+                ],
+              ),
+            )
+          else
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 2),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: () {
-                    _searchController.clear();
-                    _loadWasteTypes();
-                  },
-                  style: TextButton.styleFrom(foregroundColor: _cyan),
-                  icon: Icon(Icons.close),
-                  label: Text('Limpar pesquisa'),
+                child: Text(
+                  'Categorias',
+                  style: TextStyle(
+                    color: _darkGreen,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ),
           Expanded(
             child: _isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: _palette.text,
+                    ),
+                  )
                 : _errorMessage != null
                     ? Center(
                         child: Padding(
@@ -427,10 +601,18 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.cloud_off_outlined, size: 48, color: _muted),
-                              SizedBox(height: 12),
-                              Text(_errorMessage!, textAlign: TextAlign.center, style: TextStyle(color: _muted)),
-                              SizedBox(height: 12),
+                              Icon(
+                                Icons.cloud_off_outlined,
+                                size: 48,
+                                color: _muted,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _errorMessage!,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: _muted),
+                              ),
+                              const SizedBox(height: 12),
                               FilledButton.icon(
                                 onPressed: () => _loadWasteTypes(
                                   query: _searchController.text,
@@ -442,68 +624,22 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                           ),
                         ),
                       )
-                    : _wasteTypes.isEmpty
-                        ? Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(24),
-                              child: Text(
-                                'Nenhum resíduo encontrado. Tente outra palavra.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: _muted),
-                              ),
-                            ),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                            itemCount: _wasteTypes.length,
-                            separatorBuilder: (_, _) => SizedBox(height: 10),
-                            itemBuilder: (context, index) {
-                              final waste = _wasteTypes[index];
-                              return Card(
-                                color: _surface,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18),
-                                  side: BorderSide(color: _border),
-                                ),
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                  leading: Container(
-                                    width: 46,
-                                    height: 46,
-                                    decoration: BoxDecoration(
-                                      color: _green.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    child: Icon(Icons.recycling, color: _green),
-                                  ),
-                                  title: Text(
-                                    waste['nome']?.toString() ?? 'Resíduo',
-                                    style: TextStyle(color: _darkGreen, fontWeight: FontWeight.bold),
-                                  ),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.only(top: 5),
-                                    child: Text(
-                                      '${waste['categoria'] ?? 'Sem categoria'}\n'
-                                      '${waste['descricao'] ?? ''}',
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(color: _muted),
-                                    ),
-                                  ),
-                                  isThreeLine: true,
-                                  trailing: Icon(Icons.chevron_right, color: _muted),
-                                  onTap: () => _showWasteDetails(waste),
-                                ),
-                              );
-                            },
-                          ),
+                    : showingCategories
+                        ? _buildCategoryGrid()
+                        : _buildWasteResults(),
           ),
         ],
       ),
     );
   }
+
+}
+
+
+class _MaterialCategory {
+  final String name;
+  final IconData icon;
+  final String query;
+
+  const _MaterialCategory(this.name, this.icon, this.query);
 }
