@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            AppThemeToggleButton(color: _homeGreen),
+            AppThemeToggleButton(color: _homeText),
           ],
         ),
       ),
