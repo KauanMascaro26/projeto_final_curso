@@ -200,7 +200,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   onTap: () => _openInGoogleMaps(data),
                   leading: Icon(
                     Icons.location_on_outlined,
-                    color: _green,
+                    color: _palette.primaryForeground,
                   ),
                   title: Text(title, style: TextStyle(color: _text, fontWeight: FontWeight.bold)),
                   subtitle: Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: _muted)),
