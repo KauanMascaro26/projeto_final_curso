@@ -469,127 +469,162 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildWelcome() {
-    return SingleChildScrollView(
-      controller: _scrollController,
-      padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(
-              color: _palette.card,
-              borderRadius: BorderRadius.circular(26),
-              border: Border.all(color: _border),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  right: -12,
-                  top: -18,
-                  child: Icon(Icons.auto_awesome_rounded, size: 125,
-                    color: _green.withValues(alpha: 0.09)),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 54,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [_green, _cyan],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Icon(Icons.eco_rounded,
-                        color: _palette.primaryForeground, size: 29),
-                    ),
-                    const SizedBox(height: 20),
-                    Text('SEU GUIA PARA\nUM DESCARTE MELHOR',
-                      style: TextStyle(color: _text, fontSize: 24,
-                        height: 1.12, letterSpacing: -0.6, fontWeight: FontWeight.w900)),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Pergunte sobre qualquer resíduo e descubra como separar, preparar e encontrar o destino correto.',
-                      style: TextStyle(color: _muted, fontSize: 12.5, height: 1.5),
-                    ),
-                    const SizedBox(height: 15),
-                    Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.circle, color: _palette.primaryForeground, size: 7),
-                      const SizedBox(width: 6),
-                      Text('ASSISTENTE ECOLÓGICO',
-                        style: TextStyle(color: _palette.primaryForeground,
-                          fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w900)),
-                    ]),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 25),
-          Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 590;
+        final cardHeight = compact ? 112.0 : 132.0;
+        final suggestionHeight = compact ? 104.0 : 116.0;
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(18, compact ? 6 : 10, 18, compact ? 6 : 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              Container(
+                width: double.infinity,
+                constraints: BoxConstraints(minHeight: cardHeight),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 17,
+                  vertical: compact ? 13 : 17,
+                ),
+                decoration: BoxDecoration(
+                  color: _palette.card,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: _border),
+                ),
+                child: Stack(
                   children: [
-                    Text('POR ONDE COMEÇAR?',
-                      style: TextStyle(color: _muted, fontSize: 9,
-                        letterSpacing: 1.3, fontWeight: FontWeight.w900)),
-                    const SizedBox(height: 4),
-                    Text('Explore um assunto',
-                      style: TextStyle(color: _text, fontSize: 18,
-                        fontWeight: FontWeight.w900, letterSpacing: -0.3)),
+                    Positioned(
+                      right: -5,
+                      top: -8,
+                      child: Icon(
+                        Icons.auto_awesome_rounded,
+                        size: compact ? 82 : 96,
+                        color: _green.withValues(alpha: 0.08),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Como posso ajudar?',
+                          style: TextStyle(
+                            color: _text,
+                            fontSize: compact ? 20 : 22,
+                            height: 1.15,
+                            letterSpacing: -0.4,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        SizedBox(height: 7),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 290),
+                          child: Text(
+                            'Tire dúvidas sobre separação, preparo e descarte correto dos resíduos.',
+                            style: TextStyle(
+                              color: _muted,
+                              fontSize: compact ? 11.5 : 12,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              Icon(Icons.touch_app_outlined, color: _palette.primaryForeground, size: 19),
+              SizedBox(height: compact ? 13 : 17),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'IDEIAS PARA COMEÇAR',
+                          style: TextStyle(
+                            color: _muted,
+                            fontSize: 9,
+                            letterSpacing: 1.1,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          'Escolha um assunto',
+                          style: TextStyle(
+                            color: _text,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.touch_app_outlined,
+                    color: _palette.primaryForeground,
+                    size: 19,
+                  ),
+                ],
+              ),
+              SizedBox(height: compact ? 9 : 12),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _suggestions.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 9,
+                  mainAxisSpacing: 9,
+                  mainAxisExtent: suggestionHeight,
+                ),
+                itemBuilder: (context, index) {
+                  final item = _suggestions[index];
+                  return _SuggestionCard(
+                    item: item,
+                    onTap: () => _sendMessage(item.prompt),
+                  );
+                },
+              ),
+              SizedBox(height: compact ? 9 : 12),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: compact ? 9 : 11,
+                ),
+                decoration: BoxDecoration(
+                  color: _surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: _border),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.edit_note_rounded,
+                      color: _palette.primaryForeground,
+                      size: 20,
+                    ),
+                    SizedBox(width: 9),
+                    Expanded(
+                      child: Text(
+                        'Ou digite sua própria pergunta no campo abaixo.',
+                        style: TextStyle(
+                          color: _muted,
+                          fontSize: 11,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 13),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _suggestions.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              mainAxisExtent: 126,
-            ),
-            itemBuilder: (context, index) {
-              final item = _suggestions[index];
-              return _SuggestionCard(
-                item: item,
-                onTap: () => _sendMessage(item.prompt),
-              );
-            },
-          ),
-          const SizedBox(height: 15),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-            decoration: BoxDecoration(
-              color: _surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: _border),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.edit_note_rounded, color: _palette.primaryForeground, size: 22),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text('Ou escreva sua própria pergunta no campo abaixo.',
-                    style: TextStyle(color: _muted, fontSize: 11.5, height: 1.4)),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
