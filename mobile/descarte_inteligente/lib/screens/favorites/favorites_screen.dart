@@ -113,16 +113,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return Scaffold(
       backgroundColor: _background,
       appBar: AppBar(
-        title: Text('Favoritos'),
+        title: const Text('Favoritos'),
         backgroundColor: _background,
         foregroundColor: _text,
+        elevation: 0,
         actions: [AppThemeToggleButton()],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _favorites,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(
@@ -131,45 +132,63 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.error_outline, color: _muted, size: 42),
-                    SizedBox(height: 12),
+                    Icon(Icons.error_outline_rounded, color: _muted, size: 42),
+                    const SizedBox(height: 12),
                     Text(
                       'Não foi possível carregar seus favoritos.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: _text, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: () => setState(_load),
-                      icon: Icon(Icons.refresh),
-                      label: Text('Tentar novamente'),
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('Tentar novamente'),
                     ),
                   ],
                 ),
               ),
             );
           }
+
           final items = (snapshot.data ?? [])
               .where((item) => item['type'] == 'point')
               .toList();
+
           if (items.isEmpty) {
             return Center(
               child: Padding(
-                padding: EdgeInsets.all(28),
+                padding: const EdgeInsets.all(28),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.favorite_border, color: _muted, size: 48),
-                    SizedBox(height: 12),
+                    Container(
+                      width: 76,
+                      height: 76,
+                      decoration: BoxDecoration(
+                        color: _palette.cardAccent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.favorite_border_rounded,
+                        color: _palette.primaryForeground,
+                        size: 34,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
                     Text(
-                      'Você ainda não salvou favoritos.',
-                      style: TextStyle(color: _text, fontSize: 16, fontWeight: FontWeight.bold),
+                      'Sua lista está vazia',
+                      style: TextStyle(
+                        color: _text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 6),
+                    const SizedBox(height: 7),
                     Text(
-                      'Salve pontos de coleta para encontrá-los rapidamente aqui.',
-                      style: TextStyle(color: _muted, height: 1.4),
+                      'Toque no coração de um ponto de coleta para salvá-lo aqui.',
+                      style: TextStyle(color: _muted, height: 1.45, fontSize: 13),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -177,71 +196,60 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               ),
             );
           }
+
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 32),
             children: [
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: _palette.card,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: _palette.border),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: _palette.cardAccent,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Icon(
-                        Icons.favorite_rounded,
-                        color: _palette.primaryForeground,
-                        size: 25,
-                      ),
-                    ),
-                    SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Seus pontos salvos',
-                            style: TextStyle(
-                              color: _text,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                            ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Seus lugares',
+                          style: TextStyle(
+                            color: _text,
+                            fontSize: 25,
+                            height: 1.1,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.6,
                           ),
-                          SizedBox(height: 3),
-                          Text(
-                            'Acesse rapidamente os locais que você marcou.',
-                            style: TextStyle(color: _muted, fontSize: 12, height: 1.35),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: _palette.cardAccent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${items.length}',
-                        style: TextStyle(
-                          color: _palette.primaryForeground,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
                         ),
-                      ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Pontos de coleta que você quer ter por perto.',
+                          style: TextStyle(color: _muted, fontSize: 12.5),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: _palette.cardAccent,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.favorite_rounded, size: 15, color: _palette.primaryForeground),
+                        const SizedBox(width: 6),
+                        Text(
+                          '${items.length}',
+                          style: TextStyle(
+                            color: _palette.primaryForeground,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 18),
+              const SizedBox(height: 22),
               ...items.map((item) {
                 final rawData = item['data'];
                 final data = rawData is Map
@@ -250,32 +258,32 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 final title = (data['nome'] ?? 'Ponto de coleta').toString();
                 final subtitle = (data['endereco'] ?? 'Endereço não informado').toString();
                 final origin = (data['origem'] ?? 'Público').toString();
-                final types = (data['tipos_residuos'] is List)
+                final types = data['tipos_residuos'] is List
                     ? List<String>.from(data['tipos_residuos'])
                     : <String>[];
 
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: 14),
                   decoration: BoxDecoration(
                     color: _surface,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: _palette.border),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: _palette.border.withValues(alpha: 0.75)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.035),
-                        blurRadius: 12,
-                        offset: Offset(0, 4),
+                        color: Colors.black.withValues(alpha: 0.045),
+                        blurRadius: 18,
+                        offset: const Offset(0, 7),
                       ),
                     ],
                   ),
                   child: Material(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(22),
                     child: InkWell(
                       onTap: () => _openInGoogleMaps(data),
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(22),
                       child: Padding(
-                        padding: const EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(17),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -283,47 +291,51 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  width: 46,
-                                  height: 46,
+                                  width: 50,
+                                  height: 50,
                                   decoration: BoxDecoration(
                                     color: _palette.cardAccent,
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(17),
                                   ),
                                   child: Icon(
                                     Icons.location_on_rounded,
                                     color: _palette.primaryForeground,
-                                    size: 24,
+                                    size: 25,
                                   ),
                                 ),
-                                SizedBox(width: 12),
+                                const SizedBox(width: 13),
                                 Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        title,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: _text,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 15,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'PONTO DE COLETA',
+                                          style: TextStyle(
+                                            color: _palette.primaryForeground,
+                                            fontSize: 9,
+                                            letterSpacing: 1.05,
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        subtitle,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: _muted,
-                                          fontSize: 12,
-                                          height: 1.35,
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          title,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: _text,
+                                            fontSize: 15,
+                                            height: 1.2,
+                                            fontWeight: FontWeight.w800,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
+                                const SizedBox(width: 4),
                                 IconButton(
                                   tooltip: 'Remover dos favoritos',
                                   visualDensity: VisualDensity.compact,
@@ -333,51 +345,57 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                             (item['id'] as num).toInt(),
                                           )
                                       : null,
-                                  icon: Icon(
-                                    Icons.favorite_rounded,
-                                    color: _palette.primaryForeground,
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: _palette.cardAccent,
+                                    foregroundColor: _palette.primaryForeground,
                                   ),
+                                  icon: const Icon(Icons.favorite_rounded, size: 19),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 13),
+                            const SizedBox(height: 14),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.account_balance_outlined, size: 15, color: _muted),
-                                SizedBox(width: 6),
+                                Icon(Icons.near_me_outlined, size: 16, color: _muted),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    origin,
+                                    subtitle,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       color: _muted,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 12,
+                                      height: 1.4,
                                     ),
-                                  ),
-                                ),
-                                Icon(Icons.open_in_new_rounded, size: 16, color: _palette.primaryForeground),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Ver rota',
-                                  style: TextStyle(
-                                    color: _palette.primaryForeground,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ],
                             ),
                             if (types.isNotEmpty) ...[
-                              SizedBox(height: 12),
+                              const SizedBox(height: 15),
+                              Divider(height: 1, color: _palette.border.withValues(alpha: 0.7)),
+                              const SizedBox(height: 12),
+                              Text(
+                                'ACEITA',
+                                style: TextStyle(
+                                  color: _muted,
+                                  fontSize: 9,
+                                  letterSpacing: 1,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
                               Wrap(
-                                spacing: 6,
-                                runSpacing: 6,
+                                spacing: 7,
+                                runSpacing: 7,
                                 children: types.take(4).map((type) {
                                   return Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                                     decoration: BoxDecoration(
                                       color: _palette.cardAccent,
-                                      borderRadius: BorderRadius.circular(9),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Text(
                                       type,
@@ -391,6 +409,42 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                                 }).toList(),
                               ),
                             ],
+                            const SizedBox(height: 15),
+                            Container(
+                              height: 1,
+                              color: _palette.border.withValues(alpha: 0.7),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Icon(Icons.account_balance_outlined, size: 15, color: _muted),
+                                const SizedBox(width: 7),
+                                Expanded(
+                                  child: Text(
+                                    origin,
+                                    style: TextStyle(
+                                      color: _muted,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  'Ver rota',
+                                  style: TextStyle(
+                                    color: _palette.primaryForeground,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 16,
+                                  color: _palette.primaryForeground,
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
