@@ -136,7 +136,7 @@ abstract final class AppTheme {
     background: Color(0xFFF7FAF8),
     surface: Color(0xFFFFFFFF),
     surfaceRaised: Color(0xFFF2F6F2),
-    card: Color(0xFFE0EDE2),
+    card: AppColors.cardGreen,
     cardAccent: Color(0xFFC9DCCB),
     text: Color(0xFF20352B),
     muted: Color(0xFF718078),
