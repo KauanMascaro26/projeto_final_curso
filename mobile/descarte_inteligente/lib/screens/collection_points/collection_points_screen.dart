@@ -29,12 +29,12 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   Color get _darkGreen => _palette.text;
   Color get _muted => _palette.muted;
   Color get _border => _palette.border;
-  static const _purple = Color(0xFFB69CFF);
-  static const _orange = Color(0xFFFFB45C);
-  static const _blue = Color(0xFF69B7FF);
-  static const _yellow = Color(0xFFFFD166);
-  static const _teal = Color(0xFF55D6C2);
-  static const _grey = Color(0xFFB0BEC5);
+  static const _purple = AppColors.wasteElectronics;
+  static const _orange = AppColors.wasteBattery;
+  static const _blue = AppColors.wastePlastic;
+  static const _yellow = AppColors.wastePaper;
+  static const _teal = AppColors.wasteGlass;
+  static const _grey = AppColors.wasteMetal;
 
   late Future<List<Map<String, dynamic>>> nearbyPoints;
 
@@ -219,10 +219,10 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     final value = _normalizeWasteType(type);
     if (value.contains('pilha') || value.contains('bateria')) return _orange;
     if (value.contains('eletron') || value.contains('celular') || value.contains('computador')) return _purple;
-    if (value.contains('oleo')) return _yellow;
+    if (value.contains('oleo')) return AppColors.wasteOil;
     if (value.contains('vidro')) return _teal;
     if (value.contains('aluminio') || value.contains('metal') || value.contains('lata')) return _grey;
-    if (value.contains('papel') || value.contains('papelao')) return _yellow;
+    if (value.contains('papel') || value.contains('papelao')) return AppColors.wastePaper;
     if (value.contains('plastico') || value.contains('pet')) return _blue;
     return _green;
   }
@@ -392,7 +392,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.10),
+                          color: color.withValues(alpha: 0.16),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Row(
@@ -867,8 +867,8 @@ class _PointFavoriteButton extends StatefulWidget {
 }
 
 class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
-  Color get _activeGreen => context.appPalette.primary;
-  Color get _outlineGreen => context.appPalette.primary;
+  Color get _activeGreen => const Color(0xFFE53935);
+  Color get _outlineGreen => context.appPalette.primaryForeground;
   late Future<bool> _savedFuture;
   bool _isSaved = false;
   bool _isLoading = false;
