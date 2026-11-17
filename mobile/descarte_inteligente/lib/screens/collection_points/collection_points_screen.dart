@@ -621,7 +621,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                   padding: EdgeInsets.zero,
                   onPressed: refreshLocation,
                   icon: Icon(Icons.my_location, size: 20),
-                  color: _green,
+                  color: _palette.primaryForeground,
                   tooltip: 'Atualizar localização',
                 ),
               ],
