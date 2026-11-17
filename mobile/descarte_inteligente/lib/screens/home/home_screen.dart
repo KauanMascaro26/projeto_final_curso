@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   AppPalette get _palette => context.appPalette;
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
-  Color get _green => _palette.primary;
   static const _cyan = AppColors.cyan;
   Color get _text => _palette.text;
   Color get _muted => _palette.muted;
