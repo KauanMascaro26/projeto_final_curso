@@ -391,7 +391,6 @@ class _ChatScreenState extends State<ChatScreen> {
         scrolledUnderElevation: 0,
         toolbarHeight: 60,
         titleSpacing: 4,
-        actions: [AppThemeToggleButton()],
         title: Padding(
           padding: const EdgeInsets.only(left: 12),
           child: Column(
@@ -402,7 +401,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 'Assistente ecológico',
                 style: TextStyle(
                   color: _text,
-                  fontSize: 16,
+                  fontSize: 20,
+                  letterSpacing: -0.3,
                   fontWeight: FontWeight.w800,
                 ),
               ),
