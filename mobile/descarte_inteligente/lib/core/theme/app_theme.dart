@@ -4,6 +4,15 @@ abstract final class AppColors {
   static const emerald = Color(0xFF55D6A2);
   static const cardGreen = Color(0xFFE0EDE2);
   static const cyan = Color(0xFF53D9F5);
+
+  // Saturated, shared colors for waste categories across map and search.
+  static const wasteBattery = Color(0xFFE58A16);
+  static const wasteElectronics = Color(0xFF8050C8);
+  static const wasteOil = Color(0xFFD69A00);
+  static const wasteGlass = Color(0xFF008F83);
+  static const wasteMetal = Color(0xFF64748B);
+  static const wastePaper = Color(0xFFB7791F);
+  static const wastePlastic = Color(0xFF2878C7);
 }
 
 @immutable
