@@ -486,13 +486,35 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
               ),
             ),
             subtitle: Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Text(
-                '${waste['categoria'] ?? 'Sem categoria'}\n'
-                '${waste['descricao'] ?? ''}',
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: _muted),
+              padding: const EdgeInsets.only(top: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    waste['categoria']?.toString() ?? 'Sem categoria',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: _palette.primaryForeground,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                  if ((waste['descricao'] ?? '').toString().trim().isNotEmpty) ...[
+                    SizedBox(height: 3),
+                    Text(
+                      waste['descricao'].toString(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: _muted,
+                        fontSize: 12,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             isThreeLine: true,
