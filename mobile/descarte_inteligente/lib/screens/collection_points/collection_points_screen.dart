@@ -32,7 +32,6 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   static const _purple = AppColors.wasteElectronics;
   static const _orange = AppColors.wasteBattery;
   static const _blue = AppColors.wastePlastic;
-  static const _yellow = AppColors.wastePaper;
   static const _teal = AppColors.wasteGlass;
   static const _grey = AppColors.wasteMetal;
 
