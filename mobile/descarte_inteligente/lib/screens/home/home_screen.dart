@@ -807,7 +807,7 @@ class _StatItem extends StatelessWidget {
     final secondary = palette.muted;
     return Column(
       children: [
-        Icon(icon, color: palette.primary, size: 18),
+        Icon(icon, color: palette.primaryForeground, size: 18),
         SizedBox(height: 7),
         Text(
           value,
