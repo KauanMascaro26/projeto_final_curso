@@ -307,220 +307,197 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: _background,
         foregroundColor: _text,
         elevation: 0,
-        title: Text(
-          'Sobre',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
+        title: const Text('Sobre', style: TextStyle(fontWeight: FontWeight.w800)),
         actions: [AppThemeToggleButton()],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
                   color: _homeCard,
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(26),
                   border: Border.all(color: _homeBorder),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: [
-                    Container(
-                      width: 58,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: _homeCardAccent,
-                        borderRadius: BorderRadius.circular(19),
-                      ),
-                      child: Icon(
-                        Icons.park_rounded,
-                        color: _homeGreen,
-                        size: 34,
-                      ),
+                    Positioned(
+                      right: -20,
+                      top: -28,
+                      child: Icon(Icons.eco_rounded, size: 132,
+                        color: _homeGreen.withValues(alpha: 0.08)),
                     ),
-                    SizedBox(height: 18),
-                    Text(
-                      'Descarte Inteligente',
-                      style: TextStyle(
-                        color: _text,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.4,
-                      ),
-                    ),
-                    SizedBox(height: 7),
-                    Text(
-                      'Tecnologia a favor de uma cidade mais sustentável.',
-                      style: TextStyle(color: _muted, height: 1.5, fontSize: 13),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: _homeCardAccent,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Icon(Icons.eco_rounded, size: 14, color: _homeGreen),
+                            const SizedBox(width: 6),
+                            Text('SUSTENTABILIDADE + TECNOLOGIA',
+                              style: TextStyle(color: _homeGreen, fontSize: 9,
+                                letterSpacing: 0.8, fontWeight: FontWeight.w900)),
+                          ]),
+                        ),
+                        const SizedBox(height: 20),
+                        Text('Descarte\nInteligente',
+                          style: TextStyle(color: _text, fontSize: 29,
+                            height: 1.05, letterSpacing: -0.8, fontWeight: FontWeight.w900)),
+                        const SizedBox(height: 10),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 260),
+                          child: Text(
+                            'Pequenas atitudes, apoiadas pela tecnologia, ajudam a construir uma cidade mais sustentável.',
+                            style: TextStyle(color: _muted, fontSize: 12.5, height: 1.5),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 24),
-              Text(
-                'O que você encontra aqui',
-                style: TextStyle(
-                  color: _text,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              SizedBox(height: 12),
+              const SizedBox(height: 28),
+              _buildAboutSectionHeading('O que o app oferece', 'RECURSOS'),
+              const SizedBox(height: 13),
               _buildAboutFeature(
-                icon: Icons.search_rounded,
+                icon: Icons.document_scanner_rounded,
                 accent: _cyan,
                 title: 'Identificação de resíduos',
                 description: 'Consulte materiais e encontre orientações para o descarte correto.',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               _buildAboutFeature(
-                icon: Icons.chat_bubble_outline_rounded,
+                icon: Icons.forum_rounded,
                 accent: _homeGreen,
                 title: 'Assistente ecológico',
-                description: 'Tire dúvidas e receba orientações sobre separação e descarte.',
+                description: 'Tire dúvidas sobre separação, preparo e descarte de resíduos.',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               _buildAboutFeature(
-                icon: Icons.location_on_outlined,
+                icon: Icons.location_on_rounded,
                 accent: const Color(0xFFB8A0FF),
                 title: 'Pontos de coleta',
-                description: 'Consulte os locais cadastrados e visualize sua localização no mapa.',
+                description: 'Encontre locais cadastrados e consulte sua localização no mapa.',
               ),
-              SizedBox(height: 24),
-              Text(
-                'Como funciona',
-                style: TextStyle(
-                  color: _text,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              SizedBox(height: 12),
-              _buildAboutFeature(
-                icon: Icons.manage_search_rounded,
-                accent: _cyan,
-                title: '1. Encontre o resíduo',
-                description: 'Pesquise pelo nome do material para consultar informações e orientações.',
-              ),
-              SizedBox(height: 10),
-              _buildAboutFeature(
-                icon: Icons.lightbulb_outline_rounded,
-                accent: _green,
-                title: '2. Entenda como descartar',
-                description: 'Use o assistente ecológico para esclarecer dúvidas sobre preparo e separação.',
-              ),
-              SizedBox(height: 10),
-              _buildAboutFeature(
-                icon: Icons.map_outlined,
-                accent: const Color(0xFFB8A0FF),
-                title: '3. Consulte os pontos',
-                description: 'Visualize os locais cadastrados no mapa e confira as informações disponíveis.',
-              ),
-              SizedBox(height: 24),
+              const SizedBox(height: 28),
+              _buildAboutSectionHeading('Do resíduo ao destino correto', 'COMO FUNCIONA'),
+              const SizedBox(height: 15),
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(17),
                 decoration: BoxDecoration(
                   color: _surface,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(22),
                   border: Border.all(color: _border),
                 ),
                 child: Column(
+                  children: [
+                    _buildAboutStep('01', Icons.search_rounded, 'Identifique',
+                      'Pesquise o material que deseja descartar.', _cyan),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 17),
+                      child: Align(alignment: Alignment.centerLeft,
+                        child: Container(width: 1, height: 20, color: _border)),
+                    ),
+                    _buildAboutStep('02', Icons.lightbulb_outline_rounded, 'Receba orientação',
+                      'Confira as informações para separar e descartar corretamente.', _homeGreen),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 17),
+                      child: Align(alignment: Alignment.centerLeft,
+                        child: Container(width: 1, height: 20, color: _border)),
+                    ),
+                    _buildAboutStep('03', Icons.map_outlined, 'Encontre um ponto',
+                      'Consulte no mapa os locais de coleta disponíveis.', const Color(0xFFB8A0FF)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+              _buildAboutSectionHeading('Desenvolvido com', 'TECNOLOGIA'),
+              const SizedBox(height: 13),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: _surface,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: _border),
+                ),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildTechChip('Flutter'),
+                    _buildTechChip('Dart'),
+                    _buildTechChip('Python'),
+                    _buildTechChip('FastAPI'),
+                    _buildTechChip('PostgreSQL'),
+                    _buildTechChip('Inteligência artificial'),
+                    _buildTechChip('Geolocalização'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 22),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: _homeCardAccent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.memory_rounded, color: _cyan, size: 19),
-                        SizedBox(width: 8),
-                        Text(
-                          'Tecnologias do projeto',
-                          style: TextStyle(
-                            color: _text,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
+                    Icon(Icons.info_outline_rounded, color: _homeGreen, size: 21),
+                    const SizedBox(width: 11),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Informações importantes',
+                            style: TextStyle(color: _homeGreen, fontSize: 13,
+                              fontWeight: FontWeight.w900)),
+                          const SizedBox(height: 7),
+                          Text(
+                            'O aplicativo está em desenvolvimento e tem como foco orientar a identificação e o descarte correto de resíduos em São Carlos - SP. Os pontos exibidos dependem dos dados cadastrados. Antes de se deslocar, confirme se o local recebe o material desejado.',
+                            style: TextStyle(color: _text, fontSize: 11.5, height: 1.55),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      'Flutter e Dart • Aplicativo mobile',
-                      style: TextStyle(color: _text, fontWeight: FontWeight.w700, fontSize: 12.5),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Python e FastAPI • Serviços de backend',
-                      style: TextStyle(color: _muted, fontSize: 12.5),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'PostgreSQL • Banco de dados',
-                      style: TextStyle(color: _muted, fontSize: 12.5),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Inteligência artificial e geolocalização • Apoio à identificação e consulta de pontos',
-                      style: TextStyle(color: _muted, fontSize: 12.5, height: 1.4),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _surface,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: _border),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.info_outline_rounded, color: _palette.primaryForeground, size: 19),
-                        SizedBox(width: 8),
-                        Text(
-                          'Informações importantes',
-                          style: TextStyle(
-                            color: _text,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'O aplicativo está em desenvolvimento e tem como foco orientar a identificação e o descarte correto de resíduos em São Carlos - SP.',
-                      style: TextStyle(color: _muted, height: 1.5, fontSize: 12.5),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Os pontos exibidos dependem dos dados cadastrados. Antes de se deslocar, confirme diretamente com o estabelecimento se ele recebe o material desejado.',
-                      style: TextStyle(color: _muted, height: 1.5, fontSize: 12.5),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 18),
+              const SizedBox(height: 24),
               Center(
-                child: Text(
-                  'Descarte Inteligente • São Carlos - SP',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: _muted, fontSize: 11),
-                ),
+                child: Text('Descarte Inteligente  •  São Carlos - SP',
+                  style: TextStyle(color: _muted, fontSize: 10.5, fontWeight: FontWeight.w600)),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAboutSectionHeading(String title, String eyebrow) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(eyebrow, style: TextStyle(color: _homeGreen, fontSize: 9,
+          letterSpacing: 1.2, fontWeight: FontWeight.w900)),
+        const SizedBox(height: 5),
+        Text(title, style: TextStyle(color: _text, fontSize: 18,
+          letterSpacing: -0.3, fontWeight: FontWeight.w900)),
+      ],
     );
   }
 
@@ -531,50 +508,87 @@ class _HomeScreenState extends State<HomeScreen> {
     required String description,
   }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(19),
         border: Border.all(color: _border),
       ),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
+              color: accent.withValues(alpha: 0.13),
+              borderRadius: BorderRadius.circular(15),
             ),
             child: Icon(icon, color: accent, size: 23),
           ),
-          SizedBox(width: 13),
+          const SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: _text,
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(
-                    color: _muted,
-                    fontSize: 11.5,
-                    height: 1.4,
-                  ),
-                ),
+                Text(title, style: TextStyle(color: _text, fontSize: 13,
+                  fontWeight: FontWeight.w800)),
+                const SizedBox(height: 4),
+                Text(description, style: TextStyle(color: _muted,
+                  fontSize: 11.5, height: 1.4)),
               ],
             ),
           ),
+          const SizedBox(width: 5),
+          Icon(Icons.arrow_forward_ios_rounded, color: _muted, size: 13),
         ],
       ),
+    );
+  }
+
+  Widget _buildAboutStep(String number, IconData icon, String title,
+      String description, Color accent) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: accent.withValues(alpha: 0.13),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: accent, size: 19),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$number  $title', style: TextStyle(color: _text,
+                  fontSize: 12.5, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 4),
+                Text(description, style: TextStyle(color: _muted,
+                  fontSize: 11.5, height: 1.4)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTechChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+      decoration: BoxDecoration(
+        color: _homeCardAccent,
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: _homeBorder),
+      ),
+      child: Text(label, style: TextStyle(color: _homeGreen,
+        fontSize: 10.5, fontWeight: FontWeight.w800)),
     );
   }
 
