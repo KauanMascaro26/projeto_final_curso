@@ -46,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
       subtitle: 'Descarte seguro de eletrônicos',
       prompt: 'Como descarto uma pilha usada?',
       icon: Icons.battery_3_bar_rounded,
-      accent: _green,
+      accent: _palette.primaryForeground,
     ),
     _Suggestion(
       title: 'Plástico e garrafas',
@@ -405,7 +405,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(Icons.park_rounded, color: _background, size: 18),
+              child: Icon(Icons.park_rounded, color: _palette.primaryForeground, size: 18),
             ),
             SizedBox(width: 11),
             Expanded(
@@ -490,7 +490,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            child: Icon(Icons.eco_rounded, color: _green, size: 30),
+            child: Icon(Icons.eco_rounded, color: _palette.primaryForeground, size: 30),
           ),
           SizedBox(height: 12),
           Text(
@@ -532,7 +532,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
               ),
-              Icon(Icons.touch_app_outlined, color: _green.withValues(alpha: 0.9), size: 18),
+              Icon(Icons.touch_app_outlined, color: _palette.primaryForeground, size: 18),
             ],
           ),
           SizedBox(height: 8),
