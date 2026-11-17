@@ -867,7 +867,7 @@ class _PointFavoriteButton extends StatefulWidget {
 }
 
 class _PointFavoriteButtonState extends State<_PointFavoriteButton> {
-  Color get _activeGreen => const Color(0xFFE53935);
+  Color get _activeGreen => context.appPalette.primaryForeground;
   Color get _outlineGreen => context.appPalette.primaryForeground;
   late Future<bool> _savedFuture;
   bool _isSaved = false;
