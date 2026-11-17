@@ -775,7 +775,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         Text(
                           '${distance.toStringAsFixed(2)} km de você',
                           style: TextStyle(
-                            color: _palette.primaryForeground,
+                            color: _darkGreen,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
