@@ -25,6 +25,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
   Color get _surfaceRaised => _palette.surfaceRaised;
   Color get _green => _palette.primary;
   static const _cyan = AppColors.cyan;
+  static const _selectedFilterGreen = Color(0xFF26734D);
   Color get _darkGreen => _palette.text;
   Color get _muted => _palette.muted;
   Color get _border => _palette.border;
@@ -678,16 +679,16 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     avatar: Icon(
                       isAll ? Icons.grid_view_rounded : _categoryIcon(filter),
                       size: 14,
-                      color: selected ? _palette.primaryForeground : _muted,
+                      color: selected ? Colors.white : _muted,
                     ),
                     label: Text(filter, style: TextStyle(fontSize: 11)),
                     labelStyle: TextStyle(
                       color: selected ? _palette.primaryForeground : _muted,
                       fontWeight: FontWeight.w600,
                     ),
-                    selectedColor: _green,
+                    selectedColor: _selectedFilterGreen,
                     backgroundColor: _surfaceRaised,
-                    side: BorderSide(color: selected ? _green : _border),
+                    side: BorderSide(color: selected ? _selectedFilterGreen : _border),
                   );
                 },
               ),
@@ -764,7 +765,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                         Text(
                           '${distance.toStringAsFixed(2)} km de você',
                           style: TextStyle(
-                            color: _green,
+                            color: _palette.primaryForeground,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
