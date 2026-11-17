@@ -471,80 +471,95 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildWelcome() {
     return SingleChildScrollView(
       controller: _scrollController,
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 54,
-            height: 54,
+            width: double.infinity,
+            padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
-              color: context.appPalette.card,
-              borderRadius: BorderRadius.circular(19),
-              border: Border.all(color: _green.withValues(alpha: 0.45)),
-              boxShadow: [
-                BoxShadow(
-                  color: _cyan.withValues(alpha: 0.10),
-                  blurRadius: 30,
-                  spreadRadius: 1,
+              color: _palette.card,
+              borderRadius: BorderRadius.circular(26),
+              border: Border.all(color: _border),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: -12,
+                  top: -18,
+                  child: Icon(Icons.auto_awesome_rounded, size: 125,
+                    color: _green.withValues(alpha: 0.09)),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [_green, _cyan],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Icon(Icons.eco_rounded,
+                        color: _palette.primaryForeground, size: 29),
+                    ),
+                    const SizedBox(height: 20),
+                    Text('SEU GUIA PARA\nUM DESCARTE MELHOR',
+                      style: TextStyle(color: _text, fontSize: 24,
+                        height: 1.12, letterSpacing: -0.6, fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Pergunte sobre qualquer resíduo e descubra como separar, preparar e encontrar o destino correto.',
+                      style: TextStyle(color: _muted, fontSize: 12.5, height: 1.5),
+                    ),
+                    const SizedBox(height: 15),
+                    Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.circle, color: _palette.primaryForeground, size: 7),
+                      const SizedBox(width: 6),
+                      Text('ASSISTENTE ECOLÓGICO',
+                        style: TextStyle(color: _palette.primaryForeground,
+                          fontSize: 9, letterSpacing: 1, fontWeight: FontWeight.w900)),
+                    ]),
+                  ],
                 ),
               ],
             ),
-            child: Icon(Icons.eco_rounded, color: _palette.primaryForeground, size: 30),
           ),
-          SizedBox(height: 12),
-          Text(
-            'O QUE VAMOS',
-            style: TextStyle(
-              color: _muted,
-              fontSize: 11.5,
-              letterSpacing: 1.8,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'RECICLAR HOJE?',
-            style: TextStyle(
-              color: _text,
-              fontSize: 25,
-              height: 1.1,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.8,
-            ),
-          ),
-          SizedBox(height: 7),
-          Text(
-            'Tire suas dúvidas, descubra como separar seus resíduos e dê o próximo passo para um futuro mais sustentável.',
-            style: TextStyle(color: _muted, fontSize: 12.5, height: 1.4),
-          ),
-          SizedBox(height: 14),
+          const SizedBox(height: 25),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  'ESCOLHA UM TEMA',
-                  style: TextStyle(
-                    color: _text,
-                    fontSize: 12,
-                    letterSpacing: 1.4,
-                    fontWeight: FontWeight.w800,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('POR ONDE COMEÇAR?',
+                      style: TextStyle(color: _muted, fontSize: 9,
+                        letterSpacing: 1.3, fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 4),
+                    Text('Explore um assunto',
+                      style: TextStyle(color: _text, fontSize: 18,
+                        fontWeight: FontWeight.w900, letterSpacing: -0.3)),
+                  ],
                 ),
               ),
-              Icon(Icons.touch_app_outlined, color: _palette.primaryForeground, size: 18),
+              Icon(Icons.touch_app_outlined, color: _palette.primaryForeground, size: 19),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 13),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _suggestions.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              mainAxisExtent: 118,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              mainAxisExtent: 126,
             ),
             itemBuilder: (context, index) {
               final item = _suggestions[index];
@@ -554,23 +569,21 @@ class _ChatScreenState extends State<ChatScreen> {
               );
             },
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 15),
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
             decoration: BoxDecoration(
               color: _surface,
-              borderRadius: BorderRadius.circular(17),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: _border),
             ),
             child: Row(
               children: [
-                Icon(Icons.auto_awesome_rounded, color: _cyan, size: 21),
-                SizedBox(width: 11),
+                Icon(Icons.edit_note_rounded, color: _palette.primaryForeground, size: 22),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
-                    'Você também pode escrever uma pergunta com suas próprias palavras.',
-                    style: TextStyle(color: _muted, fontSize: 12, height: 1.4),
-                  ),
+                  child: Text('Ou escreva sua própria pergunta no campo abaixo.',
+                    style: TextStyle(color: _muted, fontSize: 11.5, height: 1.4)),
                 ),
               ],
             ),
@@ -582,15 +595,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildComposer() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 7, 12, 8),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
       decoration: BoxDecoration(
         color: _surface,
-        border: Border(top: BorderSide(color: _border)),
+        border: Border(top: BorderSide(color: _border.withValues(alpha: 0.8))),
         boxShadow: [
           BoxShadow(
-            color: Color(0x26000000),
-            blurRadius: 20,
-            offset: Offset(0, -5),
+            color: Colors.black.withValues(alpha: 0.045),
+            blurRadius: 18,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -600,55 +613,53 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
-              child: TextField(
-                controller: _messageController,
-                minLines: 1,
-                maxLines: 4,
-                textCapitalization: TextCapitalization.sentences,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => _sendMessage(),
-                style: TextStyle(color: _text, fontSize: 14),
-                decoration: InputDecoration(
-                  hintText: 'O que você quer descartar?',
-                  hintStyle: TextStyle(color: _muted, fontSize: 13),
-                  filled: true,
-                  fillColor: _surfaceRaised,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide(color: _border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide(color: _border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide(color: _green, width: 1.4),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _surfaceRaised,
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(color: _border),
+                ),
+                child: TextField(
+                  controller: _messageController,
+                  minLines: 1,
+                  maxLines: 4,
+                  textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => _sendMessage(),
+                  style: TextStyle(color: _text, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText: 'Pergunte sobre um resíduo...',
+                    hintStyle: TextStyle(color: _muted, fontSize: 12.5),
+                    filled: false,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
                   ),
                 ),
               ),
             ),
-            SizedBox(width: 9),
-            Opacity(
-              opacity: _isSending ? 0.42 : 1,
-              child: SizedBox(
-                width: 43,
-                height: 43,
-                child: FilledButton(
-                  onPressed: _isSending ? null : () => _sendMessage(),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: _green,
-                    foregroundColor: _palette.primaryForeground,
-                    disabledBackgroundColor: _green,
-                    disabledForegroundColor: _palette.primaryForeground,
-                    padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(17),
-                    ),
+            const SizedBox(width: 9),
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: FilledButton(
+                onPressed: _isSending ? null : () => _sendMessage(),
+                style: FilledButton.styleFrom(
+                  backgroundColor: _green,
+                  foregroundColor: _palette.primaryForeground,
+                  disabledBackgroundColor: _green.withValues(alpha: 0.5),
+                  disabledForegroundColor: _palette.primaryForeground,
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17),
                   ),
-                  child: Icon(Icons.arrow_upward_rounded, size: 25),
                 ),
+                child: _isSending
+                    ? const SizedBox(
+                        width: 18, height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.arrow_upward_rounded, size: 24),
               ),
             ),
           ],
