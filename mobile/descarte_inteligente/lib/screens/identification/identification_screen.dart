@@ -26,6 +26,23 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
   Color get _muted => _palette.muted;
   Color get _border => _palette.border;
 
+  Color _categoryColor(String category) {
+    final value = category.trim().toLowerCase()
+        .replaceAll('á', 'a').replaceAll('ã', 'a').replaceAll('â', 'a')
+        .replaceAll('à', 'a').replaceAll('é', 'e').replaceAll('ê', 'e')
+        .replaceAll('í', 'i').replaceAll('ó', 'o').replaceAll('ô', 'o')
+        .replaceAll('õ', 'o').replaceAll('ú', 'u').replaceAll('ç', 'c');
+
+    if (value.contains('pilha') || value.contains('bateria')) return AppColors.wasteBattery;
+    if (value.contains('eletron') || value.contains('celular') || value.contains('computador')) return AppColors.wasteElectronics;
+    if (value.contains('oleo')) return AppColors.wasteOil;
+    if (value.contains('vidro')) return AppColors.wasteGlass;
+    if (value.contains('aluminio') || value.contains('metal') || value.contains('lata')) return AppColors.wasteMetal;
+    if (value.contains('papel') || value.contains('papelao')) return AppColors.wastePaper;
+    if (value.contains('plastico') || value.contains('pet')) return AppColors.wastePlastic;
+    return _palette.primaryForeground;
+  }
+
   static const List<_MaterialCategory> _materialCategories = [
     _MaterialCategory('Plástico', Icons.local_drink_outlined, 'plástico'),
     _MaterialCategory('Vidro', Icons.wine_bar_outlined, 'vidro'),
@@ -122,10 +139,14 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: _palette.cardAccent,
+                      color: _categoryColor(
+                        waste['categoria']?.toString() ?? '',
+                      ).withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _palette.primaryForeground.withValues(alpha: 0.16),
+                        color: _categoryColor(
+                          waste['categoria']?.toString() ?? '',
+                        ).withValues(alpha: 0.45),
                       ),
                     ),
                     child: Row(
@@ -134,13 +155,17 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                         Icon(
                           Icons.category_rounded,
                           size: 18,
-                          color: _palette.primaryForeground,
+                          color: _categoryColor(
+                            waste['categoria']?.toString() ?? '',
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           waste['categoria']?.toString() ?? 'Sem categoria',
                           style: TextStyle(
-                            color: _palette.primaryForeground,
+                            color: _categoryColor(
+                              waste['categoria']?.toString() ?? '',
+                            ),
                             fontWeight: FontWeight.w800,
                             fontSize: 13,
                           ),
