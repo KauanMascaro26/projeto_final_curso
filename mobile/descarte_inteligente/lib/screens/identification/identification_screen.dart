@@ -316,7 +316,19 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.location_on_outlined, color: _green),
+                                  Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      color: _palette.cardAccent,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      Icons.location_on_rounded,
+                                      color: _palette.primaryForeground,
+                                      size: 22,
+                                    ),
+                                  ),
                                   SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
