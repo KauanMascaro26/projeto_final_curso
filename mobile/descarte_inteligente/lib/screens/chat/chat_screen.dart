@@ -774,7 +774,7 @@ class _MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final background = message.isUser
-        ? const Color(0xFF126D59)
+        ? context.appPalette.primary
         : context.appPalette.surface;
 
     return Align(
@@ -811,7 +811,7 @@ class _MessageBubble extends StatelessWidget {
                         paragraph.trim(),
                         style: TextStyle(
                           color: message.isUser
-                              ? Colors.white
+                              ? context.appPalette.primaryForeground
                               : context.appPalette.text,
                           fontSize: 14,
                           height: 1.48,
