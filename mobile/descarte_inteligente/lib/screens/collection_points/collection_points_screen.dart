@@ -730,7 +730,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                   ),
                   child: Icon(
                     Icons.location_on,
-                    color: _green,
+                    color: _palette.primaryForeground,
                     size: 22,
                   ),
                 ),
