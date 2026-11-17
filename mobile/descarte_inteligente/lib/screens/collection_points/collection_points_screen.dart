@@ -684,7 +684,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     avatar: Icon(
                       isAll ? Icons.grid_view_rounded : _categoryIcon(filter),
                       size: 14,
-                      color: selected ? _background : _muted,
+                      color: selected ? _palette.primaryForeground : _muted,
                     ),
                     label: Text(filter, style: TextStyle(fontSize: 11)),
                     labelStyle: TextStyle(
