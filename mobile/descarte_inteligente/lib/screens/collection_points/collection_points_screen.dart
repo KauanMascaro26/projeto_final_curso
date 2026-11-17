@@ -163,7 +163,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
             (point['latitude'] as num).toDouble(),
             (point['longitude'] as num).toDouble(),
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(150),
+          icon: BitmapDescriptor.defaultMarkerWithHue(_pointMarkerHue(point)),
           infoWindow: InfoWindow(
             title: point['nome'],
             snippet: point['distancia_km'] is num
@@ -237,6 +237,25 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
     if (value.contains('papel') || value.contains('papelao')) return Icons.description_outlined;
     if (value.contains('plastico') || value.contains('pet')) return Icons.recycling;
     return Icons.recycling;
+  }
+
+  bool _isPublicPoint(Map<String, dynamic> point) {
+    final origin = (point['origem'] ?? 'publico')
+        .toString()
+        .trim()
+        .toLowerCase();
+    return origin == 'publico' ||
+        origin == 'público' ||
+        origin == 'prefeitura';
+  }
+
+  Color _pointOriginColor(Map<String, dynamic> point) {
+    return _isPublicPoint(point) ? const Color(0xFF2E9D68) : _blue;
+  }
+
+  double _pointMarkerHue(Map<String, dynamic> point) {
+    // Google Maps hue: green for public points, blue for private points.
+    return _isPublicPoint(point) ? 145.0 : 210.0;
   }
 
   String _originLabel(String origin) {
@@ -731,7 +750,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                   ),
                   child: Icon(
                     Icons.location_on,
-                    color: _palette.primaryForeground,
+                    color: _pointOriginColor(point),
                     size: 22,
                   ),
                 ),
@@ -775,7 +794,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 15,
-                  color: _green,
+                  color: _pointOriginColor(point),
                 ),
               ],
             ),
