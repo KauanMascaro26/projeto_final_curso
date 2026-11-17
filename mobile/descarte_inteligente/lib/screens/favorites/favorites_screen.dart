@@ -210,7 +210,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       Icon(Icons.map_outlined, color: _muted, size: 19),
                       IconButton(
                         tooltip: 'Remover dos favoritos',
-                        icon: Icon(Icons.favorite, color: _green),
+                        icon: Icon(Icons.favorite, color: _palette.primaryForeground),
                         onPressed: item['id'] is num
                             ? () => _remove(
                                   item['type'].toString(),
