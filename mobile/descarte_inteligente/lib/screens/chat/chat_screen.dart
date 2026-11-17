@@ -454,7 +454,6 @@ class _ChatScreenState extends State<ChatScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxHeight < 590;
-        final cardHeight = compact ? 112.0 : 132.0;
         final suggestionHeight = compact ? 104.0 : 116.0;
 
         return Padding(
@@ -464,10 +463,9 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               Container(
                 width: double.infinity,
-                constraints: BoxConstraints(minHeight: cardHeight),
                 padding: EdgeInsets.symmetric(
                   horizontal: 17,
-                  vertical: compact ? 13 : 17,
+                  vertical: compact ? 10 : 13,
                 ),
                 decoration: BoxDecoration(
                   color: _palette.card,
@@ -496,7 +494,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: _text,
-                              fontSize: compact ? 20 : 22,
+                              fontSize: compact ? 19 : 21,
                               height: 1.15,
                               letterSpacing: -0.4,
                               fontWeight: FontWeight.w900,
