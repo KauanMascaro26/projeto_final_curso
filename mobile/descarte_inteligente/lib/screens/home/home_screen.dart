@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   AppPalette get _palette => context.appPalette;
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
-  static const _green = AppColors.emerald;
+  Color get _green => _palette.primary;
   static const _cyan = AppColors.cyan;
   Color get _text => _palette.text;
   Color get _muted => _palette.muted;
@@ -596,12 +596,12 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: NavigationBar(
         height: 62,
         backgroundColor: _palette.navigationBackground,
-        indicatorColor: _green.withValues(alpha: 0.18),
+        indicatorColor: _palette.cardAccent,
         surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
           final selected = states.contains(WidgetState.selected);
           return TextStyle(
-            color: selected ? _green : _palette.navigationForeground,
+            color: _palette.navigationForeground,
             fontSize: 11,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
           );
@@ -611,32 +611,32 @@ class _HomeScreenState extends State<HomeScreen> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded, color: _green),
+            selectedIcon: Icon(Icons.home_rounded),
             label: 'Início',
           ),
           NavigationDestination(
             icon: Icon(Icons.chat_bubble_outline_rounded),
-            selectedIcon: Icon(Icons.chat_rounded, color: _green),
+            selectedIcon: Icon(Icons.chat_rounded),
             label: 'Chat',
           ),
           NavigationDestination(
             icon: Icon(Icons.search_rounded),
-            selectedIcon: Icon(Icons.search_rounded, color: _green),
+            selectedIcon: Icon(Icons.search_rounded),
             label: 'Buscar',
           ),
           NavigationDestination(
             icon: Icon(Icons.location_on_outlined),
-            selectedIcon: Icon(Icons.location_on_rounded, color: _green),
+            selectedIcon: Icon(Icons.location_on_rounded),
             label: 'Pontos',
           ),
           NavigationDestination(
             icon: Icon(Icons.favorite_border_rounded),
-            selectedIcon: Icon(Icons.favorite_rounded, color: _green),
+            selectedIcon: Icon(Icons.favorite_rounded),
             label: 'Favoritos',
           ),
           NavigationDestination(
             icon: Icon(Icons.info_outline_rounded),
-            selectedIcon: Icon(Icons.info_rounded, color: _green),
+            selectedIcon: Icon(Icons.info_rounded),
             label: 'Sobre',
           ),
         ],
