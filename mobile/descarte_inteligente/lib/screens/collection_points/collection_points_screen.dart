@@ -609,25 +609,17 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
           children: [
             Row(
               children: [
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  constraints: const BoxConstraints.tightFor(width: 38, height: 38),
-                  padding: EdgeInsets.zero,
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.arrow_back, size: 21),
-                  color: _darkGreen,
-                ),
                 Expanded(
                   child: Text(
                     'Pontos de coleta',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
                       color: _darkGreen,
                     ),
                   ),
                 ),
-                AppThemeToggleButton(color: _darkGreen),
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   constraints: const BoxConstraints.tightFor(width: 38, height: 38),
