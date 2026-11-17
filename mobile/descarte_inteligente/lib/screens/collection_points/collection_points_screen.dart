@@ -162,13 +162,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
             (point['latitude'] as num).toDouble(),
             (point['longitude'] as num).toDouble(),
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            ['empresa', 'privado', 'instituicao'].contains(
-              point['origem']?.toString().toLowerCase(),
-            )
-                ? BitmapDescriptor.hueAzure
-                : BitmapDescriptor.hueGreen,
-          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(150),
           infoWindow: InfoWindow(
             title: point['nome'],
             snippet: point['distancia_km'] is num
