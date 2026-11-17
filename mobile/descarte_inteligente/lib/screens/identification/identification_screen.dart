@@ -570,10 +570,9 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
     return Scaffold(
       backgroundColor: _background,
       appBar: AppBar(
-        title: Text('Buscar resíduos'),
+        title: Text('Buscar resíduos', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
         backgroundColor: _background,
         foregroundColor: _darkGreen,
-        actions: [AppThemeToggleButton()],
       ),
       body: Column(
         children: [
