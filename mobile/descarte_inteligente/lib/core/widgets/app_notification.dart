@@ -93,7 +93,7 @@ class _NotificationCardState extends State<_NotificationCard> {
   Widget build(BuildContext context) {
     final (Color color, IconData defaultIcon, String title) = switch (widget.type) {
       AppNotificationType.success => (
-          context.appPalette.primary,
+          context.appPalette.primaryForeground,
           Icons.check_circle_outline_rounded,
           'Concluído',
         ),
