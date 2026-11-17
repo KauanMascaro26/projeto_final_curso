@@ -295,7 +295,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                                           Text(
                                             '${distance.toStringAsFixed(2)} km em linha reta',
                                             style: TextStyle(
-                                              color: _green,
+                                              color: _palette.primaryForeground,
                                               fontSize: 11,
                                               fontWeight: FontWeight.w700,
                                             ),
