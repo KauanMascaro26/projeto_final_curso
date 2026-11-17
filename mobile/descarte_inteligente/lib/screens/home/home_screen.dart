@@ -18,7 +18,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   AppPalette get _palette => context.appPalette;
   Color get _background => _palette.background;
   Color get _surface => _palette.surface;
@@ -39,6 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Key _favoritesKey = UniqueKey();
   Key _identificationKey = UniqueKey();
   String? _initialMaterialQuery;
+  late final AnimationController _pageTransitionController;
+  late final Animation<double> _pageFade;
+  late final Animation<Offset> _pageSlide;
 
   static const List<_DailyFact> _dailyFacts = [
     _DailyFact(title: 'Separe antes de descartar', text: 'Manter recicláveis separados dos rejeitos ajuda a reduzir a contaminação dos materiais.', icon: Icons.recycling_rounded),
@@ -64,6 +68,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _pageTransitionController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 180),
+      value: 1,
+    );
+    final pageCurve = CurvedAnimation(
+      parent: _pageTransitionController,
+      curve: Curves.easeOutCubic,
+    );
+    _pageFade = pageCurve;
+    _pageSlide = Tween<Offset>(
+      begin: const Offset(0.025, 0),
+      end: Offset.zero,
+    ).animate(pageCurve);
     _dailyFact = _dailyFacts[Random().nextInt(_dailyFacts.length)];
     _homeStats = _loadHomeStats();
   }
@@ -86,21 +104,30 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _openChat() => setState(() => _currentIndex = 1);
-
-  void _openIdentification([String? material]) => setState(() {
-        _initialMaterialQuery = material;
-        _identificationKey = UniqueKey();
-        _currentIndex = 2;
-      });
-
-
-  void _onNavigation(int index) {
+  void _showPage(int index) {
+    if (index == _currentIndex) return;
     setState(() {
       _currentIndex = index;
       if (index == 4) _favoritesKey = UniqueKey();
       if (index == 0) _homeStats = _loadHomeStats();
     });
+    _pageTransitionController.forward(from: 0);
+  }
+
+  void _openChat() => _showPage(1);
+
+  void _openIdentification([String? material]) {
+    _initialMaterialQuery = material;
+    _identificationKey = UniqueKey();
+    _showPage(2);
+  }
+
+  void _onNavigation(int index) => _showPage(index);
+
+  @override
+  void dispose() {
+    _pageTransitionController.dispose();
+    super.dispose();
   }
 
   Widget _buildHomeContent() {
@@ -590,18 +617,41 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  Widget _buildPage(int index, Widget page) {
+    final isCurrent = index == _currentIndex;
+    return Offstage(
+      offstage: !isCurrent,
+      child: TickerMode(
+        enabled: isCurrent,
+        child: FadeTransition(
+          opacity: _pageFade,
+          child: SlideTransition(
+            position: _pageSlide,
+            child: page,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _homeBackground,
-      body: IndexedStack(
-        index: _currentIndex,
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          _buildHomeContent(),
-          const ChatScreen(),
-          IdentificationScreen(key: _identificationKey, initialQuery: _initialMaterialQuery),
-          const CollectionPointsScreen(),
-          FavoritesScreen(key: _favoritesKey),
-          _buildAboutScreen(),
+          _buildPage(0, _buildHomeContent()),
+          _buildPage(1, const ChatScreen()),
+          _buildPage(
+            2,
+            IdentificationScreen(
+              key: _identificationKey,
+              initialQuery: _initialMaterialQuery,
+            ),
+          ),
+          _buildPage(3, const CollectionPointsScreen()),
+          _buildPage(4, FavoritesScreen(key: _favoritesKey)),
+          _buildPage(5, _buildAboutScreen()),
         ],
       ),
       bottomNavigationBar: NavigationBar(
