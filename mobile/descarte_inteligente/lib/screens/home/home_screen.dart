@@ -484,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline_rounded, color: _green, size: 19),
+                        Icon(Icons.info_outline_rounded, color: _palette.primaryForeground, size: 19),
                         SizedBox(width: 8),
                         Text(
                           'Informações importantes',
