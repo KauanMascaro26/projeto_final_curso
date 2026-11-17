@@ -688,7 +688,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     ),
                     label: Text(filter, style: TextStyle(fontSize: 11)),
                     labelStyle: TextStyle(
-                      color: selected ? _background : _muted,
+                      color: selected ? _palette.primaryForeground : _muted,
                       fontWeight: FontWeight.w600,
                     ),
                     selectedColor: _green,
