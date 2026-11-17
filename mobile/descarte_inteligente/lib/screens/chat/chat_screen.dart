@@ -40,13 +40,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   bool _isSending = false;
 
-  static const _suggestions = [
+  List<_Suggestion> get _suggestions => [
     _Suggestion(
       title: 'Pilhas e baterias',
       subtitle: 'Descarte seguro de eletrônicos',
       prompt: 'Como descarto uma pilha usada?',
       icon: Icons.battery_3_bar_rounded,
-      accent: AppColors.emerald,
+      accent: _green,
     ),
     _Suggestion(
       title: 'Plástico e garrafas',
