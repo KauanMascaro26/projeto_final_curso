@@ -392,7 +392,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                   onPressed: () => _loadWasteTypes(query: _searchController.text),
                   style: IconButton.styleFrom(
                     backgroundColor: _green,
-                    foregroundColor: Colors.white,
+                    foregroundColor: _palette.primaryForeground,
                     padding: const EdgeInsets.all(16),
                   ),
                   icon: Icon(Icons.search),
