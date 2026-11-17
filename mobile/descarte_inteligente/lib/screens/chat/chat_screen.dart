@@ -641,7 +641,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     backgroundColor: _green,
                     foregroundColor: _palette.primaryForeground,
                     disabledBackgroundColor: _green,
-                    disabledForegroundColor: _background,
+                    disabledForegroundColor: _palette.primaryForeground,
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(17),
