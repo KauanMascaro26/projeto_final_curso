@@ -116,13 +116,37 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  Chip(
-                    backgroundColor: _surfaceRaised,
-                    label: Text(
-                      waste['categoria']?.toString() ?? 'Sem categoria',
-                      style: TextStyle(color: _cyan, fontWeight: FontWeight.w600),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13,
+                      vertical: 8,
                     ),
-                    avatar: Icon(Icons.category_outlined, size: 18, color: _cyan),
+                    decoration: BoxDecoration(
+                      color: _palette.cardAccent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _palette.primaryForeground.withValues(alpha: 0.16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.category_rounded,
+                          size: 18,
+                          color: _palette.primaryForeground,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          waste['categoria']?.toString() ?? 'Sem categoria',
+                          style: TextStyle(
+                            color: _palette.primaryForeground,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   if (description.isNotEmpty) ...[
                     SizedBox(height: 12),
