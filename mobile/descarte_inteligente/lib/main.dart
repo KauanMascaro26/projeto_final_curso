@@ -16,18 +16,7 @@ class DescarteInteligenteApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Descarte Inteligente',
       theme: AppTheme.light,
-      home: AnimatedBuilder(
-        animation: appThemeController,
-        child: const HomeScreen(),
-        builder: (context, child) {
-          return AnimatedTheme(
-            data: appThemeController.isDark ? AppTheme.dark : AppTheme.light,
-            duration: const Duration(milliseconds: 240),
-            curve: Curves.easeInOutCubic,
-            child: child!,
-          );
-        },
-      ),
+      home: const HomeScreen(),
     );
   }
 }
