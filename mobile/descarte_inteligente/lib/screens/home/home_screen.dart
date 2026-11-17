@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Color get _border => _palette.border;
 
   Color get _homeBackground => _palette.background;
-  Color get _homeGreen => _palette.primary;
+  Color get _homeGreen => _palette.primaryForeground;
   Color get _homeText => _palette.text;
   Color get _homeMuted => _palette.muted;
   Color get _homeBorder => _palette.border;
