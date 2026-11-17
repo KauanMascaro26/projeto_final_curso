@@ -177,6 +177,10 @@ A preparação para produção e publicação permanece pendente:
 
 A identificação de resíduos por imagem e os ajustes finais do módulo conversacional de IA também continuam pendentes e serão retomados em uma etapa separada.
 
+## Política de Privacidade
+
+A política de privacidade do aplicativo está disponível em [`docs/index.html`](docs/index.html). Após habilitar o GitHub Pages usando a pasta `/docs` da branch `main`, a página pública poderá ser informada na Google Play Console.
+
 ## Issues
 
 Acompanhe as tarefas e pendências na aba [Issues](https://github.com/KauanMascaro26/projeto_final_curso/issues) do repositório.
