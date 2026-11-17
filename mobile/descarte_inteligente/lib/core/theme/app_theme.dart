@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   static const emerald = Color(0xFF55D6A2);
+  static const cardGreen = Color(0xFFE0EDE2);
   static const cyan = Color(0xFF53D9F5);
 }
 
@@ -124,7 +125,7 @@ class AppThemeToggleButton extends StatelessWidget {
       onPressed: appThemeController.toggle,
       icon: Icon(
         isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-        color: color ?? Theme.of(context).colorScheme.primary,
+        color: color ?? context.appPalette.text,
       ),
     );
   }
@@ -140,10 +141,10 @@ abstract final class AppTheme {
     text: Color(0xFF20352B),
     muted: Color(0xFF718078),
     border: Color(0xFFDCE6DE),
-    primary: Color(0xFF26734D),
-    primaryForeground: Color(0xFFFFFFFF),
-    navigationBackground: Color(0xFF091923),
-    navigationForeground: Color(0xFFADC1CC),
+    primary: AppColors.cardGreen,
+    primaryForeground: Color(0xFF20352B),
+    navigationBackground: Color(0xFFFFFFFF),
+    navigationForeground: Color(0xFF20352B),
   );
 
   static const darkPalette = AppPalette(
@@ -157,8 +158,8 @@ abstract final class AppTheme {
     border: Color(0xFF204653),
     primary: AppColors.emerald,
     primaryForeground: Color(0xFF07131D),
-    navigationBackground: Color(0xFF091923),
-    navigationForeground: Color(0xFFADC1CC),
+    navigationBackground: Color(0xFF000000),
+    navigationForeground: Color(0xFFFFFFFF),
   );
 
   static ThemeData get light =>
@@ -202,6 +203,22 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(18),
           side: BorderSide(color: palette.border),
         ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: palette.navigationBackground,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: palette.cardAccent,
+        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
+          return IconThemeData(color: palette.navigationForeground);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            color: palette.navigationForeground,
+            fontSize: 11,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+          );
+        }),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
