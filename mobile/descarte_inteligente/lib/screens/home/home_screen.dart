@@ -616,7 +616,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  @override
   Widget _buildPage(int index, Widget page) {
     final isCurrent = index == _currentIndex;
     return Offstage(
@@ -634,6 +633,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _homeBackground,
