@@ -887,7 +887,7 @@ class _MessageBubble extends StatelessWidget {
                     ? 'Ponto de coleta'
                     : 'Pontos de coleta',
                 style: TextStyle(
-                  color: context.appPalette.primary,
+                  color: context.appPalette.text,
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                 ),
@@ -936,7 +936,7 @@ class _MessageBubble extends StatelessWidget {
                         Text(
                           '${(distance as num).toStringAsFixed(1)} km',
                           style: TextStyle(
-                            color: context.appPalette.primary,
+                            color: context.appPalette.text,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
                           ),
@@ -1001,12 +1001,12 @@ class _BrandLoader extends StatelessWidget {
             height: size,
             child: CircularProgressIndicator(
               strokeWidth: 2.2,
-              color: context.appPalette.primary,
+              color: context.appPalette.text,
             ),
           ),
           Icon(
             Icons.park_rounded,
-            color: context.appPalette.primary,
+            color: context.appPalette.text,
             size: size * 0.48,
           ),
         ],
@@ -1031,7 +1031,11 @@ class _ThinkingBubble extends StatelessWidget {
             SizedBox(width: 9),
             Text(
               'Preparando sua resposta...',
-              style: TextStyle(color: context.appPalette.muted, fontSize: 12),
+              style: TextStyle(
+                color: context.appPalette.text,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
