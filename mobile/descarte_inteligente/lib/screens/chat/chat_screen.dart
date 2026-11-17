@@ -423,7 +423,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   SizedBox(height: 3),
                   Row(
                     children: [
-                      Icon(Icons.circle, color: _green, size: 7),
+                      Icon(Icons.circle, color: _palette.primaryForeground, size: 7),
                       SizedBox(width: 6),
                       Text(
                         'Descarte Inteligente',
