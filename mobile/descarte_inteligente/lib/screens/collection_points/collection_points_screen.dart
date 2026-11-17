@@ -313,7 +313,7 @@ class _CollectionPointsScreenState extends State<CollectionPointsScreen> {
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        color: _green,
+                        color: _palette.primaryForeground,
                       ),
                       SizedBox(width: 8),
                       Expanded(
