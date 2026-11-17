@@ -392,49 +392,31 @@ class _ChatScreenState extends State<ChatScreen> {
         toolbarHeight: 60,
         titleSpacing: 4,
         actions: [AppThemeToggleButton()],
-        title: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [_green, _cyan],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Assistente ecológico',
+                style: TextStyle(
+                  color: _text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
                 ),
-                borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(Icons.park_rounded, color: _palette.primaryForeground, size: 18),
-            ),
-            SizedBox(width: 11),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Assistente ecológico',
-                    style: TextStyle(
-                      color: _text,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  SizedBox(height: 3),
-                  Row(
-                    children: [
-                      Icon(Icons.circle, color: _palette.primaryForeground, size: 7),
-                      SizedBox(width: 6),
-                      Text(
-                        'Descarte Inteligente',
-                        style: TextStyle(color: _muted, fontSize: 11.5),
-                      ),
-                    ],
-                  ),
-                ],
+              SizedBox(height: 3),
+              Text(
+                'Descarte Inteligente',
+                style: TextStyle(
+                  color: _muted,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       body: Column(
@@ -503,33 +485,38 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: _green.withValues(alpha: 0.08),
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Como posso ajudar?',
-                          style: TextStyle(
-                            color: _text,
-                            fontSize: compact ? 20 : 22,
-                            height: 1.15,
-                            letterSpacing: -0.4,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        SizedBox(height: 7),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 290),
-                          child: Text(
-                            'Tire dúvidas sobre separação, preparo e descarte correto dos resíduos.',
+                    SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Como posso ajudar?',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: _muted,
-                              fontSize: compact ? 11.5 : 12,
-                              height: 1.4,
+                              color: _text,
+                              fontSize: compact ? 20 : 22,
+                              height: 1.15,
+                              letterSpacing: -0.4,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 8),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: 300),
+                            child: Text(
+                              'Tire dúvidas sobre separação, preparo e descarte correto dos resíduos.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: _muted,
+                                fontSize: compact ? 11.5 : 12,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
